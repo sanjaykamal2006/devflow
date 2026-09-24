@@ -3,71 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --color-primary: #FFC554;
+  --background: #09090b;
+  --foreground: #f4f4f5;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Loop-inspired dot matrix background */
-.dot-matrix {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-/* Sharp, refined card & surface styling */
-.dark-card {
-  background-color: rgba(18, 18, 22, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-.dark-card-hover:hover {
-  border-color: rgba(255, 197, 84, 0.4);
-  transform: translateY(-1px);
-}
-
-.dark-input {
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  outline: none;
-  transition: all 0.15s ease;
-}
-
-.dark-input:focus {
-  border-color: #FFC554;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-/* Primary High-Contrast Button */
-.btn-accent {
-  background-color: #FFC554;
-  color: #000000;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  transition: all 0.15s ease;
-}
-
-.btn-accent:hover {
-  background-color: #ffd166;
-}
-
-.btn-accent:active {
-  transform: scale(0.98);
-}
-
-/* Custom scrollbars */
+/* Subtle, clean scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

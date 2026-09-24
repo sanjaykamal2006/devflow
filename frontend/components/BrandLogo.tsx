@@ -7,54 +7,40 @@ interface BrandLogoProps {
 
 export function BrandLogo({ size = 'md', showText = true }: BrandLogoProps) {
   const iconDimensions = {
-    sm: 'w-7 h-7',
-    md: 'w-8 h-8',
-    lg: 'w-11 h-11',
+    sm: 'w-6 h-6',
+    md: 'w-7 h-7',
+    lg: 'w-9 h-9',
   };
 
   const textSizes = {
     sm: 'text-xs',
     md: 'text-sm',
-    lg: 'text-lg',
+    lg: 'text-base',
   };
 
   return (
-    <div className="inline-flex items-center gap-2.5 group select-none">
-      {/* Sharp Architectural Brand Icon */}
+    <div className="inline-flex items-center gap-2 select-none group">
       <div
-        className={`${iconDimensions[size]} relative flex items-center justify-center rounded-xl bg-zinc-950 border border-white/15 shadow-sm group-hover:border-[#FFC554]/50 transition-colors`}
+        className={`${iconDimensions[size]} flex items-center justify-center rounded-lg bg-zinc-100 text-zinc-950 font-bold shadow-sm transition-transform group-hover:scale-105`}
       >
         <svg
-          className="w-4 h-4 text-white"
+          className="w-4 h-4 text-zinc-950"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
-          {/* Minimalist Flow Vectors */}
-          <path d="M4 12h8m0 0l-3-3m3 3l-3 3" />
-          <path d="M14 6h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4" />
+          <polyline points="16 18 22 12 16 6" />
+          <polyline points="8 6 2 12 8 18" />
         </svg>
-        {/* Loop-inspired Warm Gold Accent Indicator */}
-        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#FFC554]" />
       </div>
 
       {showText && (
-        <div className="flex flex-col text-left leading-none">
-          <div className="flex items-center gap-1.5">
-            <span className={`${textSizes[size]} font-black tracking-tight font-sans text-white uppercase`}>
-              DEVFLOW
-            </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FFC554]" />
-          </div>
-          {size === 'lg' && (
-            <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-zinc-500 mt-1">
-              Engineering Workspace
-            </span>
-          )}
-        </div>
+        <span className={`${textSizes[size]} font-semibold tracking-tight text-zinc-100 font-sans`}>
+          DevFlow
+        </span>
       )}
     </div>
   );

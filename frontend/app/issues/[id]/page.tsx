@@ -527,7 +527,7 @@ export default function IssueDetailPage({
                           {act.activityType === 'COMMIT' ? (
                             <GitCommit className="w-4 h-4 text-sky-400 flex-shrink-0 mt-0.5" />
                           ) : (
-                            <GitPullRequest className="w-4 h-4 text-[#FFC554] flex-shrink-0 mt-0.5" />
+                            <GitPullRequest className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                           )}
                           <div className="min-w-0">
                             <a

@@ -256,7 +256,7 @@ export function GitHubPanel({
                   {act.activityType === 'COMMIT' ? (
                     <GitCommit className="w-3.5 h-3.5 text-sky-400 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <GitPullRequest className="w-3.5 h-3.5 text-[#FFC554] flex-shrink-0 mt-0.5" />
+                    <GitPullRequest className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
                   )}
                   <div className="min-w-0">
                     <a
