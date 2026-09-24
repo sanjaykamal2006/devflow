@@ -12,10 +12,11 @@ export const metadata: Metadata = {
   description: 'A fast, lightweight issue tracking and engineering workspace for software teams.',
   icons: {
     icon: [
-      { url: '/logo.jpg', sizes: 'any' },
       { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png' },
     ],
-    apple: '/logo.jpg',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 
