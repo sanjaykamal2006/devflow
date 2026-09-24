@@ -13,17 +13,17 @@ export function TypeBadge({ type, className = '', showIcon = true }: TypeBadgePr
     TASK: {
       color: 'text-zinc-300 bg-zinc-800/60 border-zinc-700/60',
       label: 'Task',
-      icon: <CheckSquare className="w-3 h-3 text-zinc-400" />,
+      icon: <CheckSquare className="w-3.5 h-3.5 text-zinc-400" />,
     },
     BUG: {
       color: 'text-rose-400 bg-rose-950/40 border-rose-800/60',
       label: 'Bug',
-      icon: <Bug className="w-3 h-3 text-rose-400" />,
+      icon: <Bug className="w-3.5 h-3.5 text-rose-400" />,
     },
     FEATURE: {
       color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60',
       label: 'Feature',
-      icon: <Sparkles className="w-3 h-3 text-emerald-400" />,
+      icon: <Sparkles className="w-3.5 h-3.5 text-emerald-400" />,
     },
   };
 
@@ -31,7 +31,7 @@ export function TypeBadge({ type, className = '', showIcon = true }: TypeBadgePr
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium border ${current.color} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium border ${current.color} ${className}`}
     >
       {showIcon && current.icon}
       <span>{current.label}</span>

@@ -23,18 +23,18 @@ export function IssueTable({ issues }: IssueTableProps) {
   }
 
   return (
-    <div className="border border-zinc-800 rounded-lg overflow-hidden bg-zinc-950">
+    <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-950">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-zinc-800 bg-zinc-900/60 text-zinc-400 font-mono uppercase text-[10px] tracking-wider">
-              <th className="py-2.5 px-3 font-medium">Key</th>
-              <th className="py-2.5 px-3 font-medium">Title</th>
-              <th className="py-2.5 px-3 font-medium">Status</th>
-              <th className="py-2.5 px-3 font-medium">Priority</th>
-              <th className="py-2.5 px-3 font-medium">Type</th>
-              <th className="py-2.5 px-3 font-medium">Assignee</th>
-              <th className="py-2.5 px-3 font-medium text-right">Created</th>
+            <tr className="border-b border-zinc-800 bg-zinc-900/60 text-zinc-400 font-mono uppercase text-xs tracking-wider">
+              <th className="py-3 px-4 font-semibold">Key</th>
+              <th className="py-3 px-4 font-semibold">Title</th>
+              <th className="py-3 px-4 font-semibold">Status</th>
+              <th className="py-3 px-4 font-semibold">Priority</th>
+              <th className="py-3 px-4 font-semibold">Type</th>
+              <th className="py-3 px-4 font-semibold">Assignee</th>
+              <th className="py-3 px-4 font-semibold text-right">Created</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-800/60">
@@ -44,33 +44,33 @@ export function IssueTable({ issues }: IssueTableProps) {
                 className="hover:bg-zinc-900/50 transition cursor-pointer group"
               >
                 {/* Key */}
-                <td className="py-2.5 px-3 font-mono font-medium text-zinc-400 group-hover:text-zinc-200 whitespace-nowrap">
+                <td className="py-3 px-4 font-mono font-semibold text-zinc-400 group-hover:text-zinc-200 whitespace-nowrap">
                   <Link href={`/issues/${issue.id}`} className="hover:underline">
                     {issue.issueKey}
                   </Link>
                 </td>
 
                 {/* Title & Labels */}
-                <td className="py-2.5 px-3 max-w-md">
-                  <div className="flex items-center gap-2">
+                <td className="py-3 px-4 max-w-md">
+                  <div className="flex items-center gap-2.5">
                     <Link
                       href={`/issues/${issue.id}`}
-                      className="font-medium text-zinc-200 group-hover:text-white truncate"
+                      className="text-sm font-medium text-zinc-200 group-hover:text-white truncate"
                     >
                       {issue.title}
                     </Link>
 
                     {/* Metadata counts */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0 text-zinc-500 font-mono text-[10px]">
+                    <div className="flex items-center gap-1.5 flex-shrink-0 text-zinc-500 font-mono text-xs">
                       {issue.commentCount > 0 && (
-                        <span className="flex items-center gap-0.5" title={`${issue.commentCount} comments`}>
-                          <MessageSquare className="w-3 h-3" />
+                        <span className="flex items-center gap-1" title={`${issue.commentCount} comments`}>
+                          <MessageSquare className="w-3.5 h-3.5" />
                           {issue.commentCount}
                         </span>
                       )}
                       {issue.githubActivityCount > 0 && (
-                        <span className="flex items-center gap-0.5 text-sky-400" title={`${issue.githubActivityCount} linked commits/PRs`}>
-                          <GitCommit className="w-3 h-3" />
+                        <span className="flex items-center gap-1 text-sky-400" title={`${issue.githubActivityCount} linked commits/PRs`}>
+                          <GitCommit className="w-3.5 h-3.5" />
                           {issue.githubActivityCount}
                         </span>
                       )}
@@ -78,11 +78,11 @@ export function IssueTable({ issues }: IssueTableProps) {
                   </div>
 
                   {issue.labels && issue.labels.length > 0 && (
-                    <div className="flex items-center gap-1 mt-1">
+                    <div className="flex items-center gap-1.5 mt-1.5">
                       {issue.labels.map((lbl) => (
                         <span
                           key={lbl.id}
-                          className="text-[10px] px-1 py-0.2 rounded border border-zinc-800 text-zinc-400 bg-zinc-900"
+                          className="text-xs px-2 py-0.5 rounded border border-zinc-800 text-zinc-400 bg-zinc-900 font-mono"
                         >
                           {lbl.name}
                         </span>
@@ -92,36 +92,36 @@ export function IssueTable({ issues }: IssueTableProps) {
                 </td>
 
                 {/* Status */}
-                <td className="py-2.5 px-3 whitespace-nowrap">
+                <td className="py-3 px-4 whitespace-nowrap">
                   <StatusBadge status={issue.status} />
                 </td>
 
                 {/* Priority */}
-                <td className="py-2.5 px-3 whitespace-nowrap">
+                <td className="py-3 px-4 whitespace-nowrap">
                   <PriorityBadge priority={issue.priority} />
                 </td>
 
                 {/* Type */}
-                <td className="py-2.5 px-3 whitespace-nowrap">
+                <td className="py-3 px-4 whitespace-nowrap">
                   <TypeBadge type={issue.issueType} />
                 </td>
 
                 {/* Assignee */}
-                <td className="py-2.5 px-3 whitespace-nowrap text-zinc-400">
+                <td className="py-3 px-4 whitespace-nowrap text-zinc-400">
                   {issue.assignee ? (
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-4 h-4 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[9px] font-mono text-zinc-300">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-300">
                         {issue.assignee.fullName.charAt(0).toUpperCase()}
                       </div>
-                      <span className="truncate max-w-[100px]">{issue.assignee.fullName}</span>
+                      <span className="truncate max-w-[120px] text-xs text-zinc-300">{issue.assignee.fullName}</span>
                     </div>
                   ) : (
-                    <span className="text-zinc-600 font-mono text-[11px]">—</span>
+                    <span className="text-zinc-600 font-mono text-xs">—</span>
                   )}
                 </td>
 
                 {/* Date */}
-                <td className="py-2.5 px-3 whitespace-nowrap text-right font-mono text-[11px] text-zinc-500">
+                <td className="py-3 px-4 whitespace-nowrap text-right font-mono text-xs text-zinc-500">
                   {new Date(issue.createdAt).toLocaleDateString(undefined, {
                     month: 'short',
                     day: 'numeric',

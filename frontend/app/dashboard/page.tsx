@@ -83,23 +83,23 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-white">
+          <h1 className="text-2xl font-bold tracking-tight text-white">
             Workspaces
           </h1>
-          <p className="text-xs text-zinc-400 mt-1">
+          <p className="text-sm text-zinc-400 mt-1">
             Logged in as <span className="text-zinc-200 font-medium">{user?.email}</span>
           </p>
         </div>
 
         <button
           onClick={() => setCreatingWs(true)}
-          className="px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium transition shadow-sm flex items-center gap-1.5 self-start sm:self-auto"
+          className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition shadow-sm flex items-center gap-2 self-start sm:self-auto"
         >
-          <Plus className="w-3.5 h-3.5" />
+          <Plus className="w-4 h-4" />
           <span>New Workspace</span>
         </button>
       </div>
@@ -192,44 +192,44 @@ export default function DashboardPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {workspaces.map((ws) => (
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-lg p-5 transition flex flex-col justify-between"
+                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 transition flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white truncate">
+                    <h3 className="text-base font-semibold text-zinc-100 group-hover:text-white truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 flex-shrink-0">
-                      <Shield className="w-2.5 h-2.5 text-zinc-400" />
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 flex-shrink-0">
+                      <Shield className="w-3 h-3 text-zinc-400" />
                       {ws.currentUserRole}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px] mb-4">
+                  <p className="text-sm text-zinc-400 line-clamp-2 min-h-[40px] mb-4">
                     {ws.description || 'No description provided.'}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1" title={`${ws.projectCount} projects`}>
-                      <FolderGit2 className="w-3.5 h-3.5 text-zinc-400" />
+                <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400 font-mono">
+                  <div className="flex items-center gap-4">
+                    <span className="flex items-center gap-1.5" title={`${ws.projectCount} projects`}>
+                      <FolderGit2 className="w-4 h-4 text-zinc-400" />
                       {ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}
                     </span>
-                    <span className="flex items-center gap-1" title={`${ws.memberCount} members`}>
-                      <Users className="w-3.5 h-3.5 text-zinc-400" />
+                    <span className="flex items-center gap-1.5" title={`${ws.memberCount} members`}>
+                      <Users className="w-4 h-4 text-zinc-400" />
                       {ws.memberCount}
                     </span>
                   </div>
 
-                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px]">
+                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-xs">
                     <span>Enter</span>
-                    <ArrowRight className="w-3 h-3" />
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </Link>

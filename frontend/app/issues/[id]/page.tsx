@@ -241,15 +241,15 @@ export default function IssueDetailPage({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
       {/* Breadcrumb Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-zinc-800">
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
+      <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div className="flex items-center gap-2 text-sm font-mono text-zinc-400">
           <Link
             href={`/projects/${issue.projectId}/issues`}
-            className="hover:text-zinc-300 flex items-center gap-1"
+            className="hover:text-zinc-200 flex items-center gap-1.5"
           >
-            <ArrowLeft className="w-3 h-3" />
+            <ArrowLeft className="w-4 h-4" />
             <span>{issue.projectName}</span>
           </Link>
           <span>/</span>

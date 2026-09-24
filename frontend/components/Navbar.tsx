@@ -34,11 +34,11 @@ export function Navbar() {
 
   return (
     <header className="border-b border-zinc-800/80 bg-[#09090b]/90 backdrop-blur sticky top-0 z-40 text-zinc-100">
-      <div className="max-w-7xl mx-auto px-4 h-13 flex items-center justify-between">
+      <div className="w-full px-6 lg:px-8 h-14 flex items-center justify-between">
         {/* Left: Brand & Workspace Selector */}
         <div className="flex items-center gap-4">
           <Link href="/dashboard" className="hover:opacity-90 transition">
-            <BrandLogo size="sm" showText={true} />
+            <BrandLogo size="md" showText={true} />
           </Link>
 
           <span className="text-zinc-700 select-none">/</span>
@@ -47,11 +47,11 @@ export function Navbar() {
           <div className="relative">
             <button
               onClick={() => setWsDropdownOpen(!wsDropdownOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition"
             >
-              <Layers className="w-3.5 h-3.5 text-zinc-400" />
-              <span className="max-w-[140px] truncate">{currentWorkspace ? currentWorkspace.name : 'Select Workspace'}</span>
-              <ChevronDown className="w-3 h-3 text-zinc-500" />
+              <Layers className="w-4 h-4 text-zinc-400" />
+              <span className="max-w-[160px] truncate">{currentWorkspace ? currentWorkspace.name : 'Select Workspace'}</span>
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
             </button>
 
             {wsDropdownOpen && (
@@ -84,7 +84,7 @@ export function Navbar() {
           </div>
 
           {/* Main Links */}
-          <nav className="hidden md:flex items-center gap-4 text-xs font-medium text-zinc-400 ml-2">
+          <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-zinc-400 ml-3">
             <Link
               href="/dashboard"
               className={`hover:text-zinc-200 transition ${pathname === '/dashboard' ? 'text-zinc-100 font-semibold' : ''}`}
@@ -105,28 +105,28 @@ export function Navbar() {
         {/* Right: User Profile & Actions */}
         <div className="flex items-center gap-3">
           {user ? (
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3">
               <Link
                 href="/settings"
-                className="text-zinc-400 hover:text-zinc-200 p-1.5 rounded hover:bg-zinc-900 transition"
+                className="text-zinc-400 hover:text-zinc-200 p-2 rounded-md hover:bg-zinc-900 transition"
                 title="Settings"
               >
-                <Settings className="w-3.5 h-3.5" />
+                <Settings className="w-4 h-4" />
               </Link>
 
-              <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
-                <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-300">
+              <div className="flex items-center gap-2.5 pl-2.5 border-l border-zinc-800">
+                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-200">
                   {user.fullName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-xs text-zinc-300 hidden sm:inline max-w-[120px] truncate">
+                <span className="text-sm font-medium text-zinc-200 hidden sm:inline max-w-[140px] truncate">
                   {user.fullName}
                 </span>
                 <button
                   onClick={logout}
-                  className="text-zinc-500 hover:text-rose-400 p-1 rounded hover:bg-zinc-900 transition"
+                  className="text-zinc-500 hover:text-rose-400 p-2 rounded-md hover:bg-zinc-900 transition"
                   title="Logout"
                 >
-                  <LogOut className="w-3.5 h-3.5" />
+                  <LogOut className="w-4 h-4" />
                 </button>
               </div>
             </div>

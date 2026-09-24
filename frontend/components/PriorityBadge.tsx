@@ -13,22 +13,22 @@ export function PriorityBadge({ priority, className = '', showIcon = true }: Pri
     LOW: {
       color: 'text-zinc-400 bg-zinc-800/40 border-zinc-700/60',
       label: 'Low',
-      icon: <ArrowDown className="w-3 h-3 text-zinc-400" />,
+      icon: <ArrowDown className="w-3.5 h-3.5 text-zinc-400" />,
     },
     MEDIUM: {
       color: 'text-blue-400 bg-blue-950/40 border-blue-800/60',
       label: 'Medium',
-      icon: <Minus className="w-3 h-3 text-blue-400" />,
+      icon: <Minus className="w-3.5 h-3.5 text-blue-400" />,
     },
     HIGH: {
       color: 'text-amber-400 bg-amber-950/40 border-amber-800/60',
       label: 'High',
-      icon: <ArrowUp className="w-3 h-3 text-amber-400" />,
+      icon: <ArrowUp className="w-3.5 h-3.5 text-amber-400" />,
     },
     CRITICAL: {
       color: 'text-rose-400 bg-rose-950/40 border-rose-800/60',
       label: 'Critical',
-      icon: <AlertOctagon className="w-3 h-3 text-rose-400" />,
+      icon: <AlertOctagon className="w-3.5 h-3.5 text-rose-400" />,
     },
   };
 
@@ -36,7 +36,7 @@ export function PriorityBadge({ priority, className = '', showIcon = true }: Pri
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-mono font-medium border ${current.color} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-medium border ${current.color} ${className}`}
     >
       {showIcon && current.icon}
       <span>{current.label}</span>

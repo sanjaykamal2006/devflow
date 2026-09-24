@@ -39,29 +39,29 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-5 items-stretch min-h-[calc(100vh-230px)]">
       {COLUMNS.map((col) => {
         const colIssues = getIssuesForColumn(col.id);
 
         return (
           <div
             key={col.id}
-            className={`bg-zinc-900/30 border ${col.border} rounded-lg p-3 flex flex-col min-h-[500px]`}
+            className={`bg-zinc-900/30 border ${col.border} rounded-xl p-4 flex flex-col`}
           >
             {/* Column Header */}
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-zinc-800/80">
-              <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800/80">
+              <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
                 {col.title}
               </span>
-              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+              <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
                 {colIssues.length}
               </span>
             </div>
 
             {/* Cards List */}
-            <div className="space-y-2.5 flex-1 overflow-y-auto">
+            <div className="space-y-3 flex-1 overflow-y-auto">
               {colIssues.length === 0 ? (
-                <div className="h-28 border border-dashed border-zinc-800/80 rounded flex items-center justify-center text-xs text-zinc-600 font-mono">
+                <div className="h-32 border border-dashed border-zinc-800/80 rounded-lg flex items-center justify-center text-xs text-zinc-600 font-mono">
                   No issues
                 </div>
               ) : (
@@ -72,13 +72,13 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                   return (
                     <div
                       key={issue.id}
-                      className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-md p-3 transition shadow-sm group"
+                      className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-lg p-4 transition shadow-sm group"
                     >
                       {/* Top Row: Key + Type + Priority */}
-                      <div className="flex items-center justify-between gap-1 mb-2">
+                      <div className="flex items-center justify-between gap-2 mb-2.5">
                         <Link
                           href={`/issues/${issue.id}`}
-                          className="font-mono text-xs font-semibold text-zinc-400 hover:text-zinc-100 hover:underline"
+                          className="font-mono text-xs font-bold text-zinc-400 hover:text-zinc-100 hover:underline"
                         >
                           {issue.issueKey}
                         </Link>
@@ -91,18 +91,18 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                       {/* Title */}
                       <Link
                         href={`/issues/${issue.id}`}
-                        className="text-xs font-medium text-zinc-200 hover:text-white line-clamp-2 mb-2 block leading-snug"
+                        className="text-sm font-medium text-zinc-100 hover:text-white line-clamp-2 mb-3 block leading-relaxed"
                       >
                         {issue.title}
                       </Link>
 
                       {/* Labels */}
                       {issue.labels && issue.labels.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-2">
+                        <div className="flex flex-wrap gap-1.5 mb-3">
                           {issue.labels.map((lbl) => (
                             <span
                               key={lbl.id}
-                              className="text-[10px] px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-900 text-zinc-400"
+                              className="text-xs px-2 py-0.5 rounded border border-zinc-800 bg-zinc-900 text-zinc-400 font-mono"
                               style={{ borderColor: lbl.color ? `${lbl.color}40` : undefined }}
                             >
                               {lbl.name}
@@ -112,29 +112,29 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                       )}
 
                       {/* Footer: Assignee + Counts + Quick Action */}
-                      <div className="flex items-center justify-between pt-2 border-t border-zinc-900 text-[11px] text-zinc-500">
-                        <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-between pt-3 border-t border-zinc-900 text-xs text-zinc-500">
+                        <div className="flex items-center gap-2.5">
                           {issue.assignee ? (
                             <div
-                              className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] text-zinc-300 font-mono"
+                              className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 font-mono font-medium"
                               title={`Assignee: ${issue.assignee.fullName}`}
                             >
                               {issue.assignee.fullName.charAt(0).toUpperCase()}
                             </div>
                           ) : (
-                            <span className="text-zinc-600 text-[10px] font-mono">Unassigned</span>
+                            <span className="text-zinc-600 text-xs font-mono">Unassigned</span>
                           )}
 
                           {issue.commentCount > 0 && (
-                            <span className="flex items-center gap-0.5 text-zinc-400 font-mono text-[10px]">
-                              <MessageSquare className="w-3 h-3" />
+                            <span className="flex items-center gap-1 text-zinc-400 font-mono text-xs">
+                              <MessageSquare className="w-3.5 h-3.5" />
                               {issue.commentCount}
                             </span>
                           )}
 
                           {issue.githubActivityCount > 0 && (
-                            <span className="flex items-center gap-0.5 text-sky-400 font-mono text-[10px]" title="Linked GitHub commits/PRs">
-                              <GitCommit className="w-3 h-3" />
+                            <span className="flex items-center gap-1 text-sky-400 font-mono text-xs" title="Linked GitHub commits/PRs">
+                              <GitCommit className="w-3.5 h-3.5" />
                               {issue.githubActivityCount}
                             </span>
                           )}
@@ -145,19 +145,19 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                           {prevStatus && (
                             <button
                               onClick={() => onStatusChange(issue.id, prevStatus)}
-                              className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-200"
+                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 transition"
                               title={`Move to ${prevStatus}`}
                             >
-                              <ArrowLeft className="w-3 h-3" />
+                              <ArrowLeft className="w-3.5 h-3.5" />
                             </button>
                           )}
                           {nextStatus && (
                             <button
                               onClick={() => onStatusChange(issue.id, nextStatus)}
-                              className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-200"
+                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 transition"
                               title={`Move to ${nextStatus}`}
                             >
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           )}
                         </div>

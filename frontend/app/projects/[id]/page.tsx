@@ -95,51 +95,51 @@ export default function ProjectOverviewPage({
     : 0;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
       {/* Breadcrumb & Header */}
       <div className="pb-6 border-b border-zinc-800">
-        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-2">
+        <div className="flex items-center gap-2 text-sm font-mono text-zinc-400 mb-2">
           {workspace && (
             <>
-              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-300">
+              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-200">
                 {workspace.name}
               </Link>
               <span>/</span>
             </>
           )}
-          <span className="text-zinc-300 font-bold">{project.key}</span>
+          <span className="text-zinc-200 font-bold">{project.key}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-xl font-bold tracking-tight text-white">{project.name}</h1>
-              <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-bold tracking-tight text-white">{project.name}</h1>
+              <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700">
                 {project.key}
               </span>
             </div>
             {project.description && (
-              <p className="text-xs text-zinc-400 mt-1 max-w-2xl">{project.description}</p>
+              <p className="text-sm text-zinc-400 mt-1 max-w-2xl">{project.description}</p>
             )}
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-3">
             <Link
               href={`/projects/${project.id}/issues`}
-              className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center gap-1.5 shadow-sm"
+              className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm"
             >
-              <Kanban className="w-3.5 h-3.5" />
+              <Kanban className="w-4 h-4" />
               <span>Issues & Board</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
             {canManage && (
               <button
                 onClick={handleDeleteProject}
-                className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-rose-800 text-zinc-500 hover:text-rose-400 transition"
+                className="h-10 w-10 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 hover:border-rose-800 text-zinc-400 hover:text-rose-400 transition"
                 title="Delete project"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-4 h-4" />
               </button>
             )}
           </div>
