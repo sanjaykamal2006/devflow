@@ -10,6 +10,13 @@ const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' }
 export const metadata: Metadata = {
   title: 'DevFlow - Developer Workspace',
   description: 'A fast, lightweight issue tracking and engineering workspace for software teams.',
+  icons: {
+    icon: [
+      { url: '/logo.jpg', sizes: 'any' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: '/logo.jpg',
+  },
 };
 
 export default function RootLayout({

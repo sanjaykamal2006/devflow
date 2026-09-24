@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg';
@@ -6,39 +7,31 @@ interface BrandLogoProps {
 }
 
 export function BrandLogo({ size = 'md', showText = true }: BrandLogoProps) {
-  const iconDimensions = {
-    sm: 'w-6 h-6',
-    md: 'w-7 h-7',
-    lg: 'w-9 h-9',
+  const dimensions = {
+    sm: { box: 'w-7 h-7', px: 28, text: 'text-xs' },
+    md: { box: 'w-8 h-8', px: 32, text: 'text-sm' },
+    lg: { box: 'w-14 h-14', px: 56, text: 'text-lg' },
   };
 
-  const textSizes = {
-    sm: 'text-xs',
-    md: 'text-sm',
-    lg: 'text-base',
-  };
+  const current = dimensions[size] || dimensions.md;
 
   return (
-    <div className="inline-flex items-center gap-2 select-none group">
+    <div className="inline-flex items-center gap-2.5 select-none group">
       <div
-        className={`${iconDimensions[size]} flex items-center justify-center rounded-lg bg-zinc-100 text-zinc-950 font-bold shadow-sm transition-transform group-hover:scale-105`}
+        className={`${current.box} relative flex items-center justify-center rounded-lg overflow-hidden border border-zinc-800/80 bg-zinc-950 shadow-sm transition-transform group-hover:scale-105`}
       >
-        <svg
-          className="w-4 h-4 text-zinc-950"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="16 18 22 12 16 6" />
-          <polyline points="8 6 2 12 8 18" />
-        </svg>
+        <Image
+          src="/logo.jpg"
+          alt="DevFlow Logo"
+          width={current.px}
+          height={current.px}
+          priority
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {showText && (
-        <span className={`${textSizes[size]} font-semibold tracking-tight text-zinc-100 font-sans`}>
+        <span className={`${current.text} font-bold tracking-tight text-white font-sans`}>
           DevFlow
         </span>
       )}
