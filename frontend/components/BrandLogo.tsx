@@ -8,18 +8,18 @@ interface BrandLogoProps {
 
 export function BrandLogo({ size = 'md', showText = true }: BrandLogoProps) {
   const dimensions = {
-    sm: { box: 'w-8 h-8', px: 32, text: 'text-sm' },
-    md: { box: 'w-10 h-10', px: 40, text: 'text-base' },
-    lg: { box: 'w-20 h-20', px: 80, text: 'text-xl' },
-    xl: { box: 'w-24 h-24', px: 96, text: 'text-2xl' },
+    sm: { box: 'w-5 h-5', px: 20, text: 'text-xs' },
+    md: { box: 'w-6 h-6', px: 24, text: 'text-sm' },
+    lg: { box: 'w-10 h-10', px: 40, text: 'text-base' },
+    xl: { box: 'w-12 h-12', px: 48, text: 'text-lg' },
   };
 
   const current = dimensions[size] || dimensions.md;
 
   return (
-    <div className="inline-flex items-center gap-3 select-none group">
+    <div className="inline-flex items-center gap-2 select-none group">
       <div
-        className={`${current.box} relative flex items-center justify-center transition-transform duration-200 group-hover:scale-105 drop-shadow-[0_6px_16px_rgba(0,0,0,0.6)]`}
+        className={`${current.box} relative flex items-center justify-center flex-shrink-0 transition-opacity group-hover:opacity-90`}
       >
         <Image
           src="/logo.png"
@@ -32,7 +32,7 @@ export function BrandLogo({ size = 'md', showText = true }: BrandLogoProps) {
       </div>
 
       {showText && (
-        <span className={`${current.text} font-bold tracking-tight text-white font-sans`}>
+        <span className={`${current.text} font-semibold tracking-tight text-zinc-100 font-sans`}>
           DevFlow
         </span>
       )}
