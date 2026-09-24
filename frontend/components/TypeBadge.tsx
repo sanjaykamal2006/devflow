@@ -11,19 +11,19 @@ interface TypeBadgeProps {
 export function TypeBadge({ type, className = '', showIcon = true }: TypeBadgeProps) {
   const meta: Record<IssueType, { color: string; label: string; icon: React.ReactNode }> = {
     TASK: {
-      color: 'text-indigo-400 bg-indigo-950/40 border-indigo-800/60',
+      color: 'text-zinc-300 bg-white/5 border-white/10',
       label: 'Task',
-      icon: <CheckSquare className="w-3 h-3 text-indigo-400" />,
+      icon: <CheckSquare className="w-3 h-3 text-zinc-400" />,
     },
     BUG: {
-      color: 'text-rose-400 bg-rose-950/40 border-rose-800/60',
+      color: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
       label: 'Bug',
       icon: <Bug className="w-3 h-3 text-rose-400" />,
     },
     FEATURE: {
-      color: 'text-emerald-400 bg-emerald-950/40 border-emerald-800/60',
+      color: 'text-[#FFC554] bg-[#FFC554]/10 border-[#FFC554]/20',
       label: 'Feature',
-      icon: <Sparkles className="w-3 h-3 text-emerald-400" />,
+      icon: <Sparkles className="w-3 h-3 text-[#FFC554]" />,
     },
   };
 

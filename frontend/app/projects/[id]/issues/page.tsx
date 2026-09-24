@@ -148,9 +148,9 @@ export default function ProjectIssuesPage({
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-5">
       {/* Top Header: Breadcrumbs & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-1">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-1.5 uppercase tracking-wider">
             {workspace && (
               <>
                 <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-300">
@@ -163,35 +163,35 @@ export default function ProjectIssuesPage({
               {project.name}
             </Link>
             <span>/</span>
-            <span className="text-zinc-300 font-bold">Issues</span>
+            <span className="text-white font-bold">Issues</span>
           </div>
 
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-white font-mono">{project.key} Issues</h1>
-            <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-400">
-              {totalElements} total
+            <h1 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">{project.key} Board</h1>
+            <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/5 border border-white/10 text-zinc-400">
+              {totalElements} issues
             </span>
             {project.githubConnected && (
               <Link
                 href={`/projects/${project.id}`}
-                className="flex items-center gap-1 text-[11px] font-mono text-emerald-400 hover:underline"
+                className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20"
               >
                 <GitBranch className="w-3 h-3" />
-                <span>GitHub linked</span>
+                <span>GitHub Sync</span>
               </Link>
             )}
           </div>
         </div>
 
         {/* View Toggle & New Issue Button */}
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center bg-zinc-900 p-0.5 rounded border border-zinc-800">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center bg-zinc-950 p-1 rounded-xl border border-white/10">
             <button
               onClick={() => setViewMode('kanban')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
                 viewMode === 'kanban'
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-[#FFC554] text-black shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
               <Kanban className="w-3.5 h-3.5" />
@@ -199,10 +199,10 @@ export default function ProjectIssuesPage({
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium transition ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
                 viewMode === 'table'
-                  ? 'bg-zinc-800 text-white shadow-sm'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-[#FFC554] text-black shadow-sm'
+                  : 'text-zinc-400 hover:text-white'
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" />
@@ -212,35 +212,35 @@ export default function ProjectIssuesPage({
 
           <button
             onClick={() => setCreateModalOpen(true)}
-            className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center gap-1.5 shadow-sm"
+            className="px-4 py-2 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-[0.98] shadow-lg shadow-[#FFC554]/10 flex items-center gap-1.5"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 stroke-[3]" />
             <span>New Issue</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium">
           {error}
         </div>
       )}
 
       {/* Filter Toolbar */}
-      <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-3 space-y-3">
+      <div className="bg-zinc-950/80 border border-white/10 rounded-[22px] p-3.5 shadow-sm space-y-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 max-w-sm">
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search by title, description or key..."
+              placeholder="Search issues..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(0);
               }}
-              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded pl-8 pr-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600"
+              className="w-full bg-white/[0.03] border border-white/10 focus:border-[#FFC554] focus:outline-none rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-600 font-medium transition-all"
             />
           </div>
 
@@ -253,7 +253,7 @@ export default function ProjectIssuesPage({
                 setStatusFilter(e.target.value as IssueStatus | '');
                 setPage(0);
               }}
-              className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
             >
               <option value="">Status: All</option>
               <option value="TODO">To Do</option>
@@ -269,7 +269,7 @@ export default function ProjectIssuesPage({
                 setPriorityFilter(e.target.value as IssuePriority | '');
                 setPage(0);
               }}
-              className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
             >
               <option value="">Priority: All</option>
               <option value="LOW">Low</option>
@@ -285,7 +285,7 @@ export default function ProjectIssuesPage({
                 setTypeFilter(e.target.value as IssueType | '');
                 setPage(0);
               }}
-              className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
             >
               <option value="">Type: All</option>
               <option value="TASK">Task</option>
@@ -300,7 +300,7 @@ export default function ProjectIssuesPage({
                 setAssigneeFilter(e.target.value);
                 setPage(0);
               }}
-              className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
             >
               <option value="">Assignee: All</option>
               {members.map((m) => (
@@ -318,7 +318,7 @@ export default function ProjectIssuesPage({
                   setLabelFilter(e.target.value);
                   setPage(0);
                 }}
-                className="bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+                className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
               >
                 <option value="">Label: All</option>
                 {labels.map((l) => (
@@ -333,9 +333,9 @@ export default function ProjectIssuesPage({
             {hasActiveFilters && (
               <button
                 onClick={clearFilters}
-                className="flex items-center gap-1 px-2 py-1 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded transition"
+                className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 rounded-xl transition"
               >
-                <X className="w-3 h-3" />
+                <X className="w-3.5 h-3.5" />
                 <span>Reset</span>
               </button>
             )}

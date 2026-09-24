@@ -142,51 +142,51 @@ export default function WorkspaceDetailPage({
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Workspace Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold tracking-tight text-white font-mono">{workspace.name}</h1>
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-zinc-800 text-zinc-300 border border-zinc-700">
-              <Shield className="w-3 h-3 text-zinc-400" />
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-white uppercase">{workspace.name}</h1>
+            <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/5 text-zinc-300 border border-white/10">
+              <Shield className="w-2.5 h-2.5 text-[#FFC554]" />
               {workspace.currentUserRole}
             </span>
           </div>
           {workspace.description && (
-            <p className="text-xs text-zinc-400 mt-1 max-w-2xl">{workspace.description}</p>
+            <p className="text-xs text-zinc-400 mt-1.5 max-w-2xl font-normal leading-relaxed">{workspace.description}</p>
           )}
         </div>
 
         {canManage && (
           <button
             onClick={() => setCreateProjectOpen(true)}
-            className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
+            className="px-4 py-2.5 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-[0.98] shadow-lg shadow-[#FFC554]/10 flex items-center gap-1.5 self-start sm:self-auto"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 stroke-[3]" />
             <span>New Project</span>
           </button>
         )}
       </div>
 
       {error && (
-        <div className="my-4 p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div className="my-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="my-4 p-3 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-mono">
+        <div className="my-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-medium">
           {success}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex items-center gap-4 mt-6 border-b border-zinc-800 text-xs font-medium">
+      <div className="flex items-center gap-2 mt-6 border-b border-white/10 pb-3 text-xs font-bold">
         <button
           onClick={() => setActiveTab('projects')}
-          className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition ${
+          className={`px-3.5 py-1.5 rounded-xl flex items-center gap-2 uppercase tracking-wider text-[11px] transition-all ${
             activeTab === 'projects'
-              ? 'border-zinc-200 text-white font-semibold'
-              : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              ? 'bg-[#FFC554] text-black font-black shadow-md shadow-[#FFC554]/10'
+              : 'text-zinc-400 hover:text-white hover:bg-white/5'
           }`}
         >
           <FolderGit2 className="w-3.5 h-3.5" />
@@ -195,14 +195,14 @@ export default function WorkspaceDetailPage({
 
         <button
           onClick={() => setActiveTab('members')}
-          className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition ${
+          className={`px-3.5 py-1.5 rounded-xl flex items-center gap-2 uppercase tracking-wider text-[11px] transition-all ${
             activeTab === 'members'
-              ? 'border-zinc-200 text-white font-semibold'
-              : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              ? 'bg-[#FFC554] text-black font-black shadow-md shadow-[#FFC554]/10'
+              : 'text-zinc-400 hover:text-white hover:bg-white/5'
           }`}
         >
           <Users className="w-3.5 h-3.5" />
-          <span>Team Members ({members.length})</span>
+          <span>Team ({members.length})</span>
         </button>
       </div>
 
@@ -210,62 +210,62 @@ export default function WorkspaceDetailPage({
       {activeTab === 'projects' && (
         <div className="mt-6">
           {projects.length === 0 ? (
-            <div className="border border-dashed border-zinc-800 rounded-lg p-12 text-center bg-zinc-900/10">
+            <div className="border border-dashed border-white/10 rounded-[24px] p-12 text-center bg-zinc-950/40">
               <FolderGit2 className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-              <h3 className="text-sm font-semibold text-zinc-200">No projects yet</h3>
+              <h3 className="text-sm font-bold text-white uppercase tracking-wider">No projects yet</h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-                Create a project (like <span className="font-mono text-zinc-400">API</span> or{' '}
-                <span className="font-mono text-zinc-400">WEB</span>) to organize issues and track development work.
+                Create a project (like <span className="font-mono text-zinc-300">CORE</span> or{' '}
+                <span className="font-mono text-zinc-300">WEB</span>) to organize issues and track development work.
               </p>
               {canManage && (
                 <button
                   onClick={() => setCreateProjectOpen(true)}
-                  className="mt-4 px-3 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium inline-flex items-center gap-1.5"
+                  className="mt-5 px-4 py-2.5 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 active:scale-[0.98]"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5 stroke-[3]" />
                   <span>Create Project</span>
                 </button>
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {projects.map((proj) => (
                 <Link
                   key={proj.id}
                   href={`/projects/${proj.id}/issues`}
-                  className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-900/80 rounded-lg p-4 transition flex flex-col justify-between"
+                  className="group bg-zinc-950/80 hover:bg-zinc-900/60 border border-white/10 hover:border-[#FFC554]/50 rounded-[24px] p-5 transition-all duration-200 flex flex-col justify-between hover:-translate-y-0.5 shadow-sm hover:shadow-xl hover:shadow-[#FFC554]/5"
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-start justify-between gap-2 mb-3">
                       <div className="min-w-0">
-                        <span className="font-mono text-[11px] font-bold px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700 mb-1 inline-block">
+                        <span className="font-mono text-xs font-black px-2 py-0.5 rounded-lg bg-white/5 text-[#FFC554] border border-white/10 mb-2 inline-block">
                           {proj.key}
                         </span>
-                        <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white truncate">
+                        <h3 className="text-sm font-black text-white group-hover:text-[#FFC554] transition-colors truncate">
                           {proj.name}
                         </h3>
                       </div>
                       {proj.githubConnected && (
-                        <span className="flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-1.5 py-0.5 rounded border border-emerald-800/60" title="Connected to GitHub">
+                        <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20" title="Connected to GitHub">
                           <GitBranch className="w-3 h-3" />
                           <span>GitHub</span>
                         </span>
                       )}
                     </div>
 
-                    <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px] mb-4">
-                      {proj.description || 'No description.'}
+                    <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px] mb-5 font-normal leading-relaxed">
+                      {proj.description || 'No description provided.'}
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
+                  <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500 font-mono">
                     <div className="flex items-center gap-3">
                       <span>{proj.totalIssues} issues</span>
                       <span>•</span>
                       <span className="text-emerald-400">{proj.doneIssues} done</span>
                     </div>
 
-                    <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px]">
+                    <span className="text-zinc-400 group-hover:text-[#FFC554] group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
                       <span>Board</span>
                       <ArrowRight className="w-3 h-3" />
                     </span>
@@ -282,25 +282,25 @@ export default function WorkspaceDetailPage({
         <div className="mt-6 space-y-6">
           {/* Invite Form */}
           {canManage && (
-            <div className="p-4 rounded-lg bg-zinc-900/50 border border-zinc-800">
-              <h3 className="text-xs font-semibold text-white font-mono uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <UserPlus className="w-3.5 h-3.5 text-zinc-400" />
+            <div className="p-5 rounded-[24px] bg-zinc-950/80 border border-white/10 shadow-sm">
+              <h3 className="text-xs font-black text-white uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                <UserPlus className="w-4 h-4 text-[#FFC554]" />
                 <span>Invite Workspace Member</span>
               </h3>
-              <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-2">
+              <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-2.5">
                 <input
                   type="email"
                   required
                   placeholder="colleague@company.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600 font-mono"
+                  className="flex-1 bg-white/[0.03] border border-white/10 focus:border-[#FFC554] focus:outline-none rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-600 font-medium transition-all"
                 />
 
                 <select
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as WorkspaceRole)}
-                  className="bg-zinc-950 border border-zinc-800 rounded px-3 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 font-mono"
+                  className="bg-zinc-900 border border-white/10 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:border-[#FFC554] font-bold uppercase tracking-wider"
                 >
                   <option value="MEMBER">Role: MEMBER</option>
                   <option value="ADMIN">Role: ADMIN</option>
@@ -309,17 +309,17 @@ export default function WorkspaceDetailPage({
                 <button
                   type="submit"
                   disabled={inviting || !inviteEmail.trim()}
-                  className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="px-5 py-2.5 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                 >
-                  {inviting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>Add Member</span>
+                  {inviting && <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />}
+                  <span>Invite</span>
                 </button>
               </form>
             </div>
           )}
 
           {/* Members Table */}
-          <div className="border border-zinc-800 rounded-lg overflow-hidden bg-zinc-950">
+          <div className="border border-white/10 rounded-[24px] overflow-hidden bg-zinc-950/80 shadow-sm">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-zinc-800 bg-zinc-900/60 text-zinc-400 font-mono uppercase text-[10px] tracking-wider">

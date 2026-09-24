@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import { Workspace } from '@/types';
 import { api, isDemoMode } from '@/lib/api';
 import { BrandLogo } from './BrandLogo';
-import { Layers, LogOut, Settings, Plus, ChevronDown, Check, Sparkles } from 'lucide-react';
+import { Layers, LogOut, Settings, Plus, ChevronDown, Check, Zap } from 'lucide-react';
 
 export function Navbar() {
   const { user, logout } = useAuth();
@@ -34,21 +34,21 @@ export function Navbar() {
   const currentWorkspace = workspaces.find((ws) => ws.id === currentWorkspaceId) || workspaces[0];
 
   return (
-    <header className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur sticky top-0 z-40 text-zinc-100">
+    <header className="border-b border-white/10 bg-black/85 backdrop-blur sticky top-0 z-40 text-white">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Left: Brand & Workspace Selector */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-5">
           <Link href="/dashboard" className="hover:opacity-90 transition">
             <BrandLogo size="sm" showText={true} />
           </Link>
 
-          <span className="text-zinc-800">/</span>
+          <span className="text-white/20 select-none">/</span>
 
           {/* Workspace Switcher */}
           <div className="relative">
             <button
               onClick={() => setWsDropdownOpen(!wsDropdownOpen)}
-              className="flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 hover:border-white/20 text-xs font-bold text-zinc-200 transition-colors"
             >
               <Layers className="w-3.5 h-3.5 text-zinc-400" />
               <span className="max-w-[140px] truncate">{currentWorkspace ? currentWorkspace.name : 'Select Workspace'}</span>
@@ -56,8 +56,8 @@ export function Navbar() {
             </button>
 
             {wsDropdownOpen && (
-              <div className="absolute left-0 mt-1 w-56 bg-zinc-900 border border-zinc-800 rounded-md shadow-xl py-1 z-50">
-                <div className="px-3 py-1.5 text-[10px] uppercase font-mono text-zinc-500 tracking-wider">
+              <div className="absolute left-0 mt-1.5 w-60 bg-zinc-950 border border-white/10 rounded-2xl shadow-2xl py-1.5 z-50">
+                <div className="px-3.5 py-1.5 text-[9px] uppercase font-black text-zinc-500 tracking-[0.2em]">
                   Workspaces
                 </div>
                 {workspaces.map((ws) => (
@@ -65,19 +65,19 @@ export function Navbar() {
                     key={ws.id}
                     href={`/workspaces/${ws.id}`}
                     onClick={() => setWsDropdownOpen(false)}
-                    className="flex items-center justify-between px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white"
+                    className="flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
                   >
                     <span className="truncate">{ws.name}</span>
-                    {ws.id === currentWorkspace?.id && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                    {ws.id === currentWorkspace?.id && <Check className="w-3.5 h-3.5 text-[#FFC554]" />}
                   </Link>
                 ))}
-                <div className="border-t border-zinc-800 my-1" />
+                <div className="border-t border-white/10 my-1" />
                 <Link
                   href="/dashboard"
                   onClick={() => setWsDropdownOpen(false)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                  className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                 >
-                  <Plus className="w-3 h-3" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>Create Workspace</span>
                 </Link>
               </div>
@@ -85,19 +85,19 @@ export function Navbar() {
           </div>
 
           {/* Main Links */}
-          <nav className="hidden md:flex items-center gap-4 text-xs font-medium text-zinc-400">
+          <nav className="hidden md:flex items-center gap-5 text-xs font-bold uppercase tracking-wider text-zinc-400">
             <Link
               href="/dashboard"
-              className={`hover:text-zinc-200 transition ${pathname === '/dashboard' ? 'text-zinc-100 font-semibold' : ''}`}
+              className={`hover:text-white transition-colors ${pathname === '/dashboard' ? 'text-white' : ''}`}
             >
               Dashboard
             </Link>
             {currentWorkspace && (
               <Link
                 href={`/workspaces/${currentWorkspace.id}`}
-                className={`hover:text-zinc-200 transition ${pathname.startsWith('/workspaces') ? 'text-zinc-100 font-semibold' : ''}`}
+                className={`hover:text-white transition-colors ${pathname.startsWith('/workspaces') ? 'text-white' : ''}`}
               >
-                Projects & Team
+                Projects
               </Link>
             )}
           </nav>
@@ -106,31 +106,31 @@ export function Navbar() {
         {/* Right: User Menu */}
         <div className="flex items-center gap-3">
           {isDemo && (
-            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
-              <Sparkles className="w-3 h-3 text-indigo-400" />
-              <span>Interactive Preview</span>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFC554]/10 text-[#FFC554] border border-[#FFC554]/25">
+              <Zap className="w-3 h-3 text-[#FFC554]" />
+              <span>Preview Mode</span>
             </span>
           )}
           {user ? (
             <div className="flex items-center gap-3">
               <Link
                 href="/settings"
-                className="text-zinc-400 hover:text-zinc-200 p-1.5 rounded hover:bg-zinc-900 transition"
+                className="text-zinc-400 hover:text-white p-1.5 rounded-lg hover:bg-white/5 transition-colors"
                 title="Settings"
               >
                 <Settings className="w-4 h-4" />
               </Link>
 
-              <div className="flex items-center gap-2 pl-2 border-l border-zinc-800">
-                <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-300">
+              <div className="flex items-center gap-2 pl-2 border-l border-white/10">
+                <div className="w-7 h-7 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-xs font-black text-white">
                   {user.fullName.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-xs text-zinc-300 hidden sm:inline max-w-[120px] truncate">
+                <span className="text-xs font-bold text-zinc-200 hidden sm:inline max-w-[120px] truncate">
                   {user.fullName}
                 </span>
                 <button
                   onClick={logout}
-                  className="text-zinc-500 hover:text-rose-400 p-1 rounded hover:bg-zinc-900 transition"
+                  className="text-zinc-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-white/5 transition-colors"
                   title="Logout"
                 >
                   <LogOut className="w-3.5 h-3.5" />
@@ -139,12 +139,12 @@ export function Navbar() {
             </div>
           ) : (
             <div className="flex items-center gap-3 text-xs">
-              <Link href="/login" className="text-zinc-400 hover:text-zinc-200">
+              <Link href="/login" className="text-zinc-400 hover:text-white font-bold uppercase tracking-wider text-[11px]">
                 Log In
               </Link>
               <Link
                 href="/register"
-                className="px-3 py-1.5 bg-zinc-100 text-zinc-950 font-medium rounded hover:bg-white transition"
+                className="px-3.5 py-1.5 bg-[#FFC554] text-black font-black text-[11px] uppercase tracking-wider rounded-xl hover:bg-[#ffd166] transition-colors"
               >
                 Sign Up
               </Link>

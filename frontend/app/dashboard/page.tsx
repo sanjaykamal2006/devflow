@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Loader2,
   Shield,
-  Briefcase,
+  X,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -85,41 +85,55 @@ export default function DashboardPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-white font-mono flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-zinc-400" />
-            <span>Developer Workspaces</span>
-          </h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Logged in as <span className="text-zinc-200 font-mono font-medium">{user?.email}</span>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tighter text-white uppercase">
+              Workspaces
+            </h1>
+            <span className="w-2 h-2 rounded-full bg-[#FFC554]" />
+          </div>
+          <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">
+            Logged in as <span className="text-zinc-300 font-mono">{user?.email}</span>
           </p>
         </div>
 
         <button
           onClick={() => setCreatingWs(true)}
-          className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
+          className="px-4 py-2.5 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider transition-all active:scale-[0.98] shadow-lg shadow-[#FFC554]/10 flex items-center gap-1.5 self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 stroke-[3]" />
           <span>New Workspace</span>
         </button>
       </div>
 
       {error && (
-        <div className="my-4 p-3 rounded bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div className="my-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium">
           {error}
         </div>
       )}
 
       {/* Create Workspace Modal */}
       {creatingWs && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-5 shadow-2xl relative text-zinc-100">
-            <h2 className="text-sm font-semibold text-white mb-3">Create New Workspace</h2>
-            <form onSubmit={handleCreateWorkspace} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
-                  Workspace Name <span className="text-rose-400">*</span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-zinc-950 border border-white/15 rounded-[28px] max-w-md w-full p-6 sm:p-7 shadow-2xl relative text-white">
+            <div className="flex items-center justify-between mb-5 pb-3 border-b border-white/10">
+              <h2 className="text-xs font-black uppercase tracking-wider text-white">
+                New Workspace
+              </h2>
+              <button
+                type="button"
+                onClick={() => setCreatingWs(false)}
+                className="text-zinc-500 hover:text-white p-1 rounded-lg transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateWorkspace} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-[0.2em] ml-1">
+                  Workspace Name <span className="text-[#FFC554]">*</span>
                 </label>
                 <input
                   type="text"
@@ -128,36 +142,38 @@ export default function DashboardPage() {
                   placeholder="e.g. Core Engineering"
                   value={wsName}
                   onChange={(e) => setWsName(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-600"
+                  className="w-full h-12 bg-white/[0.03] border border-white/10 text-white rounded-xl px-4 text-xs font-medium outline-none focus:border-[#FFC554] focus:bg-white/[0.06] transition-all"
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] uppercase font-black text-zinc-500 tracking-[0.2em] ml-1">
+                  Description
+                </label>
                 <textarea
                   rows={3}
-                  placeholder="What team or project does this workspace represent?"
+                  placeholder="What team or products belong in this workspace?"
                   value={wsDescription}
                   onChange={(e) => setWsDescription(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded p-2.5 text-xs text-zinc-100 placeholder-zinc-600 resize-none font-sans"
+                  className="w-full bg-white/[0.03] border border-white/10 text-white rounded-xl p-3.5 text-xs font-medium outline-none focus:border-[#FFC554] focus:bg-white/[0.06] resize-none transition-all"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setCreatingWs(false)}
-                  className="px-3 py-1.5 rounded text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white hover:bg-white/5 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !wsName.trim()}
-                  className="px-3.5 py-1.5 rounded text-xs font-medium bg-zinc-100 hover:bg-white text-zinc-950 transition flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-[#FFC554] hover:bg-[#ffd166] text-black transition-all flex items-center gap-1.5 active:scale-[0.98] disabled:opacity-50"
                 >
-                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>Create</span>
+                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin text-black" />}
+                  <span>Create Workspace</span>
                 </button>
               </div>
             </form>
@@ -166,48 +182,48 @@ export default function DashboardPage() {
       )}
 
       {/* Workspaces Grid */}
-      <div className="mt-6">
+      <div className="mt-8">
         {workspaces.length === 0 ? (
-          <div className="border border-dashed border-zinc-800 rounded-lg p-12 text-center bg-zinc-900/10">
+          <div className="border border-dashed border-white/10 rounded-[24px] p-12 text-center bg-zinc-950/40">
             <Layers className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
-            <h3 className="text-sm font-semibold text-zinc-200">No workspaces found</h3>
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">No workspaces found</h3>
             <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-              You do not belong to any workspaces yet. Create your first workspace to start collaborating on projects and issues.
+              Create your first engineering workspace to start tracking projects and collaborating with your team.
             </p>
             <button
               onClick={() => setCreatingWs(true)}
-              className="mt-4 px-3 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium inline-flex items-center gap-1.5"
+              className="mt-5 px-4 py-2.5 bg-[#FFC554] hover:bg-[#ffd166] text-black rounded-xl text-xs font-black uppercase tracking-wider inline-flex items-center gap-1.5 active:scale-[0.98]"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
               <span>Create Workspace</span>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {workspaces.map((ws) => (
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="group glass-card hover:border-indigo-500/40 hover:bg-zinc-900/70 rounded-xl p-5 transition-all duration-200 flex flex-col justify-between hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-0.5"
+                className="group bg-zinc-950/80 hover:bg-zinc-900/60 border border-white/10 hover:border-[#FFC554]/50 rounded-[24px] p-5 transition-all duration-200 flex flex-col justify-between hover:-translate-y-0.5 shadow-sm hover:shadow-xl hover:shadow-[#FFC554]/5"
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2 mb-2.5">
-                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-indigo-300 transition-colors truncate">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <h3 className="text-sm font-black text-white group-hover:text-[#FFC554] transition-colors truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 flex-shrink-0">
-                      <Shield className="w-2.5 h-2.5 text-indigo-400" />
+                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-white/5 border border-white/10 text-zinc-300 flex-shrink-0">
+                      <Shield className="w-2.5 h-2.5 text-[#FFC554]" />
                       {ws.currentUserRole}
                     </span>
                   </div>
 
-                  <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px] mb-4">
+                  <p className="text-xs text-zinc-400 line-clamp-2 min-h-[32px] mb-5 font-normal leading-relaxed">
                     {ws.description || 'No description provided.'}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
-                  <div className="flex items-center gap-3">
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500 font-mono">
+                  <div className="flex items-center gap-3.5">
                     <span className="flex items-center gap-1.5" title={`${ws.projectCount} projects`}>
                       <FolderGit2 className="w-3.5 h-3.5 text-zinc-400" />
                       {ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}
@@ -218,7 +234,7 @@ export default function DashboardPage() {
                     </span>
                   </div>
 
-                  <span className="text-zinc-400 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px] font-medium">
+                  <span className="text-zinc-400 group-hover:text-[#FFC554] group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider">
                     <span>Open</span>
                     <ArrowRight className="w-3 h-3" />
                   </span>

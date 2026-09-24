@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { BrandLogo } from '@/components/BrandLogo';
-import { Loader2, ArrowRight, Mail, Lock, Sparkles } from 'lucide-react';
+import { Loader2, Zap, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -46,114 +46,101 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[88vh] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Decorative Background Glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-10 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
+    <div className="min-h-[88vh] flex items-center justify-center p-4 relative">
       <div className="w-full max-w-md relative z-10">
         {/* Brand Header */}
-        <div className="mb-8 text-center">
-          <div className="flex justify-center mb-3">
+        <div className="mb-8 text-center space-y-3">
+          <div className="flex justify-center mb-2">
             <BrandLogo size="lg" showText={false} />
           </div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-white font-mono">
-            DEV<span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-300 to-cyan-400">FLOW</span>
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tighter uppercase text-white">
+            DEVFLOW
           </h1>
-          <p className="text-sm text-zinc-400 mt-1.5 font-sans">
-            A lightweight engineering workspace for modern development teams
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500">
+            Engineering Workspace
           </p>
         </div>
 
         {/* Card */}
-        <div className="glass-panel rounded-2xl p-7 shadow-2xl shadow-black/80 border border-zinc-800/80">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-base font-semibold text-white">Log in to DevFlow</h2>
-            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              Workspace Access
+        <div className="bg-zinc-950/90 border border-white/10 rounded-[28px] p-7 sm:p-8 shadow-2xl backdrop-blur-md">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+            <span className="text-xs font-black uppercase tracking-wider text-white">Sign In</span>
+            <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-400">
+              Workspace
             </span>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 rounded-lg bg-rose-950/70 border border-rose-800/80 text-rose-300 text-xs">
-              <span className="font-semibold">Notice:</span> {error}
+            <div className="mb-5 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-medium">
+              {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">Email Address</label>
-              <div className="relative">
-                <Mail className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="email"
-                  required
-                  autoFocus
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="sanjaykamal2006@gmail.com"
-                  className="w-full glass-input rounded-lg pl-9 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 font-mono focus:outline-none"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-[0.2em] ml-1">
+                Email Address
+              </label>
+              <input
+                type="email"
+                required
+                autoFocus
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@company.com"
+                className="w-full h-12 sm:h-13 bg-white/[0.03] border border-white/10 text-white rounded-2xl px-5 text-sm font-medium outline-none focus:border-[#FFC554] focus:bg-white/[0.06] transition-all"
+              />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1.5">Password</label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full glass-input rounded-lg pl-9 pr-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 font-mono focus:outline-none"
-                />
-              </div>
+            <div className="space-y-1.5">
+              <label className="text-[10px] uppercase font-black text-zinc-500 tracking-[0.2em] ml-1">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full h-12 sm:h-13 bg-white/[0.03] border border-white/10 text-white rounded-2xl px-5 text-sm font-medium outline-none focus:border-[#FFC554] focus:bg-white/[0.06] transition-all"
+              />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !email || !password}
-              className="w-full mt-2 py-2.5 px-4 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white font-medium text-xs shadow-lg shadow-indigo-500/20 transition-all duration-150 flex items-center justify-center gap-2 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
+            <div className="pt-2 space-y-3">
+              <button
+                type="submit"
+                disabled={loading || !email || !password}
+                className="w-full h-12 sm:h-13 bg-[#FFC554] hover:bg-[#ffd166] text-black font-black rounded-2xl text-xs uppercase tracking-wider transition-all active:scale-[0.98] shadow-lg shadow-[#FFC554]/10 disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-black" />
+                ) : (
+                  <>
+                    <span>Sign In</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDemoAccess}
+                disabled={loading}
+                className="w-full h-11 rounded-2xl bg-white/[0.03] hover:bg-white/[0.07] border border-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              >
+                <Zap className="w-3.5 h-3.5 text-[#FFC554]" />
+                <span>1-Click Explore as Demo User</span>
+              </button>
+            </div>
           </form>
 
-          {/* Quick Demo Divider */}
-          <div className="relative my-5">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-zinc-800" />
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-mono tracking-wider">
-              <span className="bg-zinc-900/90 px-2 text-zinc-500">or instant preview</span>
-            </div>
-          </div>
-
-          {/* 1-Click Demo Login */}
-          <button
-            type="button"
-            onClick={handleDemoAccess}
-            disabled={loading}
-            className="w-full py-2 px-3 rounded-lg bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/60 text-zinc-200 text-xs font-medium transition flex items-center justify-center gap-2 group"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400 group-hover:rotate-12 transition-transform" />
-            <span>1-Click Explore as Sanjay Kamal</span>
-          </button>
-
-          <div className="mt-5 pt-4 border-t border-zinc-800/80 text-center text-xs text-zinc-400">
-            Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium transition">
-              Create Account
-            </Link>
+          <div className="mt-6 pt-5 border-t border-white/10 text-center">
+            <p className="text-xs text-zinc-500 font-medium">
+              Don&apos;t have an account?{' '}
+              <Link href="/register" className="text-[#FFC554] hover:underline font-bold">
+                Create Account
+              </Link>
+            </p>
           </div>
         </div>
       </div>
