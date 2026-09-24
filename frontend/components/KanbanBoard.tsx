@@ -46,22 +46,22 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
         return (
           <div
             key={col.id}
-            className={`bg-zinc-900/40 border ${col.border} rounded-lg p-3 flex flex-col min-h-[500px]`}
+            className={`glass-panel border ${col.border} rounded-xl p-3.5 flex flex-col min-h-[520px] shadow-sm`}
           >
             {/* Column Header */}
-            <div className="flex items-center justify-between pb-2.5 mb-2.5 border-b border-zinc-800">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800/80">
               <span className="text-xs font-semibold text-zinc-200 uppercase tracking-wider font-mono">
                 {col.title}
               </span>
-              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded bg-zinc-800 text-zinc-400">
+              <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700/60 text-zinc-300">
                 {colIssues.length}
               </span>
             </div>
 
             {/* Cards List */}
-            <div className="space-y-2.5 flex-1 overflow-y-auto">
+            <div className="space-y-3 flex-1 overflow-y-auto">
               {colIssues.length === 0 ? (
-                <div className="h-28 border border-dashed border-zinc-800/80 rounded flex items-center justify-center text-xs text-zinc-600 font-mono">
+                <div className="h-28 border border-dashed border-zinc-800/80 rounded-lg flex items-center justify-center text-xs text-zinc-500 font-mono">
                   No issues
                 </div>
               ) : (
@@ -72,7 +72,7 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                   return (
                     <div
                       key={issue.id}
-                      className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-md p-3 transition shadow-sm group"
+                      className="glass-card hover:border-indigo-500/40 rounded-lg p-3.5 transition-all duration-150 shadow-sm group hover:shadow-md hover:shadow-indigo-500/5 hover:-translate-y-0.5"
                     >
                       {/* Top Row: Key + Type + Priority */}
                       <div className="flex items-center justify-between gap-1 mb-2">

@@ -5,14 +5,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Workspace } from '@/types';
-import { api } from '@/lib/api';
-import { Layers, LogOut, Settings, Plus, ChevronDown, Check } from 'lucide-react';
+import { api, isDemoMode } from '@/lib/api';
+import { BrandLogo } from './BrandLogo';
+import { Layers, LogOut, Settings, Plus, ChevronDown, Check, Sparkles } from 'lucide-react';
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [wsDropdownOpen, setWsDropdownOpen] = useState(false);
+  const isDemo = isDemoMode();
 
   useEffect(() => {
     if (user) {
@@ -36,12 +38,11 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Left: Brand & Workspace Selector */}
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2 font-mono font-bold tracking-tight text-sm text-zinc-100 hover:text-white">
-            <span className="w-5 h-5 rounded bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold text-xs">D</span>
-            <span>DEVFLOW</span>
+          <Link href="/dashboard" className="hover:opacity-90 transition">
+            <BrandLogo size="sm" showText={true} />
           </Link>
 
-          <span className="text-zinc-700">/</span>
+          <span className="text-zinc-800">/</span>
 
           {/* Workspace Switcher */}
           <div className="relative">
@@ -104,6 +105,12 @@ export function Navbar() {
 
         {/* Right: User Menu */}
         <div className="flex items-center gap-3">
+          {isDemo && (
+            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              <Sparkles className="w-3 h-3 text-indigo-400" />
+              <span>Interactive Preview</span>
+            </span>
+          )}
           {user ? (
             <div className="flex items-center gap-3">
               <Link

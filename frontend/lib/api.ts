@@ -46,6 +46,144 @@ export function clearToken(): void {
   localStorage.removeItem('devflow_token');
 }
 
+import { mockStore } from './mock-store';
+
+let demoModeActive = false;
+
+export function isDemoMode(): boolean {
+  return demoModeActive;
+}
+
+function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
+  demoModeActive = true;
+  const method = (options.method || 'GET').toUpperCase();
+  let body: Record<string, unknown> = {};
+  try {
+    if (options.body && typeof options.body === 'string') {
+      body = JSON.parse(options.body);
+    }
+  } catch {
+    body = {};
+  }
+
+  // Clean query string from endpoint for routing
+  const cleanEndpoint = endpoint.split('?')[0];
+
+  // Auth
+  if (cleanEndpoint === '/api/auth/register') {
+    return mockStore.register((body.email as string) || 'demo@devflow.io', (body.fullName as string) || 'Demo Developer') as unknown as T;
+  }
+  if (cleanEndpoint === '/api/auth/login') {
+    return mockStore.login((body.email as string) || 'demo@devflow.io') as unknown as T;
+  }
+  if (cleanEndpoint === '/api/auth/logout') {
+    return undefined as unknown as T;
+  }
+  if (cleanEndpoint === '/api/users/me') {
+    return mockStore.getMe() as unknown as T;
+  }
+
+  // Workspaces
+  if (cleanEndpoint === '/api/workspaces') {
+    if (method === 'POST') {
+      return mockStore.createWorkspace(body as unknown as { name: string; slug?: string; description?: string }) as unknown as T;
+    }
+    return mockStore.listWorkspaces() as unknown as T;
+  }
+  if (cleanEndpoint.startsWith('/api/workspaces/')) {
+    const parts = cleanEndpoint.split('/');
+    const wsId = parts[3];
+    const sub = parts[4];
+
+    if (!sub) {
+      if (method === 'DELETE') {
+        mockStore.deleteWorkspace(wsId);
+        return undefined as unknown as T;
+      }
+      return mockStore.getWorkspace(wsId) as unknown as T;
+    }
+    if (sub === 'members') {
+      if (method === 'POST') {
+        return mockStore.addMember(wsId, (body.email as string) || 'member@devflow.io', (body.role as unknown as WorkspaceRole) || 'MEMBER') as unknown as T;
+      }
+      return mockStore.getWorkspaceMembers(wsId) as unknown as T;
+    }
+    if (sub === 'projects') {
+      if (method === 'POST') {
+        return mockStore.createProject(wsId, body as unknown as { name: string; key: string; description?: string }) as unknown as T;
+      }
+      return mockStore.listProjects(wsId) as unknown as T;
+    }
+  }
+
+  // Projects
+  if (cleanEndpoint.startsWith('/api/projects/')) {
+    const parts = cleanEndpoint.split('/');
+    const prjId = parts[3];
+    const sub = parts[4];
+
+    if (!sub) {
+      if (method === 'DELETE') {
+        mockStore.deleteProject(prjId);
+        return undefined as unknown as T;
+      }
+      return mockStore.getProject(prjId) as unknown as T;
+    }
+    if (sub === 'issues') {
+      if (method === 'POST') {
+        return mockStore.createIssue(prjId, body as unknown as { title: string; description?: string; issueType?: IssueType; priority?: IssuePriority; assigneeId?: string }) as unknown as T;
+      }
+      return mockStore.listIssues(prjId) as unknown as T;
+    }
+    if (sub === 'labels') {
+      if (method === 'POST') {
+        return mockStore.createLabel(prjId, body as unknown as { name: string; color?: string }) as unknown as T;
+      }
+      return mockStore.listLabels(prjId) as unknown as T;
+    }
+    if (sub === 'github') {
+      return {
+        id: 'gh-1',
+        projectId: prjId,
+        repoOwner: 'demo',
+        repoName: 'devflow-repo',
+        repoUrl: 'https://github.com/demo/devflow-repo',
+        defaultBranch: 'main',
+        lastSyncAt: new Date().toISOString(),
+      } as unknown as T;
+    }
+  }
+
+  // Issues
+  if (cleanEndpoint.startsWith('/api/issues/')) {
+    const parts = cleanEndpoint.split('/');
+    const issueId = parts[3];
+    const sub = parts[4];
+
+    if (!sub) {
+      if (method === 'DELETE') {
+        mockStore.deleteIssue(issueId);
+        return undefined as unknown as T;
+      }
+      return mockStore.getIssue(issueId) as unknown as T;
+    }
+    if (sub === 'status' && method === 'PATCH') {
+      return mockStore.changeIssueStatus(issueId, (body.status as unknown as IssueStatus) || 'TODO') as unknown as T;
+    }
+    if (sub === 'comments') {
+      if (method === 'POST') {
+        return mockStore.createComment(issueId, (body.content as string) || '') as unknown as T;
+      }
+      return mockStore.listComments(issueId) as unknown as T;
+    }
+    if (sub === 'github-activity') {
+      return [] as unknown as T;
+    }
+  }
+
+  return [] as unknown as T;
+}
+
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers = new Headers(options.headers || {});
@@ -60,36 +198,43 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-  const isJson = response.headers.get('content-type')?.includes('application/json');
-  const body = isJson ? await response.json() : null;
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const body = isJson ? await response.json() : null;
 
-  if (!response.ok) {
-    const status = response.status;
-    const errorCode = body?.error || 'UNKNOWN_ERROR';
-    const message = body?.message || response.statusText || 'An unexpected error occurred';
-    const fieldErrors = body?.fieldErrors;
+    if (!response.ok) {
+      const status = response.status;
+      const errorCode = body?.error || 'UNKNOWN_ERROR';
+      const message = body?.message || response.statusText || 'An unexpected error occurred';
+      const fieldErrors = body?.fieldErrors;
 
-    if (status === 401 && typeof window !== 'undefined') {
-      // Don't auto-redirect on login page
-      if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
-        clearToken();
-        window.location.href = '/login';
+      if (status === 401 && typeof window !== 'undefined') {
+        if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
+          clearToken();
+          window.location.href = '/login';
+        }
       }
+
+      throw new ApiError(status, errorCode, message, fieldErrors);
     }
 
-    throw new ApiError(status, errorCode, message, fieldErrors);
-  }
+    if (body && typeof body === 'object' && 'data' in body) {
+      return (body as ApiResponse<T>).data;
+    }
 
-  if (body && typeof body === 'object' && 'data' in body) {
-    return (body as ApiResponse<T>).data;
+    return body as T;
+  } catch (networkError: unknown) {
+    if (networkError instanceof ApiError) {
+      throw networkError;
+    }
+    // If fetch failed due to offline backend / CORS / mixed content, seamlessly fall back to client-side mock store!
+    return handleMockFallback<T>(endpoint, options);
   }
-
-  return body as T;
 }
 
 export const api = {

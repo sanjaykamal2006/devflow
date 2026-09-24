@@ -188,15 +188,15 @@ export default function DashboardPage() {
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/40 hover:bg-zinc-900/80 rounded-lg p-4 transition flex flex-col justify-between"
+                className="group glass-card hover:border-indigo-500/40 hover:bg-zinc-900/70 rounded-xl p-5 transition-all duration-200 flex flex-col justify-between hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-0.5"
               >
                 <div>
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-white truncate">
+                  <div className="flex items-start justify-between gap-2 mb-2.5">
+                    <h3 className="text-sm font-semibold text-zinc-100 group-hover:text-indigo-300 transition-colors truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 flex-shrink-0">
-                      <Shield className="w-2.5 h-2.5 text-zinc-400" />
+                    <span className="flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-medium bg-zinc-800/80 border border-zinc-700/60 text-zinc-300 flex-shrink-0">
+                      <Shield className="w-2.5 h-2.5 text-indigo-400" />
                       {ws.currentUserRole}
                     </span>
                   </div>
@@ -208,18 +208,18 @@ export default function DashboardPage() {
 
                 <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-500 font-mono">
                   <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1" title={`${ws.projectCount} projects`}>
+                    <span className="flex items-center gap-1.5" title={`${ws.projectCount} projects`}>
                       <FolderGit2 className="w-3.5 h-3.5 text-zinc-400" />
-                      {ws.projectCount}
+                      {ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}
                     </span>
-                    <span className="flex items-center gap-1" title={`${ws.memberCount} members`}>
+                    <span className="flex items-center gap-1.5" title={`${ws.memberCount} members`}>
                       <Users className="w-3.5 h-3.5 text-zinc-400" />
                       {ws.memberCount}
                     </span>
                   </div>
 
-                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px]">
-                    <span>Enter</span>
+                  <span className="text-zinc-400 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition flex items-center gap-1 text-[11px] font-medium">
+                    <span>Open</span>
                     <ArrowRight className="w-3 h-3" />
                   </span>
                 </div>
