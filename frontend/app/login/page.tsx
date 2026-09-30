@@ -62,40 +62,46 @@ export default function LoginPage() {
         {/* Card */}
         <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-6 shadow-sm">
           {error && (
-            <div className="mb-4 p-2.5 rounded-md bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-medium">
+            <div role="alert" className="mb-4 p-2.5 rounded-md bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-medium">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-zinc-300 mb-1">
+              <label htmlFor="login-email" className="block text-xs font-medium text-zinc-300 mb-1">
                 Email
               </label>
               <input
+                id="login-email"
                 type="email"
                 required
                 autoFocus
+                autoComplete="email"
+                spellCheck={false}
+                inputMode="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition"
+                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
               />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-300">
+                <label htmlFor="login-password" className="block text-xs font-medium text-zinc-300">
                   Password
                 </label>
               </div>
               <input
+                id="login-password"
                 type="password"
                 required
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition"
+                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
               />
             </div>
 
@@ -103,16 +109,16 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading || !email || !password}
-                className="w-full h-9 bg-white hover:bg-zinc-200 text-zinc-950 font-medium rounded-md text-xs transition flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="w-full h-9 bg-white hover:bg-zinc-200 text-zinc-950 font-medium rounded-md text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <span>Sign In</span>}
+                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> : <span>Sign In</span>}
               </button>
 
               <button
                 type="button"
                 onClick={handleGuestAccess}
                 disabled={loading}
-                className="w-full h-9 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 font-medium rounded-md text-xs transition flex items-center justify-center gap-1.5"
+                className="w-full h-9 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 font-medium rounded-md text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center justify-center gap-1.5"
               >
                 <span>Continue as Guest</span>
               </button>
@@ -122,7 +128,7 @@ export default function LoginPage() {
           <div className="mt-5 pt-4 border-t border-zinc-800/80 text-center">
             <p className="text-xs text-zinc-400">
               Don&apos;t have an account?{' '}
-              <Link href="/register" className="text-zinc-200 hover:text-white font-medium underline underline-offset-4">
+              <Link href="/register" className="text-zinc-200 hover:text-white font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded">
                 Sign up
               </Link>
             </p>

@@ -74,10 +74,19 @@ export default function DashboardPage() {
     }
   };
 
+  useEffect(() => {
+    if (!creatingWs) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setCreatingWs(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [creatingWs]);
+
   if (authLoading || (loading && !workspaces.length)) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
+        <Loader2 className="w-5 h-5 animate-spin text-zinc-500" aria-hidden="true" />
       </div>
     );
   }
@@ -96,59 +105,74 @@ export default function DashboardPage() {
         </div>
 
         <button
+          type="button"
           onClick={() => setCreatingWs(true)}
-          className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition shadow-sm flex items-center gap-2 self-start sm:self-auto"
+          className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 shadow-sm flex items-center gap-2 self-start sm:self-auto"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4" aria-hidden="true" />
           <span>New Workspace</span>
         </button>
       </div>
 
       {error && (
-        <div className="my-4 p-3 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div role="alert" className="my-4 p-3 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {/* Create Workspace Modal */}
       {creatingWs && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-5 shadow-2xl relative text-zinc-100">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setCreatingWs(false);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-ws-title"
+            className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-5 shadow-2xl relative text-zinc-100"
+          >
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
-              <h2 className="text-sm font-semibold text-white">Create New Workspace</h2>
+              <h2 id="create-ws-title" className="text-sm font-semibold text-white">Create New Workspace</h2>
               <button
                 type="button"
                 onClick={() => setCreatingWs(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded transition"
+                aria-label="Close dialog"
+                className="text-zinc-400 hover:text-white p-1 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
             <form onSubmit={handleCreateWorkspace} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">
+                <label htmlFor="ws-name" className="block text-xs font-medium text-zinc-300 mb-1">
                   Workspace Name <span className="text-rose-400">*</span>
                 </label>
                 <input
+                  id="ws-name"
                   type="text"
                   required
                   autoFocus
+                  autoComplete="off"
                   placeholder="e.g. Core Engineering"
                   value={wsName}
                   onChange={(e) => setWsName(e.target.value)}
-                  className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition"
+                  className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
+                <label htmlFor="ws-desc" className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
                 <textarea
+                  id="ws-desc"
                   rows={3}
                   placeholder="What team or project does this workspace represent?"
                   value={wsDescription}
                   onChange={(e) => setWsDescription(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 resize-none transition"
+                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 resize-none transition-colors duration-150"
                 />
               </div>
 
@@ -156,16 +180,16 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setCreatingWs(false)}
-                  className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 transition"
+                  className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !wsName.trim()}
-                  className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 transition flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
                 >
-                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
                   <span>Create Workspace</span>
                 </button>
               </div>
@@ -184,10 +208,11 @@ export default function DashboardPage() {
               You do not belong to any workspaces yet. Create your first workspace to start collaborating on projects and issues.
             </p>
             <button
+              type="button"
               onClick={() => setCreatingWs(true)}
-              className="mt-4 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium inline-flex items-center gap-1.5"
+              className="mt-4 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
             >
-              <Plus className="w-3.5 h-3.5" />
+              <Plus className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Create Workspace</span>
             </button>
           </div>
@@ -197,7 +222,7 @@ export default function DashboardPage() {
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 transition flex flex-col justify-between"
+                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -205,8 +230,8 @@ export default function DashboardPage() {
                       {ws.name}
                     </h3>
                     <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 flex-shrink-0">
-                      <Shield className="w-3 h-3 text-zinc-400" />
-                      {ws.currentUserRole}
+                      <Shield className="w-3 h-3 text-zinc-400" aria-hidden="true" />
+                      <span>{ws.currentUserRole}</span>
                     </span>
                   </div>
 
@@ -217,19 +242,19 @@ export default function DashboardPage() {
 
                 <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400 font-mono">
                   <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1.5" title={`${ws.projectCount} projects`}>
-                      <FolderGit2 className="w-4 h-4 text-zinc-400" />
-                      {ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}
+                    <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.projectCount} projects`}>
+                      <FolderGit2 className="w-4 h-4 text-zinc-400" aria-hidden="true" />
+                      <span>{ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}</span>
                     </span>
-                    <span className="flex items-center gap-1.5" title={`${ws.memberCount} members`}>
-                      <Users className="w-4 h-4 text-zinc-400" />
-                      {ws.memberCount}
+                    <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.memberCount} members`}>
+                      <Users className="w-4 h-4 text-zinc-400" aria-hidden="true" />
+                      <span>{ws.memberCount}</span>
                     </span>
                   </div>
 
-                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-xs">
+                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-transform duration-150 flex items-center gap-1 text-xs">
                     <span>Enter</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </span>
                 </div>
               </Link>

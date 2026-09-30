@@ -53,7 +53,7 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
               <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider font-mono">
                 {col.title}
               </span>
-              <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300">
+              <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-zinc-800 text-zinc-300 tabular-nums">
                 {colIssues.length}
               </span>
             </div>
@@ -72,13 +72,13 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                   return (
                     <div
                       key={issue.id}
-                      className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-lg p-4 transition shadow-sm group"
+                      className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 focus-within:border-zinc-700 rounded-lg p-4 transition-colors duration-150 shadow-sm group"
                     >
                       {/* Top Row: Key + Type + Priority */}
                       <div className="flex items-center justify-between gap-2 mb-2.5">
                         <Link
                           href={`/issues/${issue.id}`}
-                          className="font-mono text-xs font-bold text-zinc-400 hover:text-zinc-100 hover:underline"
+                          className="font-mono text-xs font-bold text-zinc-400 hover:text-zinc-100 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
                         >
                           {issue.issueKey}
                         </Link>
@@ -91,7 +91,7 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                       {/* Title */}
                       <Link
                         href={`/issues/${issue.id}`}
-                        className="text-sm font-medium text-zinc-100 hover:text-white line-clamp-2 mb-3 block leading-relaxed"
+                        className="text-sm font-medium text-zinc-100 hover:text-white line-clamp-2 mb-3 block leading-relaxed focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
                       >
                         {issue.title}
                       </Link>
@@ -116,7 +116,7 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                         <div className="flex items-center gap-2.5">
                           {issue.assignee ? (
                             <div
-                              className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 font-mono font-medium"
+                              className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 font-mono font-medium tabular-nums"
                               title={`Assignee: ${issue.assignee.fullName}`}
                             >
                               {issue.assignee.fullName.charAt(0).toUpperCase()}
@@ -126,38 +126,42 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
                           )}
 
                           {issue.commentCount > 0 && (
-                            <span className="flex items-center gap-1 text-zinc-400 font-mono text-xs">
-                              <MessageSquare className="w-3.5 h-3.5" />
-                              {issue.commentCount}
+                            <span className="flex items-center gap-1 text-zinc-400 font-mono text-xs tabular-nums">
+                              <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+                              <span>{issue.commentCount}</span>
                             </span>
                           )}
 
                           {issue.githubActivityCount > 0 && (
-                            <span className="flex items-center gap-1 text-sky-400 font-mono text-xs" title="Linked GitHub commits/PRs">
-                              <GitCommit className="w-3.5 h-3.5" />
-                              {issue.githubActivityCount}
+                            <span className="flex items-center gap-1 text-sky-400 font-mono text-xs tabular-nums" title="Linked GitHub commits/PRs">
+                              <GitCommit className="w-3.5 h-3.5" aria-hidden="true" />
+                              <span>{issue.githubActivityCount}</span>
                             </span>
                           )}
                         </div>
 
                         {/* Quick Status Advance / Regress Buttons */}
-                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition">
+                        <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity duration-150">
                           {prevStatus && (
                             <button
+                              type="button"
                               onClick={() => onStatusChange(issue.id, prevStatus)}
-                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 transition"
-                              title={`Move to ${prevStatus}`}
+                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                              title={`Move to ${prevStatus.replace('_', ' ')}`}
+                              aria-label={`Move ${issue.issueKey} to ${prevStatus.replace('_', ' ')}`}
                             >
-                              <ArrowLeft className="w-3.5 h-3.5" />
+                              <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                           )}
                           {nextStatus && (
                             <button
+                              type="button"
                               onClick={() => onStatusChange(issue.id, nextStatus)}
-                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 transition"
-                              title={`Move to ${nextStatus}`}
+                              className="p-1.5 hover:bg-zinc-800 rounded-md text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                              title={`Move to ${nextStatus.replace('_', ' ')}`}
+                              aria-label={`Move ${issue.issueKey} to ${nextStatus.replace('_', ' ')}`}
                             >
-                              <ArrowRight className="w-3.5 h-3.5" />
+                              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                             </button>
                           )}
                         </div>

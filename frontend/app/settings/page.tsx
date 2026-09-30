@@ -54,13 +54,13 @@ export default function SettingsPage() {
       </div>
 
       {success && (
-        <div className="p-3 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-mono">
+        <div role="status" className="p-3 rounded bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs font-mono">
           {success}
         </div>
       )}
 
       {error && (
-        <div className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
@@ -68,14 +68,15 @@ export default function SettingsPage() {
       {/* Profile Section */}
       <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-5">
         <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-          <UserIcon className="w-4 h-4 text-zinc-400" />
+          <UserIcon className="w-4 h-4 text-zinc-400" aria-hidden="true" />
           <span>Profile Information</span>
         </h2>
 
         <form onSubmit={handleSaveProfile} className="space-y-4 max-w-md">
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">Email (Read-only)</label>
+            <label htmlFor="settings-email" className="block text-xs font-medium text-zinc-300 mb-1">Email (Read-only)</label>
             <input
+              id="settings-email"
               type="email"
               disabled
               value={user?.email || ''}
@@ -84,34 +85,39 @@ export default function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">Full Name</label>
+            <label htmlFor="settings-name" className="block text-xs font-medium text-zinc-300 mb-1">Full Name</label>
             <input
+              id="settings-name"
               type="text"
               required
+              autoComplete="name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="e.g. Taylor Dev"
-              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded px-3 py-1.5 text-xs text-zinc-100"
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-3 py-1.5 text-xs text-zinc-100 transition-colors duration-150"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-zinc-300 mb-1">Avatar Image URL</label>
+            <label htmlFor="settings-avatar" className="block text-xs font-medium text-zinc-300 mb-1">Avatar Image URL</label>
             <input
+              id="settings-avatar"
               type="url"
+              autoComplete="off"
+              spellCheck={false}
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
               placeholder="https://github.com/username.png"
-              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded px-3 py-1.5 text-xs text-zinc-100 font-mono"
+              className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-3 py-1.5 text-xs text-zinc-100 font-mono transition-colors duration-150"
             />
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium transition flex items-center gap-1.5"
+            className="px-3.5 py-1.5 bg-zinc-100 hover:bg-white text-zinc-950 rounded text-xs font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
           >
-            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+            {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> : <Save className="w-3.5 h-3.5" aria-hidden="true" />}
             <span>Save Profile</span>
           </button>
         </form>
@@ -120,7 +126,7 @@ export default function SettingsPage() {
       {/* Developer API Token Section */}
       <div className="bg-zinc-900/40 border border-zinc-800 rounded-lg p-5">
         <h2 className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-          <Key className="w-4 h-4 text-zinc-400" />
+          <Key className="w-4 h-4 text-zinc-400" aria-hidden="true" />
           <span>Active Session JWT Token</span>
         </h2>
         <p className="text-xs text-zinc-400 mb-4">
@@ -135,17 +141,18 @@ export default function SettingsPage() {
               </pre>
             </div>
             <button
+              type="button"
               onClick={handleCopyToken}
-              className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-xs font-mono text-zinc-300 flex items-center gap-1.5 transition"
+              className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded text-xs font-mono text-zinc-300 flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
             >
               {copiedToken ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
                   <span className="text-emerald-400">Copied to Clipboard</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5" />
+                  <Copy className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Copy Bearer Token</span>
                 </>
               )}
@@ -163,10 +170,11 @@ export default function SettingsPage() {
           <div className="text-[11px] text-zinc-500">Sign out of this browser session.</div>
         </div>
         <button
+          type="button"
           onClick={logout}
-          className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-rose-900 text-zinc-400 hover:text-rose-400 text-xs font-medium transition flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-rose-900 text-zinc-400 hover:text-rose-400 text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150 flex items-center gap-1.5"
         >
-          <LogOut className="w-3.5 h-3.5" />
+          <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
           <span>Sign Out</span>
         </button>
       </div>

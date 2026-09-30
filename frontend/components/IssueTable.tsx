@@ -41,11 +41,14 @@ export function IssueTable({ issues }: IssueTableProps) {
             {issues.map((issue) => (
               <tr
                 key={issue.id}
-                className="hover:bg-zinc-900/50 transition cursor-pointer group"
+                className="hover:bg-zinc-900/50 transition-colors duration-150 cursor-pointer group"
               >
                 {/* Key */}
                 <td className="py-3 px-4 font-mono font-semibold text-zinc-400 group-hover:text-zinc-200 whitespace-nowrap">
-                  <Link href={`/issues/${issue.id}`} className="hover:underline">
+                  <Link
+                    href={`/issues/${issue.id}`}
+                    className="hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
+                  >
                     {issue.issueKey}
                   </Link>
                 </td>
@@ -55,23 +58,23 @@ export function IssueTable({ issues }: IssueTableProps) {
                   <div className="flex items-center gap-2.5">
                     <Link
                       href={`/issues/${issue.id}`}
-                      className="text-sm font-medium text-zinc-200 group-hover:text-white truncate"
+                      className="text-sm font-medium text-zinc-200 group-hover:text-white truncate focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
                     >
                       {issue.title}
                     </Link>
 
                     {/* Metadata counts */}
-                    <div className="flex items-center gap-1.5 flex-shrink-0 text-zinc-500 font-mono text-xs">
+                    <div className="flex items-center gap-1.5 flex-shrink-0 text-zinc-500 font-mono text-xs tabular-nums">
                       {issue.commentCount > 0 && (
                         <span className="flex items-center gap-1" title={`${issue.commentCount} comments`}>
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          {issue.commentCount}
+                          <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>{issue.commentCount}</span>
                         </span>
                       )}
                       {issue.githubActivityCount > 0 && (
                         <span className="flex items-center gap-1 text-sky-400" title={`${issue.githubActivityCount} linked commits/PRs`}>
-                          <GitCommit className="w-3.5 h-3.5" />
-                          {issue.githubActivityCount}
+                          <GitCommit className="w-3.5 h-3.5" aria-hidden="true" />
+                          <span>{issue.githubActivityCount}</span>
                         </span>
                       )}
                     </div>
@@ -110,7 +113,7 @@ export function IssueTable({ issues }: IssueTableProps) {
                 <td className="py-3 px-4 whitespace-nowrap text-zinc-400">
                   {issue.assignee ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-300">
+                      <div className="w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-300 tabular-nums">
                         {issue.assignee.fullName.charAt(0).toUpperCase()}
                       </div>
                       <span className="truncate max-w-[120px] text-xs text-zinc-300">{issue.assignee.fullName}</span>
@@ -121,7 +124,7 @@ export function IssueTable({ issues }: IssueTableProps) {
                 </td>
 
                 {/* Date */}
-                <td className="py-3 px-4 whitespace-nowrap text-right font-mono text-xs text-zinc-500">
+                <td className="py-3 px-4 whitespace-nowrap text-right font-mono text-xs text-zinc-500 tabular-nums">
                   {new Date(issue.createdAt).toLocaleDateString(undefined, {
                     month: 'short',
                     day: 'numeric',

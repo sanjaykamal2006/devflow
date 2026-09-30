@@ -147,8 +147,8 @@ export default function WorkspaceDetailPage({
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white">{workspace.name}</h1>
             <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300">
-              <Shield className="w-3 h-3 text-zinc-400" />
-              {workspace.currentUserRole}
+              <Shield className="w-3 h-3 text-zinc-400" aria-hidden="true" />
+              <span>{workspace.currentUserRole}</span>
             </span>
           </div>
           {workspace.description && (
@@ -158,51 +158,58 @@ export default function WorkspaceDetailPage({
 
         {canManage && (
           <button
+            type="button"
             onClick={() => setCreateProjectOpen(true)}
-            className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition shadow-sm flex items-center gap-2 self-start sm:self-auto"
+            className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 shadow-sm flex items-center gap-2 self-start sm:self-auto"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" aria-hidden="true" />
             <span>New Project</span>
           </button>
         )}
       </div>
 
       {error && (
-        <div className="my-4 p-3 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div role="alert" className="my-4 p-3 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="my-4 p-3 rounded-md bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs font-mono">
+        <div role="status" className="my-4 p-3 rounded-md bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 text-xs font-mono">
           {success}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex items-center gap-6 mt-6 border-b border-zinc-800 text-sm font-medium">
+      <div className="flex items-center gap-6 mt-6 border-b border-zinc-800 text-sm font-medium" role="tablist" aria-label="Workspace tabs">
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'projects'}
           onClick={() => setActiveTab('projects')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition ${
+          className={`pb-3 flex items-center gap-2 border-b-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-t transition-colors duration-150 ${
             activeTab === 'projects'
               ? 'border-zinc-200 text-white font-semibold'
               : 'border-transparent text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          <FolderGit2 className="w-4 h-4" />
-          <span>Projects ({projects.length})</span>
+          <FolderGit2 className="w-4 h-4" aria-hidden="true" />
+          <span>Projects (<span className="tabular-nums">{projects.length}</span>)</span>
         </button>
 
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'members'}
           onClick={() => setActiveTab('members')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition ${
+          className={`pb-3 flex items-center gap-2 border-b-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-t transition-colors duration-150 ${
             activeTab === 'members'
               ? 'border-zinc-200 text-white font-semibold'
               : 'border-transparent text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          <Users className="w-4 h-4" />
-          <span>Team Members ({members.length})</span>
+          <Users className="w-4 h-4" aria-hidden="true" />
+          <span>Team Members (<span className="tabular-nums">{members.length}</span>)</span>
         </button>
       </div>
 
@@ -211,7 +218,7 @@ export default function WorkspaceDetailPage({
         <div className="mt-6">
           {projects.length === 0 ? (
             <div className="border border-dashed border-zinc-800 rounded-lg p-12 text-center bg-zinc-900/10">
-              <FolderGit2 className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
+              <FolderGit2 className="w-8 h-8 text-zinc-600 mx-auto mb-3" aria-hidden="true" />
               <h3 className="text-sm font-semibold text-zinc-200">No projects yet</h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
                 Create a project (like <span className="font-mono text-zinc-400">API</span> or{' '}
@@ -219,10 +226,11 @@ export default function WorkspaceDetailPage({
               </p>
               {canManage && (
                 <button
+                  type="button"
                   onClick={() => setCreateProjectOpen(true)}
-                  className="mt-4 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium inline-flex items-center gap-1.5 shadow-sm"
+                  className="mt-4 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium inline-flex items-center gap-1.5 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Create Project</span>
                 </button>
               )}
@@ -233,7 +241,7 @@ export default function WorkspaceDetailPage({
                 <Link
                   key={proj.id}
                   href={`/projects/${proj.id}/issues`}
-                  className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 transition flex flex-col justify-between"
+                  className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -247,7 +255,7 @@ export default function WorkspaceDetailPage({
                       </div>
                       {proj.githubConnected && (
                         <span className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/60" title="Connected to GitHub">
-                          <GitBranch className="w-3.5 h-3.5" />
+                          <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
                           <span>GitHub</span>
                         </span>
                       )}
@@ -259,15 +267,15 @@ export default function WorkspaceDetailPage({
                   </div>
 
                   <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400 font-mono">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 tabular-nums">
                       <span>{proj.totalIssues} issues</span>
-                      <span>•</span>
+                      <span aria-hidden="true">•</span>
                       <span className="text-emerald-400">{proj.doneIssues} done</span>
                     </div>
 
-                    <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition flex items-center gap-1 text-xs">
+                    <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-transform duration-150 flex items-center gap-1 text-xs">
                       <span>Board</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                     </span>
                   </div>
                 </Link>
@@ -284,23 +292,28 @@ export default function WorkspaceDetailPage({
           {canManage && (
             <div className="p-5 rounded-xl bg-zinc-900/40 border border-zinc-800">
               <h3 className="text-xs font-semibold text-white font-mono uppercase tracking-wider mb-3 flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-zinc-400" />
+                <UserPlus className="w-4 h-4 text-zinc-400" aria-hidden="true" />
                 <span>Invite Workspace Member</span>
               </h3>
               <form onSubmit={handleInvite} className="flex flex-col sm:flex-row gap-3">
                 <input
                   type="email"
                   required
+                  autoComplete="email"
+                  spellCheck={false}
+                  inputMode="email"
+                  aria-label="Colleague email address"
                   placeholder="colleague@company.com"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1 h-10 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded-lg px-3.5 text-sm text-zinc-100 placeholder-zinc-500"
+                  className="flex-1 h-10 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-lg px-3.5 text-sm text-zinc-100 placeholder-zinc-500 transition-colors duration-150"
                 />
 
                 <select
+                  aria-label="Member role"
                   value={inviteRole}
                   onChange={(e) => setInviteRole(e.target.value as WorkspaceRole)}
-                  className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 font-mono"
+                  className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-mono transition-colors duration-150"
                 >
                   <option value="MEMBER">Role: MEMBER</option>
                   <option value="ADMIN">Role: ADMIN</option>
@@ -309,9 +322,9 @@ export default function WorkspaceDetailPage({
                 <button
                   type="submit"
                   disabled={inviting || !inviteEmail.trim()}
-                  className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  {inviting && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {inviting && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
                   <span>Add Member</span>
                 </button>
               </form>
@@ -331,10 +344,10 @@ export default function WorkspaceDetailPage({
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
                 {members.map((m) => (
-                  <tr key={m.id} className="hover:bg-zinc-900/30 transition">
+                  <tr key={m.id} className="hover:bg-zinc-900/30 transition-colors duration-150">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono font-medium text-xs text-zinc-300">
+                        <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono font-medium text-xs text-zinc-300 tabular-nums">
                           {m.user.fullName.charAt(0).toUpperCase()}
                         </div>
                         <div>
@@ -347,9 +360,10 @@ export default function WorkspaceDetailPage({
                     <td className="py-3 px-4">
                       {isOwner && m.role !== 'OWNER' ? (
                         <select
+                          aria-label={`Change role for ${m.user.fullName}`}
                           value={m.role}
                           onChange={(e) => handleRoleChange(m.user.id, e.target.value as WorkspaceRole)}
-                          className="h-8 bg-zinc-900 border border-zinc-800 rounded-md px-2.5 text-xs text-zinc-200 font-mono"
+                          className="h-8 bg-zinc-900 border border-zinc-800 rounded-md px-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                         >
                           <option value="MEMBER">MEMBER</option>
                           <option value="ADMIN">ADMIN</option>
@@ -361,7 +375,7 @@ export default function WorkspaceDetailPage({
                       )}
                     </td>
 
-                    <td className="py-3 px-4 text-zinc-400 font-mono text-xs">
+                    <td className="py-3 px-4 text-zinc-400 font-mono text-xs tabular-nums">
                       {new Date(m.joinedAt).toLocaleDateString()}
                     </td>
 
@@ -369,11 +383,13 @@ export default function WorkspaceDetailPage({
                       <td className="py-3 px-4 text-right">
                         {m.role !== 'OWNER' && m.user.id !== user?.id && (
                           <button
+                            type="button"
                             onClick={() => handleRemoveMember(m.user.id)}
-                            className="p-1.5 rounded-md text-zinc-500 hover:text-rose-400 hover:bg-zinc-900 transition"
+                            aria-label={`Remove ${m.user.fullName} from workspace`}
+                            className="p-1.5 rounded-md text-zinc-500 hover:text-rose-400 hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
                             title="Remove member"
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-4 h-4" aria-hidden="true" />
                           </button>
                         )}
                       </td>
@@ -395,8 +411,9 @@ export default function WorkspaceDetailPage({
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={handleDeleteWorkspace}
-                  className="h-10 px-4 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/80 rounded-lg text-xs font-semibold transition self-start sm:self-auto"
+                  className="h-10 px-4 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/80 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150 self-start sm:self-auto"
                 >
                   Delete Workspace
                 </button>

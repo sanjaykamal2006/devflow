@@ -47,11 +47,14 @@ export function Navbar() {
           <div className="relative">
             <button
               onClick={() => setWsDropdownOpen(!wsDropdownOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-xs font-medium text-zinc-200 transition"
+              aria-haspopup="true"
+              aria-expanded={wsDropdownOpen}
+              aria-label="Select workspace"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 text-xs font-medium text-zinc-200 transition-colors duration-150"
             >
-              <Layers className="w-4 h-4 text-zinc-400" />
+              <Layers className="w-4 h-4 text-zinc-400" aria-hidden="true" />
               <span className="max-w-[160px] truncate">{currentWorkspace ? currentWorkspace.name : 'Select Workspace'}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" />
+              <ChevronDown className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
             </button>
 
             {wsDropdownOpen && (
@@ -64,19 +67,19 @@ export function Navbar() {
                     key={ws.id}
                     href={`/workspaces/${ws.id}`}
                     onClick={() => setWsDropdownOpen(false)}
-                    className="flex items-center justify-between px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white transition"
+                    className="flex items-center justify-between px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:bg-zinc-800 transition-colors duration-150"
                   >
                     <span className="truncate">{ws.name}</span>
-                    {ws.id === currentWorkspace?.id && <Check className="w-3.5 h-3.5 text-zinc-400" />}
+                    {ws.id === currentWorkspace?.id && <Check className="w-3.5 h-3.5 text-zinc-400" aria-hidden="true" />}
                   </Link>
                 ))}
                 <div className="border-t border-zinc-800 my-1" />
                 <Link
                   href="/dashboard"
                   onClick={() => setWsDropdownOpen(false)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 transition"
+                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 focus-visible:outline-none focus-visible:bg-zinc-800 transition-colors duration-150"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Create Workspace</span>
                 </Link>
               </div>
@@ -87,14 +90,14 @@ export function Navbar() {
           <nav className="hidden md:flex items-center gap-5 text-sm font-medium text-zinc-400 ml-3">
             <Link
               href="/dashboard"
-              className={`hover:text-zinc-200 transition ${pathname === '/dashboard' ? 'text-zinc-100 font-semibold' : ''}`}
+              className={`hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150 ${pathname === '/dashboard' ? 'text-zinc-100 font-semibold' : ''}`}
             >
               Dashboard
             </Link>
             {currentWorkspace && (
               <Link
                 href={`/workspaces/${currentWorkspace.id}`}
-                className={`hover:text-zinc-200 transition ${pathname.startsWith('/workspaces') ? 'text-zinc-100 font-semibold' : ''}`}
+                className={`hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150 ${pathname.startsWith('/workspaces') ? 'text-zinc-100 font-semibold' : ''}`}
               >
                 Projects
               </Link>
@@ -108,14 +111,15 @@ export function Navbar() {
             <div className="flex items-center gap-3">
               <Link
                 href="/settings"
-                className="text-zinc-400 hover:text-zinc-200 p-2 rounded-md hover:bg-zinc-900 transition"
+                className="text-zinc-400 hover:text-zinc-200 p-2 rounded-md hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                aria-label="Settings"
                 title="Settings"
               >
-                <Settings className="w-4 h-4" />
+                <Settings className="w-4 h-4" aria-hidden="true" />
               </Link>
 
               <div className="flex items-center gap-2.5 pl-2.5 border-l border-zinc-800">
-                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-200">
+                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-200 tabular-nums">
                   {user.fullName.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-sm font-medium text-zinc-200 hidden sm:inline max-w-[140px] truncate">
@@ -123,21 +127,22 @@ export function Navbar() {
                 </span>
                 <button
                   onClick={logout}
-                  className="text-zinc-500 hover:text-rose-400 p-2 rounded-md hover:bg-zinc-900 transition"
+                  className="text-zinc-500 hover:text-rose-400 p-2 rounded-md hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
+                  aria-label="Log out"
                   title="Logout"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3 text-xs">
-              <Link href="/login" className="text-zinc-400 hover:text-zinc-200 transition">
+              <Link href="/login" className="text-zinc-400 hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150">
                 Log In
               </Link>
               <Link
                 href="/register"
-                className="px-3 py-1.5 bg-white text-zinc-950 font-medium rounded-md hover:bg-zinc-200 transition"
+                className="px-3 py-1.5 bg-white text-zinc-950 font-medium rounded-md hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
               >
                 Sign Up
               </Link>

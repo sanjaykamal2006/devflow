@@ -101,10 +101,10 @@ export default function ProjectOverviewPage({
         <div className="flex items-center gap-2 text-sm font-mono text-zinc-400 mb-2">
           {workspace && (
             <>
-              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-200">
+              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150">
                 {workspace.name}
               </Link>
-              <span>/</span>
+              <span aria-hidden="true">/</span>
             </>
           )}
           <span className="text-zinc-200 font-bold">{project.key}</span>
@@ -126,20 +126,22 @@ export default function ProjectOverviewPage({
           <div className="flex items-center gap-3">
             <Link
               href={`/projects/${project.id}/issues`}
-              className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm"
+              className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-2 shadow-sm"
             >
-              <Kanban className="w-4 h-4" />
+              <Kanban className="w-4 h-4" aria-hidden="true" />
               <span>Issues & Board</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </Link>
 
             {canManage && (
               <button
+                type="button"
                 onClick={handleDeleteProject}
-                className="h-10 w-10 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 hover:border-rose-800 text-zinc-400 hover:text-rose-400 transition"
+                aria-label="Delete project"
+                className="h-10 w-10 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 hover:border-rose-800 text-zinc-400 hover:text-rose-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
                 title="Delete project"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-4 h-4" aria-hidden="true" />
               </button>
             )}
           </div>
@@ -147,7 +149,7 @@ export default function ProjectOverviewPage({
       </div>
 
       {error && (
-        <div className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
@@ -158,37 +160,37 @@ export default function ProjectOverviewPage({
           <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
             Total Issues
           </div>
-          <div className="text-2xl font-bold font-mono text-zinc-100">
+          <div className="text-2xl font-bold font-mono text-zinc-100 tabular-nums">
             {project.totalIssues}
           </div>
         </div>
 
         <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
           <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3 text-sky-400" />
+            <AlertCircle className="w-3 h-3 text-sky-400" aria-hidden="true" />
             <span>Open Issues</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-sky-300">
+          <div className="text-2xl font-bold font-mono text-sky-300 tabular-nums">
             {project.openIssues}
           </div>
         </div>
 
         <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
           <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+            <CheckCircle2 className="w-3 h-3 text-emerald-400" aria-hidden="true" />
             <span>Completed</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-emerald-300">
+          <div className="text-2xl font-bold font-mono text-emerald-300 tabular-nums">
             {project.doneIssues}
           </div>
         </div>
 
         <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
           <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <Clock className="w-3 h-3 text-zinc-400" />
+            <Clock className="w-3 h-3 text-zinc-400" aria-hidden="true" />
             <span>Completion Rate</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-zinc-200">
+          <div className="text-2xl font-bold font-mono text-zinc-200 tabular-nums">
             {completionPercent}%
           </div>
         </div>

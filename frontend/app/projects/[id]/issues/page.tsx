@@ -168,15 +168,15 @@ export default function ProjectIssuesPage({
 
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white font-mono">{project.key} Issues</h1>
-            <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300">
+            <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 tabular-nums">
               {totalElements} total
             </span>
             {project.githubConnected && (
               <Link
                 href={`/projects/${project.id}`}
-                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 hover:underline"
+                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
               >
-                <GitBranch className="w-3.5 h-3.5" />
+                <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>GitHub linked</span>
               </Link>
             )}
@@ -185,43 +185,50 @@ export default function ProjectIssuesPage({
 
         {/* View Toggle & New Issue Button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-zinc-900 p-1 rounded-lg border border-zinc-800">
+          <div className="flex items-center bg-zinc-900 p-1 rounded-lg border border-zinc-800" role="group" aria-label="View layout switch">
             <button
+              type="button"
               onClick={() => setViewMode('kanban')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+              aria-pressed={viewMode === 'kanban'}
+              aria-label="Board view"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
                 viewMode === 'kanban'
                   ? 'bg-zinc-800 text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <Kanban className="w-4 h-4" />
+              <Kanban className="w-4 h-4" aria-hidden="true" />
               <span>Board</span>
             </button>
             <button
+              type="button"
               onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition ${
+              aria-pressed={viewMode === 'table'}
+              aria-label="List view"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
                 viewMode === 'table'
                   ? 'bg-zinc-800 text-white shadow-sm'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <TableIcon className="w-4 h-4" />
+              <TableIcon className="w-4 h-4" aria-hidden="true" />
               <span>List</span>
             </button>
           </div>
 
           <button
+            type="button"
             onClick={() => setCreateModalOpen(true)}
-            className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow-sm"
+            className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-2 shadow-sm"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" aria-hidden="true" />
             <span>New Issue</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="p-3.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
@@ -231,16 +238,17 @@ export default function ProjectIssuesPage({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
             <input
               type="text"
-              placeholder="Search by title, description or key..."
+              aria-label="Search issues"
+              placeholder="Search by title, description, or key…"
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(0);
               }}
-              className="w-full h-10 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded-lg pl-9 pr-3 text-sm text-zinc-100 placeholder-zinc-500"
+              className="w-full h-10 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-lg pl-9 pr-3 text-sm text-zinc-100 placeholder-zinc-500 transition-colors duration-150"
             />
           </div>
 
@@ -248,12 +256,13 @@ export default function ProjectIssuesPage({
           <div className="flex flex-wrap items-center gap-2">
             {/* Status Filter */}
             <select
+              aria-label="Filter by status"
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value as IssueStatus | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
             >
               <option value="">Status: All</option>
               <option value="TODO">To Do</option>
@@ -264,12 +273,13 @@ export default function ProjectIssuesPage({
 
             {/* Priority Filter */}
             <select
+              aria-label="Filter by priority"
               value={priorityFilter}
               onChange={(e) => {
                 setPriorityFilter(e.target.value as IssuePriority | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
             >
               <option value="">Priority: All</option>
               <option value="LOW">Low</option>
@@ -280,12 +290,13 @@ export default function ProjectIssuesPage({
 
             {/* Type Filter */}
             <select
+              aria-label="Filter by issue type"
               value={typeFilter}
               onChange={(e) => {
                 setTypeFilter(e.target.value as IssueType | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
             >
               <option value="">Type: All</option>
               <option value="TASK">Task</option>
@@ -295,12 +306,13 @@ export default function ProjectIssuesPage({
 
             {/* Assignee Filter */}
             <select
+              aria-label="Filter by assignee"
               value={assigneeFilter}
               onChange={(e) => {
                 setAssigneeFilter(e.target.value);
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
             >
               <option value="">Assignee: All</option>
               {members.map((m) => (
@@ -313,12 +325,13 @@ export default function ProjectIssuesPage({
             {/* Label Filter */}
             {labels.length > 0 && (
               <select
+                aria-label="Filter by label"
                 value={labelFilter}
                 onChange={(e) => {
                   setLabelFilter(e.target.value);
                   setPage(0);
                 }}
-                className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-500"
+                className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
               >
                 <option value="">Label: All</option>
                 {labels.map((l) => (
@@ -332,10 +345,12 @@ export default function ProjectIssuesPage({
             {/* Clear Filters */}
             {hasActiveFilters && (
               <button
+                type="button"
                 onClick={clearFilters}
-                className="h-10 flex items-center gap-1.5 px-3 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg border border-zinc-800 transition"
+                aria-label="Reset all filters"
+                className="h-10 flex items-center gap-1.5 px-3 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg border border-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Reset</span>
               </button>
             )}
@@ -353,23 +368,27 @@ export default function ProjectIssuesPage({
           {/* Table Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between py-2 text-xs text-zinc-400 font-mono">
-              <div>
+              <div className="tabular-nums">
                 Page {page + 1} of {totalPages} ({totalElements} issues)
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
+                  aria-label="Previous page"
                   disabled={page <= 0}
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 disabled:opacity-40"
+                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:opacity-40 transition-colors duration-150"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
                 <button
+                  type="button"
+                  aria-label="Next page"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
-                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 disabled:opacity-40"
+                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:opacity-40 transition-colors duration-150"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
             </div>

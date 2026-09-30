@@ -247,26 +247,28 @@ export default function IssueDetailPage({
         <div className="flex items-center gap-2 text-sm font-mono text-zinc-400">
           <Link
             href={`/projects/${issue.projectId}/issues`}
-            className="hover:text-zinc-200 flex items-center gap-1.5"
+            className="hover:text-zinc-200 flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
             <span>{issue.projectName}</span>
           </Link>
-          <span>/</span>
+          <span aria-hidden="true">/</span>
           <span className="font-bold text-zinc-200">{issue.issueKey}</span>
         </div>
 
         <button
+          type="button"
           onClick={handleDeleteIssue}
-          className="text-zinc-500 hover:text-rose-400 p-1 rounded hover:bg-zinc-900 transition"
+          aria-label="Delete issue"
+          className="text-zinc-500 hover:text-rose-400 p-1.5 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
           title="Delete issue"
         >
-          <Trash2 className="w-4 h-4" />
+          <Trash2 className="w-4 h-4" aria-hidden="true" />
         </button>
       </div>
 
       {error && (
-        <div className="p-2.5 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-2.5 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
@@ -282,35 +284,42 @@ export default function IssueDetailPage({
                 <input
                   type="text"
                   autoFocus
+                  aria-label="Edit issue title"
                   value={titleInput}
                   onChange={(e) => setTitleInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 focus:outline-none rounded px-3 py-1.5 text-base font-semibold text-white"
+                  className="w-full bg-zinc-950 border border-zinc-700 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-3 py-1.5 text-base font-semibold text-white transition-colors duration-150"
                 />
                 <button
+                  type="button"
                   onClick={handleSaveTitle}
-                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-white"
+                  aria-label="Save title"
+                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-4 h-4" aria-hidden="true" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setTitleInput(issue.title);
                     setEditingTitle(false);
                   }}
-                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400"
+                  aria-label="Cancel title editing"
+                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             ) : (
               <div className="flex items-start justify-between gap-3 group">
                 <h1 className="text-xl font-bold tracking-tight text-white">{issue.title}</h1>
                 <button
+                  type="button"
                   onClick={() => setEditingTitle(true)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-zinc-300 rounded transition"
+                  aria-label="Edit title"
+                  className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-zinc-300 rounded focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition duration-150"
                   title="Edit title"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
+                  <Edit2 className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
               </div>
             )}
@@ -322,10 +331,12 @@ export default function IssueDetailPage({
               <span>Description</span>
               {!editingDesc && (
                 <button
+                  type="button"
                   onClick={() => setEditingDesc(true)}
-                  className="text-zinc-400 hover:text-zinc-200 text-xs font-sans normal-case flex items-center gap-1"
+                  aria-label="Edit description"
+                  className="text-zinc-400 hover:text-zinc-200 text-xs font-sans normal-case flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1 transition-colors duration-150"
                 >
-                  <Edit2 className="w-3 h-3" />
+                  <Edit2 className="w-3 h-3" aria-hidden="true" />
                   <span>Edit</span>
                 </button>
               )}
@@ -336,23 +347,26 @@ export default function IssueDetailPage({
                 <textarea
                   rows={6}
                   autoFocus
+                  aria-label="Issue description"
                   value={descInput}
                   onChange={(e) => setDescInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2.5 text-xs text-zinc-100 focus:outline-none resize-none font-sans"
+                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2.5 text-xs text-zinc-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 resize-none font-sans transition-colors duration-150"
                 />
                 <div className="flex items-center justify-end gap-2">
                   <button
+                    type="button"
                     onClick={() => {
                       setDescInput(issue.description || '');
                       setEditingDesc(false);
                     }}
-                    className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200"
+                    className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                   >
                     Cancel
                   </button>
                   <button
+                    type="button"
                     onClick={handleSaveDesc}
-                    className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white"
+                    className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
                   >
                     Save
                   </button>
@@ -369,29 +383,35 @@ export default function IssueDetailPage({
 
           {/* Tabs: Comments vs GitHub Activity */}
           <div>
-            <div className="flex items-center gap-4 border-b border-zinc-800 text-xs font-medium pb-2 mb-4">
+            <div className="flex items-center gap-4 border-b border-zinc-800 text-xs font-medium pb-2 mb-4" role="tablist" aria-label="Issue discussion tabs">
               <button
+                type="button"
+                role="tab"
+                aria-selected={mainTab === 'comments'}
                 onClick={() => setMainTab('comments')}
-                className={`flex items-center gap-1.5 transition ${
+                className={`flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1.5 py-0.5 transition-colors duration-150 ${
                   mainTab === 'comments'
                     ? 'text-white font-semibold'
                     : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Comments ({comments.length})</span>
+                <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Comments (<span className="tabular-nums">{comments.length}</span>)</span>
               </button>
 
               <button
+                type="button"
+                role="tab"
+                aria-selected={mainTab === 'github'}
                 onClick={() => setMainTab('github')}
-                className={`flex items-center gap-1.5 transition ${
+                className={`flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1.5 py-0.5 transition-colors duration-150 ${
                   mainTab === 'github'
                     ? 'text-white font-semibold'
                     : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                <GitCommit className="w-3.5 h-3.5 text-sky-400" />
-                <span>GitHub Activity ({activities.length})</span>
+                <GitCommit className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
+                <span>GitHub Activity (<span className="tabular-nums">{activities.length}</span>)</span>
               </button>
             </div>
 
@@ -411,34 +431,38 @@ export default function IssueDetailPage({
                       >
                         <div className="flex items-center justify-between text-xs">
                           <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono text-[10px] text-zinc-300 font-medium">
+                            <div className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono text-[10px] text-zinc-300 font-medium tabular-nums">
                               {comment.author.fullName.charAt(0).toUpperCase()}
                             </div>
                             <span className="font-medium text-zinc-200">{comment.author.fullName}</span>
-                            <span className="text-[11px] text-zinc-500 font-mono">
+                            <span className="text-[11px] text-zinc-500 font-mono tabular-nums">
                               {new Date(comment.createdAt).toLocaleString()}
                             </span>
                           </div>
 
                           {/* Comment actions */}
                           {user?.id === comment.author.id && (
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
                               <button
+                                type="button"
                                 onClick={() => {
                                   setEditingCommentId(comment.id);
                                   setEditingCommentText(comment.content);
                                 }}
-                                className="p-1 text-zinc-500 hover:text-zinc-300 rounded hover:bg-zinc-900"
+                                aria-label="Edit comment"
+                                className="p-1 text-zinc-500 hover:text-zinc-300 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                                 title="Edit comment"
                               >
-                                <Edit2 className="w-3 h-3" />
+                                <Edit2 className="w-3 h-3" aria-hidden="true" />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleDeleteComment(comment.id)}
-                                className="p-1 text-zinc-500 hover:text-rose-400 rounded hover:bg-zinc-900"
+                                aria-label="Delete comment"
+                                className="p-1 text-zinc-500 hover:text-rose-400 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
                                 title="Delete comment"
                               >
-                                <Trash2 className="w-3 h-3" />
+                                <Trash2 className="w-3 h-3" aria-hidden="true" />
                               </button>
                             </div>
                           )}
@@ -448,20 +472,23 @@ export default function IssueDetailPage({
                           <div className="space-y-2 pt-1">
                             <textarea
                               rows={3}
+                              aria-label="Edit comment text"
                               value={editingCommentText}
                               onChange={(e) => setEditingCommentText(e.target.value)}
-                              className="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-xs text-zinc-100 focus:outline-none resize-none font-sans"
+                              className="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-xs text-zinc-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 resize-none font-sans transition-colors duration-150"
                             />
                             <div className="flex items-center justify-end gap-2">
                               <button
+                                type="button"
                                 onClick={() => setEditingCommentId(null)}
-                                className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200"
+                                className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
                               >
                                 Cancel
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleUpdateComment(comment.id)}
-                                className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white"
+                                className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
                               >
                                 Save
                               </button>
@@ -481,21 +508,22 @@ export default function IssueDetailPage({
                 <form onSubmit={handleAddComment} className="space-y-2 pt-2">
                   <textarea
                     rows={3}
-                    placeholder="Write a comment..."
+                    aria-label="Add a comment"
+                    placeholder="Write a comment…"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-600 resize-none font-sans"
+                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-600 resize-none font-sans transition-colors duration-150"
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={postingComment || !newComment.trim()}
-                      className="px-3.5 py-1.5 rounded bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs transition flex items-center gap-1.5 disabled:opacity-50"
+                      className="px-3.5 py-1.5 rounded bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
                     >
                       {postingComment ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
                       ) : (
-                        <Send className="w-3.5 h-3.5" />
+                        <Send className="w-3.5 h-3.5" aria-hidden="true" />
                       )}
                       <span>Post Comment</span>
                     </button>
@@ -568,11 +596,12 @@ export default function IssueDetailPage({
 
             {/* Status Select */}
             <div>
-              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Status</label>
+              <label htmlFor="issue-prop-status" className="block text-[11px] font-mono text-zinc-400 mb-1">Status</label>
               <select
+                id="issue-prop-status"
                 value={issue.status}
                 onChange={(e) => handleUpdateStatus(e.target.value as IssueStatus)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
               >
                 <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -583,11 +612,12 @@ export default function IssueDetailPage({
 
             {/* Priority Select */}
             <div>
-              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Priority</label>
+              <label htmlFor="issue-prop-priority" className="block text-[11px] font-mono text-zinc-400 mb-1">Priority</label>
               <select
+                id="issue-prop-priority"
                 value={issue.priority}
                 onChange={(e) => handleUpdatePriority(e.target.value as IssuePriority)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
               >
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
@@ -598,11 +628,12 @@ export default function IssueDetailPage({
 
             {/* Type Select */}
             <div>
-              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Type</label>
+              <label htmlFor="issue-prop-type" className="block text-[11px] font-mono text-zinc-400 mb-1">Type</label>
               <select
+                id="issue-prop-type"
                 value={issue.issueType}
                 onChange={(e) => handleUpdateType(e.target.value as IssueType)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500 font-medium"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
               >
                 <option value="TASK">Task</option>
                 <option value="BUG">Bug</option>
@@ -612,11 +643,12 @@ export default function IssueDetailPage({
 
             {/* Assignee Select */}
             <div>
-              <label className="block text-[11px] font-mono text-zinc-400 mb-1">Assignee</label>
+              <label htmlFor="issue-prop-assignee" className="block text-[11px] font-mono text-zinc-400 mb-1">Assignee</label>
               <select
+                id="issue-prop-assignee"
                 value={issue.assignee?.id || ''}
                 onChange={(e) => handleAssign(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus:border-zinc-500"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
               >
                 <option value="">Unassigned</option>
                 {members.map((m) => (
@@ -630,11 +662,11 @@ export default function IssueDetailPage({
             {/* Labels */}
             {availableLabels.length > 0 && (
               <div>
-                <label className="block text-[11px] font-mono text-zinc-400 mb-1.5 flex items-center gap-1">
-                  <Tag className="w-3 h-3" />
+                <span className="block text-[11px] font-mono text-zinc-400 mb-1.5 flex items-center gap-1">
+                  <Tag className="w-3 h-3" aria-hidden="true" />
                   <span>Labels</span>
-                </label>
-                <div className="flex flex-wrap gap-1.5">
+                </span>
+                <div className="flex flex-wrap gap-1.5" role="group" aria-label="Available labels">
                   {availableLabels.map((lbl) => {
                     const isAttached = issue.labels?.some((l) => l.id === lbl.id);
                     return (
@@ -642,7 +674,8 @@ export default function IssueDetailPage({
                         key={lbl.id}
                         type="button"
                         onClick={() => handleToggleLabel(lbl.id)}
-                        className={`text-[10px] px-2 py-0.5 rounded border transition ${
+                        aria-pressed={isAttached}
+                        className={`text-[10px] px-2 py-0.5 rounded border focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
                           isAttached
                             ? 'bg-zinc-800 text-white border-zinc-600'
                             : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
@@ -664,16 +697,16 @@ export default function IssueDetailPage({
               </div>
               <div className="flex items-center justify-between">
                 <span>Created:</span>
-                <span>{new Date(issue.createdAt).toLocaleDateString()}</span>
+                <span className="tabular-nums">{new Date(issue.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span>Updated:</span>
-                <span>{new Date(issue.updatedAt).toLocaleDateString()}</span>
+                <span className="tabular-nums">{new Date(issue.updatedAt).toLocaleDateString()}</span>
               </div>
               {issue.dueDate && (
                 <div className="flex items-center justify-between text-amber-400">
                   <span>Due Date:</span>
-                  <span>{new Date(issue.dueDate).toLocaleDateString()}</span>
+                  <span className="tabular-nums">{new Date(issue.dueDate).toLocaleDateString()}</span>
                 </div>
               )}
             </div>
