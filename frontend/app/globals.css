@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  --background: #09090b;
+  --background: #08090a;
   --foreground: #f4f4f5;
 }
 
@@ -17,8 +17,8 @@ body {
 
 /* Subtle, clean scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -33,34 +33,54 @@ body {
 
 /* Linear-grade Surface Elevation & Inset Highlights */
 .linear-card {
-  background-color: #0c0c0e;
+  background: linear-gradient(180deg, rgba(24, 24, 27, 0.6) 0%, rgba(12, 12, 14, 0.8) 100%);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05) inset, 0 4px 20px -2px rgba(0, 0, 0, 0.5);
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05) inset, 0 4px 24px -2px rgba(0, 0, 0, 0.6);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .linear-card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 8px 32px -4px rgba(0, 0, 0, 0.7);
   transform: translateY(-1px);
 }
 
 .glass-panel {
-  background: rgba(18, 18, 21, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(14, 14, 17, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset;
 }
 
-/* Subtle Engineering Grid Background */
-.bg-grid-subtle {
+/* Radiant Background Glows */
+.bg-hero-glow {
+  background: radial-gradient(circle at 50% -20%, rgba(56, 189, 248, 0.12), rgba(99, 102, 241, 0.06) 40%, transparent 70%);
+}
+
+.bg-radial-subtle {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.04), transparent 65%);
+}
+
+.bg-grid-pattern {
   background-size: 32px 32px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
 }
 
-.bg-radial-gradient {
-  background: radial-gradient(circle at 50% 0%, rgba(120, 119, 198, 0.07), transparent 60%);
+/* Linear-style Glow Border animation */
+@keyframes border-shimmer {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.animate-border-shimmer {
+  animation: border-shimmer 4s ease-in-out infinite;
 }
 
 /* Cmdk styling reset & selection */
@@ -69,7 +89,7 @@ body {
 }
 
 [cmdk-item][data-selected='true'] {
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
 

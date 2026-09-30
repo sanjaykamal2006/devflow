@@ -6,6 +6,7 @@ import { Issue, IssueStatus } from '@/types';
 import { PriorityBadge } from './PriorityBadge';
 import { TypeBadge } from './TypeBadge';
 import { MessageSquare, GitCommit, ArrowRight, ArrowLeft, GripVertical } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import {
   DndContext,
   DragOverlay,
@@ -31,11 +32,46 @@ interface KanbanBoardProps {
   onStatusChange: (issueId: string, newStatus: IssueStatus) => Promise<void>;
 }
 
-const COLUMNS: { id: IssueStatus; title: string; defaultBorder: string; activeBorder: string }[] = [
-  { id: 'TODO', title: 'To Do', defaultBorder: 'border-zinc-800', activeBorder: 'border-zinc-500 bg-zinc-900/40' },
-  { id: 'IN_PROGRESS', title: 'In Progress', defaultBorder: 'border-sky-950/60', activeBorder: 'border-sky-500/50 bg-sky-950/20' },
-  { id: 'IN_REVIEW', title: 'In Review', defaultBorder: 'border-amber-950/60', activeBorder: 'border-amber-500/50 bg-amber-950/20' },
-  { id: 'DONE', title: 'Done', defaultBorder: 'border-emerald-950/60', activeBorder: 'border-emerald-500/50 bg-emerald-950/20' },
+const COLUMNS: {
+  id: IssueStatus;
+  title: string;
+  dotColor: string;
+  headerBorder: string;
+  defaultBorder: string;
+  activeBorder: string;
+}[] = [
+  {
+    id: 'TODO',
+    title: 'To Do',
+    dotColor: 'bg-zinc-400 shadow-[0_0_8px_rgba(161,161,170,0.4)]',
+    headerBorder: 'border-zinc-800',
+    defaultBorder: 'border-white/[0.06]',
+    activeBorder: 'border-zinc-500 bg-zinc-900/60 shadow-[0_0_24px_rgba(255,255,255,0.04)]',
+  },
+  {
+    id: 'IN_PROGRESS',
+    title: 'In Progress',
+    dotColor: 'bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)] animate-pulse',
+    headerBorder: 'border-sky-900/40',
+    defaultBorder: 'border-sky-950/40',
+    activeBorder: 'border-sky-500/60 bg-sky-950/20 shadow-[0_0_24px_rgba(56,189,248,0.08)]',
+  },
+  {
+    id: 'IN_REVIEW',
+    title: 'In Review',
+    dotColor: 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]',
+    headerBorder: 'border-amber-900/40',
+    defaultBorder: 'border-amber-950/40',
+    activeBorder: 'border-amber-500/60 bg-amber-950/20 shadow-[0_0_24px_rgba(251,191,36,0.08)]',
+  },
+  {
+    id: 'DONE',
+    title: 'Done',
+    dotColor: 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]',
+    headerBorder: 'border-emerald-900/40',
+    defaultBorder: 'border-emerald-950/40',
+    activeBorder: 'border-emerald-500/60 bg-emerald-950/20 shadow-[0_0_24px_rgba(52,211,153,0.08)]',
+  },
 ];
 
 const COLUMN_NAMES: Record<IssueStatus, string> = {
@@ -44,6 +80,21 @@ const COLUMN_NAMES: Record<IssueStatus, string> = {
   IN_REVIEW: 'In Review',
   DONE: 'Done',
 };
+
+function triggerCompletionCelebration() {
+  try {
+    confetti({
+      particleCount: 45,
+      spread: 60,
+      origin: { y: 0.75 },
+      colors: ['#34d399', '#38bdf8', '#fbbf24', '#f472b6'],
+      ticks: 180,
+      disableForReducedMotion: true,
+    });
+  } catch {
+    // Non-blocking fallback
+  }
+}
 
 // Single draggable issue card
 function SortableIssueCard({
@@ -75,8 +126,8 @@ function SortableIssueCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`bg-zinc-900/80 border border-zinc-800/80 rounded-xl p-3.5 transition-all duration-150 group relative ${
-        isDragging ? 'opacity-30 border-dashed border-zinc-600' : 'hover:border-zinc-700 hover:bg-zinc-900'
+      className={`linear-card rounded-xl p-3.5 transition-all duration-200 group relative ${
+        isDragging ? 'opacity-20 border-dashed border-sky-400/80 scale-[0.98]' : 'hover:border-white/[0.18]'
       }`}
     >
       {/* Drag handle & top row */}
@@ -85,8 +136,8 @@ function SortableIssueCard({
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-zinc-500 hover:text-zinc-300 rounded transition-colors touch-none"
-            title="Drag to reorder"
+            className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-zinc-500 hover:text-zinc-200 rounded transition-colors touch-none"
+            title="Drag to reposition"
             aria-label="Drag handle"
           >
             <GripVertical className="w-3.5 h-3.5" />
@@ -100,15 +151,15 @@ function SortableIssueCard({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          <TypeBadge type={issue.issueType} />
-          <PriorityBadge priority={issue.priority} showIcon={false} />
+          <TypeBadge type={issue.issueType} size="sm" />
+          <PriorityBadge priority={issue.priority} showIcon={false} size="sm" />
         </div>
       </div>
 
       {/* Title */}
       <Link
         href={`/issues/${issue.id}`}
-        className="text-xs font-medium text-zinc-200 hover:text-white line-clamp-2 mb-2.5 block leading-snug focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
+        className="text-xs font-medium text-zinc-100 hover:text-white line-clamp-2 mb-2.5 block leading-snug focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
       >
         {issue.title}
       </Link>
@@ -119,7 +170,7 @@ function SortableIssueCard({
           {issue.labels.map((lbl) => (
             <span
               key={lbl.id}
-              className="text-[10px] px-1.5 py-0.5 rounded border border-zinc-800 bg-zinc-950 text-zinc-400 font-mono"
+              className="text-[10px] px-1.5 py-0.5 rounded border border-white/[0.08] bg-zinc-950/80 text-zinc-400 font-mono"
               style={{ borderColor: lbl.color ? `${lbl.color}40` : undefined }}
             >
               {lbl.name}
@@ -129,11 +180,11 @@ function SortableIssueCard({
       )}
 
       {/* Footer: Assignee + Counts + Quick Step Buttons */}
-      <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 text-xs text-zinc-500">
+      <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs text-zinc-500">
         <div className="flex items-center gap-2 min-w-0">
           {issue.assignee ? (
             <div
-              className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-[10px] text-zinc-300 font-mono font-medium tabular-nums shrink-0"
+              className="w-5 h-5 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-white/[0.12] flex items-center justify-center text-[10px] text-zinc-200 font-mono font-medium tabular-nums shrink-0 shadow-inner"
               title={`Assignee: ${issue.assignee.fullName}`}
             >
               {issue.assignee.fullName.charAt(0).toUpperCase()}
@@ -160,14 +211,14 @@ function SortableIssueCard({
           )}
         </div>
 
-        {/* Quick status step buttons - visible on touch/hover */}
-        <div className="flex items-center gap-1 opacity-75 md:opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Quick status step buttons */}
+        <div className="flex items-center gap-0.5 opacity-80 md:opacity-0 group-hover:opacity-100 transition-opacity">
           {prevStatus && (
             <button
               type="button"
               onClick={() => onStatusChange(issue.id, prevStatus)}
-              className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-200 transition-colors"
-              title={`Move to ${COLUMN_NAMES[prevStatus]}`}
+              className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+              title={`Move back to ${COLUMN_NAMES[prevStatus]}`}
               aria-label={`Move ${issue.issueKey} to ${COLUMN_NAMES[prevStatus]}`}
             >
               <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
@@ -177,8 +228,8 @@ function SortableIssueCard({
             <button
               type="button"
               onClick={() => onStatusChange(issue.id, nextStatus)}
-              className="p-1 hover:bg-zinc-800 rounded text-zinc-400 hover:text-zinc-200 transition-colors"
-              title={`Move to ${COLUMN_NAMES[nextStatus]}`}
+              className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+              title={`Advance to ${COLUMN_NAMES[nextStatus]}`}
               aria-label={`Move ${issue.issueKey} to ${COLUMN_NAMES[nextStatus]}`}
             >
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -193,18 +244,20 @@ function SortableIssueCard({
 // Visual Card for DragOverlay
 function OverlayIssueCard({ issue }: { issue: Issue }) {
   return (
-    <div className="bg-zinc-900 border border-sky-500/60 rounded-xl p-3.5 shadow-2xl scale-[1.02] cursor-grabbing w-[280px]">
+    <div className="bg-zinc-900 border border-sky-400/80 rounded-xl p-3.5 shadow-[0_12px_36px_rgba(0,0,0,0.8)] scale-[1.03] cursor-grabbing w-[280px] backdrop-blur-xl">
       <div className="flex items-center justify-between gap-2 mb-2">
         <span className="font-mono text-xs font-bold text-sky-400">{issue.issueKey}</span>
         <div className="flex items-center gap-1.5">
-          <TypeBadge type={issue.issueType} />
-          <PriorityBadge priority={issue.priority} showIcon={false} />
+          <TypeBadge type={issue.issueType} size="sm" />
+          <PriorityBadge priority={issue.priority} showIcon={false} size="sm" />
         </div>
       </div>
       <p className="text-xs font-medium text-zinc-100 line-clamp-2 mb-2 leading-snug">{issue.title}</p>
       <div className="flex items-center justify-between pt-2 border-t border-zinc-800 text-[11px] text-zinc-400">
         <span>{issue.assignee?.fullName || 'Unassigned'}</span>
-        <span className="font-mono text-[10px] text-sky-400 uppercase">{COLUMN_NAMES[issue.status]}</span>
+        <span className="font-mono text-[10px] text-sky-400 uppercase tracking-wider font-semibold">
+          {COLUMN_NAMES[issue.status]}
+        </span>
       </div>
     </div>
   );
@@ -231,26 +284,28 @@ function DroppableColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`w-[82vw] sm:w-[320px] md:w-auto shrink-0 md:shrink snap-center rounded-2xl p-3.5 flex flex-col transition-all duration-150 border ${
-        isOver ? col.activeBorder : `bg-zinc-950/70 ${col.defaultBorder}`
+      className={`w-[82vw] sm:w-[320px] md:w-auto shrink-0 md:shrink snap-center rounded-2xl p-3 flex flex-col transition-all duration-200 border ${
+        isOver
+          ? col.activeBorder
+          : `bg-[#0c0c0e]/80 ${col.defaultBorder} shadow-[0_1px_0_0_rgba(255,255,255,0.03)_inset]`
       }`}
     >
       {/* Column Header */}
-      <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800/80">
+      <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06] px-1">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-zinc-500" />
+          <span className={`w-2 h-2 rounded-full ${col.dotColor}`} />
           <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider font-mono">
             {col.title}
           </span>
         </div>
-        <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 tabular-nums">
+        <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300 tabular-nums">
           {issues.length}
         </span>
       </div>
 
       {/* Cards Sortable Container */}
       <SortableContext items={issues.map((i) => i.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2.5 flex-1 min-h-[160px] overflow-y-auto max-h-[calc(100vh-280px)] pr-0.5">
+        <div className="space-y-2 flex-1 min-h-[160px] overflow-y-auto max-h-[calc(100vh-270px)] pr-0.5">
           {issues.length === 0 ? (
             <div className="h-28 border border-dashed border-zinc-800/80 rounded-xl flex items-center justify-center text-[11px] text-zinc-600 font-mono select-none">
               No issues in {col.title}
@@ -334,6 +389,10 @@ export function KanbanBoard({ issues, onStatusChange }: KanbanBoardProps) {
 
     if (targetStatus && targetStatus !== draggedIssue.status) {
       const oldStatus = draggedIssue.status;
+
+      if (targetStatus === 'DONE') {
+        triggerCompletionCelebration();
+      }
 
       try {
         await onStatusChange(issueId, targetStatus);

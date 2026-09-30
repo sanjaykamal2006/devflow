@@ -15,6 +15,7 @@ import {
   Loader2,
   Shield,
   X,
+  Sparkles,
 } from 'lucide-react';
 
 export default function DashboardPage() {
@@ -94,28 +95,33 @@ export default function DashboardPage() {
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
-            Workspaces
-          </h1>
-          <p className="text-sm text-zinc-400 mt-1">
-            Logged in as <span className="text-zinc-200 font-medium">{user?.email}</span>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              Workspaces
+            </h1>
+            <span className="text-xs font-mono text-zinc-400 px-2 py-0.5 rounded-full bg-zinc-900 border border-white/[0.08]">
+              {workspaces.length} total
+            </span>
+          </div>
+          <p className="text-xs text-zinc-400 mt-1">
+            Logged in as <span className="text-zinc-200 font-mono font-medium">{user?.email}</span>
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setCreatingWs(true)}
-          className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 shadow-sm flex items-center gap-2 self-start sm:self-auto"
+          className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-150 shadow-[0_0_16px_rgba(255,255,255,0.12)] flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
-          <Plus className="w-4 h-4" aria-hidden="true" />
+          <Plus className="w-3.5 h-3.5" aria-hidden="true" />
           <span>New Workspace</span>
         </button>
       </div>
 
       {error && (
-        <div role="alert" className="my-4 p-3 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div role="alert" className="my-4 p-3 rounded-lg bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
@@ -123,7 +129,7 @@ export default function DashboardPage() {
       {/* Create Workspace Modal */}
       {creatingWs && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
           onClick={(e) => {
             if (e.target === e.currentTarget) setCreatingWs(false);
           }}
@@ -132,23 +138,26 @@ export default function DashboardPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-ws-title"
-            className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-5 shadow-2xl relative text-zinc-100"
+            className="bg-[#0e0e11] border border-white/[0.12] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-zinc-100"
           >
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800">
-              <h2 id="create-ws-title" className="text-sm font-semibold text-white">Create New Workspace</h2>
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-sky-400" />
+                <h2 id="create-ws-title" className="text-sm font-semibold text-white">Create Workspace</h2>
+              </div>
               <button
                 type="button"
                 onClick={() => setCreatingWs(false)}
                 aria-label="Close dialog"
-                className="text-zinc-400 hover:text-white p-1 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-900 transition-colors"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateWorkspace} className="space-y-3.5">
+            <form onSubmit={handleCreateWorkspace} className="space-y-4">
               <div>
-                <label htmlFor="ws-name" className="block text-xs font-medium text-zinc-300 mb-1">
+                <label htmlFor="ws-name" className="block text-xs font-medium text-zinc-300 mb-1.5">
                   Workspace Name <span className="text-rose-400">*</span>
                 </label>
                 <input
@@ -160,34 +169,34 @@ export default function DashboardPage() {
                   placeholder="e.g. Core Engineering"
                   value={wsName}
                   onChange={(e) => setWsName(e.target.value)}
-                  className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                  className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
                 />
               </div>
 
               <div>
-                <label htmlFor="ws-desc" className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
+                <label htmlFor="ws-desc" className="block text-xs font-medium text-zinc-300 mb-1.5">Description</label>
                 <textarea
                   id="ws-desc"
                   rows={3}
-                  placeholder="What team or project does this workspace represent?"
+                  placeholder="What repositories or systems does this workspace encompass?"
                   value={wsDescription}
                   onChange={(e) => setWsDescription(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 resize-none transition-colors duration-150"
+                  className="w-full bg-zinc-950 border border-white/[0.08] rounded-lg p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] resize-none transition-colors"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.06]">
                 <button
                   type="button"
                   onClick={() => setCreatingWs(false)}
-                  className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !wsName.trim()}
-                  className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
+                  className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-[0_0_12px_rgba(255,255,255,0.1)]"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
                   <span>Create Workspace</span>
@@ -201,7 +210,7 @@ export default function DashboardPage() {
       {/* Workspaces Grid */}
       <div className="mt-6">
         {workspaces.length === 0 ? (
-          <div className="border border-dashed border-zinc-800 rounded-lg p-12 text-center bg-zinc-900/10">
+          <div className="border border-dashed border-white/[0.08] rounded-2xl p-12 text-center bg-zinc-950/40">
             <Layers className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-zinc-200">No workspaces found</h3>
             <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
@@ -210,49 +219,49 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setCreatingWs(true)}
-              className="mt-4 px-3.5 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-md text-xs font-medium inline-flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
+              className="mt-4 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition-all shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Create Workspace</span>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {workspaces.map((ws) => (
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="group border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30 hover:bg-zinc-900/60 rounded-xl p-5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 flex flex-col justify-between"
+                className="linear-card rounded-2xl p-5 flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-base font-semibold text-zinc-100 group-hover:text-white truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-mono font-medium bg-zinc-800 border border-zinc-700 text-zinc-300 flex-shrink-0">
+                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-900 border border-white/[0.08] text-zinc-300 shrink-0">
                       <Shield className="w-3 h-3 text-zinc-400" aria-hidden="true" />
                       <span>{ws.currentUserRole}</span>
                     </span>
                   </div>
 
-                  <p className="text-sm text-zinc-400 line-clamp-2 min-h-[40px] mb-4">
+                  <p className="text-xs text-zinc-400 line-clamp-2 min-h-[36px] mb-4">
                     {ws.description || 'No description provided.'}
                   </p>
                 </div>
 
-                <div className="pt-3.5 border-t border-zinc-800/80 flex items-center justify-between text-xs text-zinc-400 font-mono">
+                <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400 font-mono">
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.projectCount} projects`}>
-                      <FolderGit2 className="w-4 h-4 text-zinc-400" aria-hidden="true" />
+                      <FolderGit2 className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
                       <span>{ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}</span>
                     </span>
                     <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.memberCount} members`}>
-                      <Users className="w-4 h-4 text-zinc-400" aria-hidden="true" />
+                      <Users className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
                       <span>{ws.memberCount}</span>
                     </span>
                   </div>
 
-                  <span className="text-zinc-400 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-transform duration-150 flex items-center gap-1 text-xs">
+                  <span className="text-zinc-500 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-all duration-150 flex items-center gap-1 text-xs">
                     <span>Enter</span>
                     <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </span>

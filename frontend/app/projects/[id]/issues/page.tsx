@@ -146,37 +146,37 @@ export default function ProjectIssuesPage({
   }
 
   return (
-    <div className="w-full px-6 lg:px-8 py-6 space-y-6">
+    <div className="w-full px-6 lg:px-8 py-6 space-y-5">
       {/* Top Header: Breadcrumbs & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-zinc-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.06]">
         <div>
-          <div className="flex items-center gap-2 text-sm font-mono text-zinc-400 mb-1.5">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-1">
             {workspace && (
               <>
-                <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-200">
+                <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-300 transition-colors">
                   {workspace.name}
                 </Link>
                 <span>/</span>
               </>
             )}
-            <Link href={`/projects/${project.id}`} className="hover:text-zinc-200">
+            <Link href={`/projects/${project.id}`} className="hover:text-zinc-300 transition-colors">
               {project.name}
             </Link>
             <span>/</span>
-            <span className="text-zinc-200 font-bold">Issues</span>
+            <span className="text-zinc-200 font-semibold">Issues</span>
           </div>
 
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white font-mono">{project.key} Issues</h1>
-            <span className="text-xs font-mono font-medium px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-zinc-300 tabular-nums">
+            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-300 tabular-nums">
               {totalElements} total
             </span>
             {project.githubConnected && (
               <Link
                 href={`/projects/${project.id}`}
-                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded"
+                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/60 hover:border-emerald-500/60 transition-colors"
               >
-                <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
+                <GitBranch className="w-3 h-3" aria-hidden="true" />
                 <span>GitHub linked</span>
               </Link>
             )}
@@ -185,19 +185,19 @@ export default function ProjectIssuesPage({
 
         {/* View Toggle & New Issue Button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-zinc-900 p-1 rounded-lg border border-zinc-800" role="group" aria-label="View layout switch">
+          <div className="flex items-center bg-zinc-900/90 p-1 rounded-lg border border-white/[0.08]" role="group" aria-label="View layout switch">
             <button
               type="button"
               onClick={() => setViewMode('kanban')}
               aria-pressed={viewMode === 'kanban'}
               aria-label="Board view"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${
                 viewMode === 'kanban'
-                  ? 'bg-zinc-800 text-white shadow-sm'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <Kanban className="w-4 h-4" aria-hidden="true" />
+              <Kanban className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Board</span>
             </button>
             <button
@@ -205,13 +205,13 @@ export default function ProjectIssuesPage({
               onClick={() => setViewMode('table')}
               aria-pressed={viewMode === 'table'}
               aria-label="List view"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-zinc-800 text-white shadow-sm'
+                  ? 'bg-zinc-800 text-white shadow-sm font-semibold'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <TableIcon className="w-4 h-4" aria-hidden="true" />
+              <TableIcon className="w-3.5 h-3.5" aria-hidden="true" />
               <span>List</span>
             </button>
           </div>
@@ -219,26 +219,26 @@ export default function ProjectIssuesPage({
           <button
             type="button"
             onClick={() => setCreateModalOpen(true)}
-            className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-2 shadow-sm"
+            className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
           >
-            <Plus className="w-4 h-4" aria-hidden="true" />
+            <Plus className="w-3.5 h-3.5" aria-hidden="true" />
             <span>New Issue</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div role="alert" className="p-3.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3.5 rounded-lg bg-rose-950/50 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {/* Filter Toolbar */}
-      <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-3.5 space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-[#0c0c0e]/90 border border-white/[0.08] rounded-xl p-3 space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
+            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
             <input
               type="text"
               aria-label="Search issues"
@@ -248,7 +248,7 @@ export default function ProjectIssuesPage({
                 setSearch(e.target.value);
                 setPage(0);
               }}
-              className="w-full h-10 bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-lg pl-9 pr-3 text-sm text-zinc-100 placeholder-zinc-500 transition-colors duration-150"
+              className="w-full h-9 bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] focus:outline-none rounded-lg pl-9 pr-3 text-xs text-zinc-100 placeholder-zinc-500 transition-colors"
             />
           </div>
 
@@ -262,7 +262,7 @@ export default function ProjectIssuesPage({
                 setStatusFilter(e.target.value as IssueStatus | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-2.5 text-xs text-zinc-300 focus:outline-none focus:border-white/[0.25] transition-colors"
             >
               <option value="">Status: All</option>
               <option value="TODO">To Do</option>
@@ -279,7 +279,7 @@ export default function ProjectIssuesPage({
                 setPriorityFilter(e.target.value as IssuePriority | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-2.5 text-xs text-zinc-300 focus:outline-none focus:border-white/[0.25] transition-colors"
             >
               <option value="">Priority: All</option>
               <option value="LOW">Low</option>
@@ -296,7 +296,7 @@ export default function ProjectIssuesPage({
                 setTypeFilter(e.target.value as IssueType | '');
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-2.5 text-xs text-zinc-300 focus:outline-none focus:border-white/[0.25] transition-colors"
             >
               <option value="">Type: All</option>
               <option value="TASK">Task</option>
@@ -312,7 +312,7 @@ export default function ProjectIssuesPage({
                 setAssigneeFilter(e.target.value);
                 setPage(0);
               }}
-              className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-2.5 text-xs text-zinc-300 focus:outline-none focus:border-white/[0.25] transition-colors"
             >
               <option value="">Assignee: All</option>
               {members.map((m) => (
@@ -331,7 +331,7 @@ export default function ProjectIssuesPage({
                   setLabelFilter(e.target.value);
                   setPage(0);
                 }}
-                className="h-10 bg-zinc-950 border border-zinc-800 rounded-lg px-3 text-xs text-zinc-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                className="h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-2.5 text-xs text-zinc-300 focus:outline-none focus:border-white/[0.25] transition-colors"
               >
                 <option value="">Label: All</option>
                 {labels.map((l) => (
@@ -348,7 +348,7 @@ export default function ProjectIssuesPage({
                 type="button"
                 onClick={clearFilters}
                 aria-label="Reset all filters"
-                className="h-10 flex items-center gap-1.5 px-3 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 rounded-lg border border-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                className="h-9 flex items-center gap-1.5 px-3 text-xs text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850 rounded-lg border border-white/[0.08] transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" aria-hidden="true" />
                 <span>Reset</span>
@@ -377,7 +377,7 @@ export default function ProjectIssuesPage({
                   aria-label="Previous page"
                   disabled={page <= 0}
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:opacity-40 transition-colors duration-150"
+                  className="p-1.5 rounded-lg bg-zinc-900 border border-white/[0.08] hover:border-white/[0.16] disabled:opacity-40 transition-colors cursor-pointer"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
@@ -386,7 +386,7 @@ export default function ProjectIssuesPage({
                   aria-label="Next page"
                   disabled={page >= totalPages - 1}
                   onClick={() => setPage((p) => p + 1)}
-                  className="p-1.5 rounded bg-zinc-900 border border-zinc-800 hover:border-zinc-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 disabled:opacity-40 transition-colors duration-150"
+                  className="p-1.5 rounded-lg bg-zinc-900 border border-white/[0.08] hover:border-white/[0.16] disabled:opacity-40 transition-colors cursor-pointer"
                 >
                   <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
                 </button>
