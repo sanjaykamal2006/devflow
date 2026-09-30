@@ -83,7 +83,7 @@ export default function DashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [creatingWs]);
 
-  if (authLoading || (loading && !workspaces.length)) {
+  if (authLoading || (loading && !workspaces.length && !error)) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center">
         <Loader2 className="w-5 h-5 animate-spin text-zinc-500" aria-hidden="true" />

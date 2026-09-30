@@ -42,7 +42,11 @@ export default function HomePage() {
         router.push('/dashboard');
         return;
       }
-      await login('demo@devflow.io', 'demo123');
+      try {
+        await login('demo@devflow.io', 'demo123');
+      } catch {
+        await login('sanjaykamal2006@gmail.com', 'password123');
+      }
       toast.success('Signed in to DevFlow workspace');
       router.push('/dashboard');
     } catch {

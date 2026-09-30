@@ -17,7 +17,7 @@ import {
 } from '@/types';
 import { mockStore } from './mock-store';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080').replace(/\/+$/, '');
 
 export class ApiError extends Error {
   status: number;
@@ -257,11 +257,16 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 12000);
+
   try {
     const response = await fetch(url, {
       ...options,
       headers,
+      signal: options.signal || controller.signal,
     });
+    clearTimeout(timeoutId);
 
     const isJson = response.headers.get('content-type')?.includes('application/json');
     const body = isJson ? await response.json() : null;

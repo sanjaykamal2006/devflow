@@ -36,7 +36,11 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      await login('sanjaykamal2006@gmail.com', 'password123');
+      try {
+        await login('demo@devflow.io', 'demo123');
+      } catch {
+        await login('sanjaykamal2006@gmail.com', 'password123');
+      }
       router.push('/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Unable to sign in as guest.');
