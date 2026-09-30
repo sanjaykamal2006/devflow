@@ -19,6 +19,8 @@
 # IDE & Editor Files
 .idea/
 .vscode/
+.cursor/
+.claude/
 *.iml
 *.iws
 *.ipr
