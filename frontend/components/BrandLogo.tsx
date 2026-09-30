@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -7,38 +8,52 @@ interface BrandLogoProps {
 }
 
 export function BrandLogo({ size = 'md', showText = true, className = '' }: BrandLogoProps) {
-  const dimensions = {
-    sm: { box: 'w-5 h-5', icon: 'w-3 h-3', text: 'text-xs' },
-    md: { box: 'w-6 h-6', icon: 'w-3.5 h-3.5', text: 'text-sm' },
-    lg: { box: 'w-9 h-9', icon: 'w-5 h-5', text: 'text-base' },
-    xl: { box: 'w-11 h-11', icon: 'w-6 h-6', text: 'text-lg' },
+  // Proportions mapped to 1024x928 native aspect ratio (1.103:1)
+  const sizeConfig = {
+    sm: {
+      width: 24,
+      height: 22,
+      imgClass: 'h-5 w-auto',
+      textClass: 'text-xs',
+    },
+    md: {
+      width: 32,
+      height: 29,
+      imgClass: 'h-6 sm:h-7 w-auto',
+      textClass: 'text-sm',
+    },
+    lg: {
+      width: 64,
+      height: 58,
+      imgClass: 'h-12 w-auto',
+      textClass: 'text-lg',
+    },
+    xl: {
+      width: 96,
+      height: 87,
+      imgClass: 'h-16 sm:h-20 w-auto',
+      textClass: 'text-2xl',
+    },
   };
 
-  const current = dimensions[size] || dimensions.md;
+  const current = sizeConfig[size] || sizeConfig.md;
 
   return (
     <div className={`inline-flex items-center gap-2.5 select-none group ${className}`}>
-      {/* Precision Geometric Emblem */}
-      <div
-        className={`${current.box} relative flex items-center justify-center rounded-lg bg-gradient-to-b from-zinc-800 to-zinc-950 border border-white/[0.12] shadow-sm group-hover:border-white/[0.25] group-hover:shadow-[0_0_12px_rgba(255,255,255,0.12)] transition-all duration-200 shrink-0`}
-      >
-        <svg
-          className={`${current.icon} text-white transition-transform duration-200 group-hover:scale-105`}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-          <path d="M2 17l10 5 10-5" />
-          <path d="M2 12l10 5 10-5" />
-        </svg>
+      {/* Official DevFlow Liquid-Glass Layered Logo */}
+      <div className="relative flex items-center justify-center shrink-0">
+        <Image
+          src="/logo.png"
+          alt="DevFlow Logo"
+          width={current.width}
+          height={current.height}
+          priority
+          className={`${current.imgClass} object-contain transition-transform duration-200 group-hover:scale-105 filter drop-shadow-[0_2px_12px_rgba(56,189,248,0.2)]`}
+        />
       </div>
 
       {showText && (
-        <span className={`${current.text} font-semibold tracking-tight text-white font-sans flex items-center gap-1.5`}>
+        <span className={`${current.textClass} font-semibold tracking-tight text-white font-sans flex items-center gap-1.5`}>
           <span>DevFlow</span>
         </span>
       )}
