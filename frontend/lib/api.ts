@@ -15,6 +15,7 @@ import {
   GitHubRepository,
   GitHubActivity,
 } from '@/types';
+import { mockStore } from './mock-store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -46,8 +47,6 @@ export function clearToken(): void {
   localStorage.removeItem('devflow_token');
 }
 
-import { mockStore } from './mock-store';
-
 let demoModeActive = false;
 
 export function isDemoMode(): boolean {
@@ -69,7 +68,7 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
   // Clean query string from endpoint for routing
   const cleanEndpoint = endpoint.split('?')[0];
 
-  // Auth
+  // Auth & Profile
   if (cleanEndpoint === '/api/auth/register') {
     return mockStore.register((body.email as string) || 'demo@devflow.io', (body.fullName as string) || 'Demo Developer') as unknown as T;
   }
@@ -80,6 +79,9 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
     return undefined as unknown as T;
   }
   if (cleanEndpoint === '/api/users/me') {
+    if (method === 'PATCH') {
+      return mockStore.updateProfile(body as { fullName?: string; avatarUrl?: string }) as unknown as T;
+    }
     return mockStore.getMe() as unknown as T;
   }
 
@@ -94,15 +96,28 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
     const parts = cleanEndpoint.split('/');
     const wsId = parts[3];
     const sub = parts[4];
+    const subId = parts[5];
 
     if (!sub) {
       if (method === 'DELETE') {
         mockStore.deleteWorkspace(wsId);
         return undefined as unknown as T;
       }
+      if (method === 'PATCH') {
+        return mockStore.updateWorkspace(wsId, body as { name?: string; description?: string }) as unknown as T;
+      }
       return mockStore.getWorkspace(wsId) as unknown as T;
     }
     if (sub === 'members') {
+      if (subId) {
+        if (method === 'PATCH') {
+          return mockStore.updateMemberRole(wsId, subId, body.role as WorkspaceRole) as unknown as T;
+        }
+        if (method === 'DELETE') {
+          mockStore.removeMember(wsId, subId);
+          return undefined as unknown as T;
+        }
+      }
       if (method === 'POST') {
         return mockStore.addMember(wsId, (body.email as string) || 'member@devflow.io', (body.role as unknown as WorkspaceRole) || 'MEMBER') as unknown as T;
       }
@@ -127,11 +142,22 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
         mockStore.deleteProject(prjId);
         return undefined as unknown as T;
       }
+      if (method === 'PATCH') {
+        return mockStore.updateProject(prjId, body as { name?: string; description?: string }) as unknown as T;
+      }
       return mockStore.getProject(prjId) as unknown as T;
     }
     if (sub === 'issues') {
       if (method === 'POST') {
-        return mockStore.createIssue(prjId, body as unknown as { title: string; description?: string; issueType?: IssueType; priority?: IssuePriority; assigneeId?: string }) as unknown as T;
+        return mockStore.createIssue(prjId, body as unknown as {
+          title: string;
+          description?: string;
+          issueType?: IssueType;
+          priority?: IssuePriority;
+          assigneeId?: string;
+          labelIds?: string[];
+          dueDate?: string;
+        }) as unknown as T;
       }
       return mockStore.listIssues(prjId) as unknown as T;
     }
@@ -157,18 +183,38 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
   // Issues
   if (cleanEndpoint.startsWith('/api/issues/')) {
     const parts = cleanEndpoint.split('/');
+    if (parts[3] === 'key') {
+      const issueKey = parts[4];
+      return mockStore.getIssue(issueKey) as unknown as T;
+    }
+
     const issueId = parts[3];
     const sub = parts[4];
+    const subId = parts[5];
 
     if (!sub) {
       if (method === 'DELETE') {
         mockStore.deleteIssue(issueId);
         return undefined as unknown as T;
       }
+      if (method === 'PATCH') {
+        return mockStore.updateIssue(issueId, body as Record<string, unknown>) as unknown as T;
+      }
       return mockStore.getIssue(issueId) as unknown as T;
     }
     if (sub === 'status' && method === 'PATCH') {
       return mockStore.changeIssueStatus(issueId, (body.status as unknown as IssueStatus) || 'TODO') as unknown as T;
+    }
+    if (sub === 'assign' && method === 'PATCH') {
+      return mockStore.assignIssue(issueId, body.assigneeId as string | undefined) as unknown as T;
+    }
+    if (sub === 'labels' && subId) {
+      if (method === 'POST') {
+        return mockStore.attachLabel(issueId, subId) as unknown as T;
+      }
+      if (method === 'DELETE') {
+        return mockStore.removeLabel(issueId, subId) as unknown as T;
+      }
     }
     if (sub === 'comments') {
       if (method === 'POST') {
@@ -178,6 +224,19 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
     }
     if (sub === 'github-activity') {
       return [] as unknown as T;
+    }
+  }
+
+  // Comments direct modification
+  if (cleanEndpoint.startsWith('/api/comments/')) {
+    const parts = cleanEndpoint.split('/');
+    const commentId = parts[3];
+    if (method === 'PATCH') {
+      return mockStore.updateComment(commentId, (body.content as string) || '') as unknown as T;
+    }
+    if (method === 'DELETE') {
+      mockStore.deleteComment(commentId);
+      return undefined as unknown as T;
     }
   }
 
@@ -232,7 +291,7 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     if (networkError instanceof ApiError) {
       throw networkError;
     }
-    // If fetch failed due to offline backend / CORS / mixed content, seamlessly fall back to client-side mock store!
+    // If fetch failed due to offline backend / CORS / mixed content, seamlessly fall back to client-side mock store
     return handleMockFallback<T>(endpoint, options);
   }
 }

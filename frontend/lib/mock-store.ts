@@ -15,7 +15,7 @@ import {
   PagedResponse,
 } from '@/types';
 
-const STORAGE_KEY = 'devflow_mock_db_v2';
+const STORAGE_KEY = 'devflow_mock_db_v3';
 
 interface MockDatabase {
   currentUser: User | null;
@@ -57,7 +57,7 @@ function getInitialDatabase(): MockDatabase {
     id: 'ws-1',
     name: 'DevFlow Engineering',
     slug: 'devflow-engineering',
-    description: 'Primary engineering workspace for platform and mobile teams',
+    description: 'Primary engineering workspace for platform and web applications',
     owner: defaultUser,
     currentUserRole: 'OWNER',
     memberCount: 3,
@@ -91,12 +91,12 @@ function getInitialDatabase(): MockDatabase {
     id: 'prj-1',
     workspaceId: ws1.id,
     workspaceName: ws1.name,
-    name: 'Platform Core',
-    key: 'CORE',
-    description: 'Core microservices, transaction managers, and security infrastructure',
+    name: 'Backend API',
+    key: 'API',
+    description: 'Spring Boot REST backend services, auth filters, and database schemas',
     createdBy: defaultUser,
-    totalIssues: 6,
-    openIssues: 4,
+    totalIssues: 5,
+    openIssues: 3,
     doneIssues: 2,
     githubConnected: true,
     createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
@@ -107,13 +107,13 @@ function getInitialDatabase(): MockDatabase {
     id: 'prj-2',
     workspaceId: ws1.id,
     workspaceName: ws1.name,
-    name: 'Web & Mobile Client',
-    key: 'CLIENT',
-    description: 'Next.js 15 client dashboard and responsive interface',
+    name: 'Frontend Client',
+    key: 'WEB',
+    description: 'Next.js 15 user interface, kanban board, and responsive layouts',
     createdBy: defaultUser,
-    totalIssues: 2,
+    totalIssues: 3,
     openIssues: 2,
-    doneIssues: 0,
+    doneIssues: 1,
     githubConnected: false,
     createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
     updatedAt: new Date().toISOString(),
@@ -124,6 +124,8 @@ function getInitialDatabase(): MockDatabase {
     { id: 'lbl-2', projectId: p1.id, name: 'security', color: '#EF4444' },
     { id: 'lbl-3', projectId: p1.id, name: 'database', color: '#10B981' },
     { id: 'lbl-4', projectId: p1.id, name: 'p0', color: '#F59E0B' },
+    { id: 'lbl-5', projectId: p2.id, name: 'frontend', color: '#3B82F6' },
+    { id: 'lbl-6', projectId: p2.id, name: 'ui', color: '#8B5CF6' },
   ];
 
   const issues: Issue[] = [
@@ -132,16 +134,16 @@ function getInitialDatabase(): MockDatabase {
       projectId: p1.id,
       projectKey: p1.key,
       projectName: p1.name,
-      issueKey: 'CORE-1',
+      issueKey: 'API-1',
       sequenceNumber: 1,
-      title: 'Implement row-level pessimistic locking for sequence generator',
-      description: 'Use JPA PESSIMISTIC_WRITE locks (SELECT ... FOR UPDATE) in an isolated transaction to prevent key collisions.',
+      title: 'Configure JWT authentication filter and token expiration handling',
+      description: 'Implement stateless JWT token validation filter with custom authentication entry point and RBAC roles.',
       status: 'DONE',
       priority: 'HIGH',
       issueType: 'FEATURE',
       reporter: defaultUser,
       assignee: defaultUser,
-      labels: [labels[0], labels[2]],
+      labels: [labels[0], labels[1]],
       commentCount: 1,
       githubActivityCount: 1,
       createdAt: new Date(Date.now() - 86400000 * 4).toISOString(),
@@ -152,16 +154,16 @@ function getInitialDatabase(): MockDatabase {
       projectId: p1.id,
       projectKey: p1.key,
       projectName: p1.name,
-      issueKey: 'CORE-2',
+      issueKey: 'API-2',
       sequenceNumber: 2,
-      title: 'Enforce anti-IDOR RBAC & remove vulnerable project cache',
-      description: 'Ensure cross-tenant project lookups validate workspace membership in PostgreSQL directly.',
+      title: 'Implement database sequence generation with row-level locking',
+      description: 'Use pessimistic locking to prevent race conditions during concurrent issue key generation.',
       status: 'DONE',
       priority: 'CRITICAL',
       issueType: 'BUG',
       reporter: defaultUser,
       assignee: user2,
-      labels: [labels[1], labels[3]],
+      labels: [labels[0], labels[2], labels[3]],
       commentCount: 0,
       githubActivityCount: 0,
       createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
@@ -172,16 +174,16 @@ function getInitialDatabase(): MockDatabase {
       projectId: p1.id,
       projectKey: p1.key,
       projectName: p1.name,
-      issueKey: 'CORE-3',
+      issueKey: 'API-3',
       sequenceNumber: 3,
-      title: 'GitHub webhook auto-transitions on fixes/closes commit syntax',
-      description: 'Parse push commits and pull requests; advance referenced issues to DONE with HMAC-SHA256 signature validation.',
+      title: 'Add webhook signature verification for GitHub integrations',
+      description: 'Validate incoming X-Hub-Signature-256 HMAC headers on push and pull-request webhooks.',
       status: 'IN_REVIEW',
       priority: 'HIGH',
       issueType: 'FEATURE',
       reporter: defaultUser,
       assignee: defaultUser,
-      labels: [labels[0]],
+      labels: [labels[0], labels[1]],
       commentCount: 0,
       githubActivityCount: 2,
       createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
@@ -192,10 +194,10 @@ function getInitialDatabase(): MockDatabase {
       projectId: p1.id,
       projectKey: p1.key,
       projectName: p1.name,
-      issueKey: 'CORE-4',
+      issueKey: 'API-4',
       sequenceNumber: 4,
-      title: 'Graceful Redis circuit-breaker degradation on connection drop',
-      description: 'GracefulCacheErrorHandler intercepts cache get/put failures and transparently executes SQL queries against PostgreSQL.',
+      title: 'Set up Redis caching with database fallback for issue queries',
+      description: 'Cache issue lists by project in Redis with transparent fallback to PostgreSQL when cache is unavailable.',
       status: 'IN_PROGRESS',
       priority: 'MEDIUM',
       issueType: 'TASK',
@@ -212,10 +214,10 @@ function getInitialDatabase(): MockDatabase {
       projectId: p1.id,
       projectKey: p1.key,
       projectName: p1.name,
-      issueKey: 'CORE-5',
+      issueKey: 'API-5',
       sequenceNumber: 5,
-      title: 'Cascading deletion service-layer child record cleanup',
-      description: 'Explicitly delete child comments, activities, issues, and sequences before deleting parent workspaces.',
+      title: 'Implement cascading deletion for workspace cleanup',
+      description: 'Ensure related projects, issues, comments, and members are deleted cleanly when a workspace is removed.',
       status: 'TODO',
       priority: 'MEDIUM',
       issueType: 'TASK',
@@ -229,19 +231,59 @@ function getInitialDatabase(): MockDatabase {
     },
     {
       id: 'iss-6',
-      projectId: p1.id,
-      projectKey: p1.key,
-      projectName: p1.name,
-      issueKey: 'CORE-6',
-      sequenceNumber: 6,
-      title: 'Full multi-threaded concurrency integration test suite',
-      description: 'Verify 10 parallel threads executing via CountDownLatch generate monotonic gapless issue keys.',
+      projectId: p2.id,
+      projectKey: p2.key,
+      projectName: p2.name,
+      issueKey: 'WEB-1',
+      sequenceNumber: 1,
+      title: 'Design responsive Kanban board with fluid horizontal swipe on mobile',
+      description: 'Provide an intuitive kanban experience on mobile devices and responsive multi-column board on desktop.',
+      status: 'IN_PROGRESS',
+      priority: 'HIGH',
+      issueType: 'FEATURE',
+      reporter: defaultUser,
+      assignee: defaultUser,
+      labels: [labels[4], labels[5]],
+      commentCount: 0,
+      githubActivityCount: 0,
+      createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'iss-7',
+      projectId: p2.id,
+      projectKey: p2.key,
+      projectName: p2.name,
+      issueKey: 'WEB-2',
+      sequenceNumber: 2,
+      title: 'Implement global search and command palette (Cmd+K)',
+      description: 'Fast keyboard-driven navigation across workspaces, projects, issues, and quick creation actions.',
+      status: 'DONE',
+      priority: 'MEDIUM',
+      issueType: 'FEATURE',
+      reporter: defaultUser,
+      assignee: user2,
+      labels: [labels[4]],
+      commentCount: 0,
+      githubActivityCount: 0,
+      createdAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+      updatedAt: new Date(Date.now() - 86400000 * 1).toISOString(),
+    },
+    {
+      id: 'iss-8',
+      projectId: p2.id,
+      projectKey: p2.key,
+      projectName: p2.name,
+      issueKey: 'WEB-3',
+      sequenceNumber: 3,
+      title: 'Add inline issue editing and quick status stepping',
+      description: 'Allow engineers to edit issue title, description, and properties without page refreshes.',
       status: 'TODO',
-      priority: 'LOW',
+      priority: 'MEDIUM',
       issueType: 'TASK',
       reporter: defaultUser,
       assignee: null,
-      labels: [],
+      labels: [labels[4], labels[5]],
       commentCount: 0,
       githubActivityCount: 0,
       createdAt: new Date().toISOString(),
@@ -254,7 +296,7 @@ function getInitialDatabase(): MockDatabase {
       id: 'cmt-1',
       issueId: 'iss-1',
       author: defaultUser,
-      content: 'Benchmarked with 10 concurrent threads—zero key collisions or sequence lock deadlocks observed.',
+      content: 'JWT filter configuration verified against standard test suite.',
       createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
       updatedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
     },
@@ -356,6 +398,17 @@ class MockStore {
     return db.currentUser || db.users[0] || getInitialDatabase().users[0];
   }
 
+  updateProfile(data: { fullName?: string; avatarUrl?: string }): User {
+    const db = this.load();
+    const me = this.getMe();
+    const user = db.users.find((u) => u.id === me.id) || me;
+    if (data.fullName !== undefined) user.fullName = data.fullName;
+    if (data.avatarUrl !== undefined) user.avatarUrl = data.avatarUrl || null;
+    db.currentUser = user;
+    this.save(db);
+    return user;
+  }
+
   // Workspaces
   listWorkspaces(): Workspace[] {
     const db = this.load();
@@ -402,6 +455,19 @@ class MockStore {
     return newWs;
   }
 
+  updateWorkspace(id: string, data: { name?: string; description?: string }): Workspace {
+    const db = this.load();
+    const ws = db.workspaces.find((w) => w.id === id);
+    if (ws) {
+      if (data.name !== undefined) ws.name = data.name;
+      if (data.description !== undefined) ws.description = data.description || null;
+      ws.updatedAt = new Date().toISOString();
+      this.save(db);
+      return ws;
+    }
+    return db.workspaces[0];
+  }
+
   deleteWorkspace(id: string): void {
     const db = this.load();
     db.workspaces = db.workspaces.filter((w) => w.id !== id);
@@ -438,6 +504,27 @@ class MockStore {
     db.members.push(member);
     this.save(db);
     return member;
+  }
+
+  updateMemberRole(workspaceId: string, userId: string, role: WorkspaceRole): WorkspaceMember {
+    const db = this.load();
+    const member = db.members.find((m) => m.user.id === userId);
+    if (member) {
+      member.role = role;
+      this.save(db);
+      return member;
+    }
+    return db.members[0];
+  }
+
+  removeMember(workspaceId: string, userId: string): void {
+    const db = this.load();
+    db.members = db.members.filter((m) => m.user.id !== userId);
+    const ws = db.workspaces.find((w) => w.id === workspaceId);
+    if (ws && ws.memberCount && ws.memberCount > 1) {
+      ws.memberCount -= 1;
+    }
+    this.save(db);
   }
 
   // Projects
@@ -492,6 +579,19 @@ class MockStore {
     return newProj;
   }
 
+  updateProject(id: string, data: { name?: string; description?: string }): Project {
+    const db = this.load();
+    const p = db.projects.find((proj) => proj.id === id);
+    if (p) {
+      if (data.name !== undefined) p.name = data.name;
+      if (data.description !== undefined) p.description = data.description || null;
+      p.updatedAt = new Date().toISOString();
+      this.save(db);
+      return this.getProject(id);
+    }
+    return db.projects[0];
+  }
+
   deleteProject(id: string): void {
     const db = this.load();
     db.projects = db.projects.filter((p) => p.id !== id);
@@ -505,6 +605,9 @@ class MockStore {
     params?: {
       status?: IssueStatus;
       priority?: IssuePriority;
+      issueType?: IssueType;
+      assigneeId?: string;
+      labelId?: string;
       search?: string;
     }
   ): PagedResponse<Issue> {
@@ -516,6 +619,15 @@ class MockStore {
     }
     if (params?.priority) {
       filtered = filtered.filter((i) => i.priority === params.priority);
+    }
+    if (params?.issueType) {
+      filtered = filtered.filter((i) => i.issueType === params.issueType);
+    }
+    if (params?.assigneeId) {
+      filtered = filtered.filter((i) => i.assignee?.id === params.assigneeId);
+    }
+    if (params?.labelId) {
+      filtered = filtered.filter((i) => i.labels?.some((l) => l.id === params.labelId));
     }
     if (params?.search) {
       const q = params.search.toLowerCase();
@@ -550,6 +662,8 @@ class MockStore {
       issueType?: IssueType;
       priority?: IssuePriority;
       assigneeId?: string;
+      labelIds?: string[];
+      dueDate?: string;
     }
   ): Issue {
     const db = this.load();
@@ -558,6 +672,9 @@ class MockStore {
     const nextNumber = projectIssues.length + 1;
     const me = this.getMe();
     const assignee = data.assigneeId ? db.users.find((u) => u.id === data.assigneeId) : null;
+    const selectedLabels = data.labelIds
+      ? db.labels.filter((l) => data.labelIds!.includes(l.id))
+      : [];
 
     const newIssue: Issue = {
       id: `iss-${Date.now()}`,
@@ -573,9 +690,10 @@ class MockStore {
       issueType: data.issueType || 'TASK',
       reporter: me,
       assignee: assignee || null,
-      labels: [],
+      labels: selectedLabels,
       commentCount: 0,
       githubActivityCount: 0,
+      dueDate: data.dueDate || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -585,11 +703,75 @@ class MockStore {
     return newIssue;
   }
 
-  changeIssueStatus(id: string, status: IssueStatus): Issue {
+  updateIssue(
+    id: string,
+    data: {
+      title?: string;
+      description?: string | null;
+      status?: IssueStatus;
+      priority?: IssuePriority;
+      issueType?: IssueType;
+      assigneeId?: string | null;
+      unassign?: boolean;
+      labelIds?: string[];
+      dueDate?: string | null;
+      [key: string]: unknown;
+    }
+  ): Issue {
     const db = this.load();
     const issue = db.issues.find((i) => i.id === id);
     if (issue) {
-      issue.status = status;
+      if (data.title !== undefined) issue.title = data.title;
+      if (data.description !== undefined) issue.description = data.description || null;
+      if (data.status !== undefined) issue.status = data.status;
+      if (data.priority !== undefined) issue.priority = data.priority;
+      if (data.issueType !== undefined) issue.issueType = data.issueType;
+      if (data.dueDate !== undefined) issue.dueDate = data.dueDate || null;
+      if (data.unassign) {
+        issue.assignee = null;
+      } else if (data.assigneeId !== undefined) {
+        const found = db.users.find((u) => u.id === data.assigneeId);
+        issue.assignee = found || null;
+      }
+      if (data.labelIds !== undefined) {
+        issue.labels = db.labels.filter((l) => data.labelIds!.includes(l.id));
+      }
+      issue.updatedAt = new Date().toISOString();
+      this.save(db);
+      return issue;
+    }
+    return db.issues[0];
+  }
+
+  changeIssueStatus(id: string, status: IssueStatus): Issue {
+    return this.updateIssue(id, { status });
+  }
+
+  assignIssue(id: string, assigneeId?: string): Issue {
+    return this.updateIssue(id, { assigneeId, unassign: !assigneeId });
+  }
+
+  attachLabel(issueId: string, labelId: string): Issue {
+    const db = this.load();
+    const issue = db.issues.find((i) => i.id === issueId);
+    const label = db.labels.find((l) => l.id === labelId);
+    if (issue && label) {
+      if (!issue.labels) issue.labels = [];
+      if (!issue.labels.some((l) => l.id === labelId)) {
+        issue.labels.push(label);
+      }
+      issue.updatedAt = new Date().toISOString();
+      this.save(db);
+      return issue;
+    }
+    return db.issues[0];
+  }
+
+  removeLabel(issueId: string, labelId: string): Issue {
+    const db = this.load();
+    const issue = db.issues.find((i) => i.id === issueId);
+    if (issue && issue.labels) {
+      issue.labels = issue.labels.filter((l) => l.id !== labelId);
       issue.updatedAt = new Date().toISOString();
       this.save(db);
       return issue;
@@ -600,6 +782,7 @@ class MockStore {
   deleteIssue(id: string): void {
     const db = this.load();
     db.issues = db.issues.filter((i) => i.id !== id);
+    db.comments = db.comments.filter((c) => c.issueId !== id);
     this.save(db);
   }
 
@@ -621,8 +804,37 @@ class MockStore {
       updatedAt: new Date().toISOString(),
     };
     db.comments.push(comment);
+    const issue = db.issues.find((i) => i.id === issueId);
+    if (issue) {
+      issue.commentCount = (issue.commentCount || 0) + 1;
+    }
     this.save(db);
     return comment;
+  }
+
+  updateComment(id: string, content: string): IssueComment {
+    const db = this.load();
+    const comment = db.comments.find((c) => c.id === id);
+    if (comment) {
+      comment.content = content;
+      comment.updatedAt = new Date().toISOString();
+      this.save(db);
+      return comment;
+    }
+    return db.comments[0];
+  }
+
+  deleteComment(id: string): void {
+    const db = this.load();
+    const comment = db.comments.find((c) => c.id === id);
+    if (comment) {
+      const issue = db.issues.find((i) => i.id === comment.issueId);
+      if (issue && issue.commentCount && issue.commentCount > 0) {
+        issue.commentCount -= 1;
+      }
+      db.comments = db.comments.filter((c) => c.id !== id);
+      this.save(db);
+    }
   }
 
   // Labels
