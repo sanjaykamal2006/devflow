@@ -37,15 +37,15 @@ export function Navbar() {
   };
 
   return (
-    <header className="border-b border-white/[0.06] bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-40 text-zinc-100">
-      <div className="w-full px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
+    <header className="border-b border-white/[0.06] bg-[#08090a]/80 backdrop-blur-xl sticky top-0 z-40 text-zinc-100">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
         {/* Left: Brand & Workspace Selector */}
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           <Link href="/dashboard" className="hover:opacity-90 transition">
             <BrandLogo size="md" showText={true} />
           </Link>
 
-          <span className="text-zinc-700 select-none hidden sm:inline">/</span>
+          <span className="text-zinc-700 select-none hidden sm:inline font-mono">/</span>
 
           {/* Workspace Switcher */}
           <div className="relative">
@@ -54,7 +54,7 @@ export function Navbar() {
               aria-haspopup="true"
               aria-expanded={wsDropdownOpen}
               aria-label="Select workspace"
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.16] hover:bg-zinc-850 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 text-xs font-medium text-zinc-200 transition-all duration-150"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.16] text-xs font-medium text-zinc-200 transition-all cursor-pointer"
             >
               <Layers className="w-3.5 h-3.5 text-zinc-400 shrink-0" aria-hidden="true" />
               <span className="max-w-[120px] sm:max-w-[150px] truncate">
@@ -64,8 +64,8 @@ export function Navbar() {
             </button>
 
             {wsDropdownOpen && (
-              <div className="absolute left-0 mt-1.5 w-60 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                <div className="px-3 py-1 text-[10px] uppercase font-mono text-zinc-400 tracking-wider">
+              <div className="absolute left-0 mt-1.5 w-60 bg-[#0c0c0e]/95 border border-white/[0.12] rounded-2xl shadow-2xl py-1.5 z-50 backdrop-blur-2xl animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-3 py-1.5 text-[10px] uppercase font-mono text-zinc-400 tracking-wider">
                   Workspaces
                 </div>
                 {workspaces.map((ws) => (
@@ -73,17 +73,17 @@ export function Navbar() {
                     key={ws.id}
                     href={`/workspaces/${ws.id}`}
                     onClick={() => setWsDropdownOpen(false)}
-                    className="flex items-center justify-between px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 hover:text-white focus-visible:outline-none focus-visible:bg-zinc-800 transition-colors duration-150"
+                    className="flex items-center justify-between px-3 py-2 text-xs text-zinc-300 hover:bg-zinc-800/80 hover:text-white transition-colors"
                   >
                     <span className="truncate">{ws.name}</span>
                     {ws.id === currentWorkspace?.id && <Check className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />}
                   </Link>
                 ))}
-                <div className="border-t border-zinc-800 my-1" />
+                <div className="border-t border-white/[0.06] my-1" />
                 <Link
                   href="/dashboard"
                   onClick={() => setWsDropdownOpen(false)}
-                  className="flex items-center gap-2 px-3 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 focus-visible:outline-none focus-visible:bg-zinc-800 transition-colors duration-150"
+                  className="flex items-center gap-2 px-3 py-2 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
                   <span>Create Workspace</span>
@@ -93,11 +93,11 @@ export function Navbar() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-4 text-xs font-medium text-zinc-400 ml-2">
+          <nav className="hidden lg:flex items-center gap-2 text-xs font-medium text-zinc-400 ml-2">
             <Link
               href="/dashboard"
-              className={`hover:text-zinc-100 px-2 py-1 rounded transition-colors duration-150 ${
-                pathname === '/dashboard' ? 'text-zinc-100 font-semibold bg-zinc-850/50' : ''
+              className={`hover:text-zinc-100 px-2.5 py-1 rounded-md transition-colors ${
+                pathname === '/dashboard' ? 'text-zinc-100 font-semibold bg-zinc-850/60' : ''
               }`}
             >
               Dashboard
@@ -105,8 +105,8 @@ export function Navbar() {
             {currentWorkspace && (
               <Link
                 href={`/workspaces/${currentWorkspace.id}`}
-                className={`hover:text-zinc-100 px-2 py-1 rounded transition-colors duration-150 ${
-                  pathname.startsWith('/workspaces') ? 'text-zinc-100 font-semibold bg-zinc-850/50' : ''
+                className={`hover:text-zinc-100 px-2.5 py-1 rounded-md transition-colors ${
+                  pathname.startsWith('/workspaces') ? 'text-zinc-100 font-semibold bg-zinc-850/60' : ''
                 }`}
               >
                 Projects
@@ -120,13 +120,13 @@ export function Navbar() {
           <button
             type="button"
             onClick={handleOpenCommandPalette}
-            className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-zinc-400 bg-zinc-900/60 hover:bg-zinc-900 border border-white/[0.08] hover:border-white/[0.16] rounded-lg transition-all duration-150 shadow-inner group"
+            className="w-full flex items-center justify-between px-3 py-1.5 text-xs text-zinc-400 bg-zinc-900/60 hover:bg-zinc-900 border border-white/[0.08] hover:border-white/[0.16] rounded-lg transition-all duration-150 shadow-inner group cursor-pointer"
           >
             <div className="flex items-center gap-2">
               <Search className="w-3.5 h-3.5 text-zinc-400 group-hover:text-zinc-300" aria-hidden="true" />
               <span className="text-zinc-400 group-hover:text-zinc-300">Quick search or command...</span>
             </div>
-            <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-850 border border-zinc-700/60 rounded">
+            <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-850 border border-white/[0.08] rounded">
               <span>⌘</span>K
             </kbd>
           </button>
@@ -138,7 +138,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={handleOpenCommandPalette}
-            className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-white/[0.06]"
+            className="sm:hidden p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-white/[0.06] cursor-pointer"
             aria-label="Open command palette"
           >
             <Search className="w-4 h-4" />
@@ -148,15 +148,15 @@ export function Navbar() {
             <div className="flex items-center gap-2 sm:gap-3">
               <Link
                 href="/settings"
-                className="text-zinc-400 hover:text-zinc-200 p-2 rounded-lg hover:bg-zinc-900 border border-transparent hover:border-white/[0.06] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-all duration-150"
+                className="text-zinc-400 hover:text-zinc-200 p-2 rounded-lg hover:bg-zinc-900 border border-transparent hover:border-white/[0.06] transition-all"
                 aria-label="Settings"
                 title="Settings"
               >
                 <Settings className="w-4 h-4" aria-hidden="true" />
               </Link>
 
-              <div className="flex items-center gap-2 pl-2 sm:pl-3 border-l border-zinc-800">
-                <div className="w-7 h-7 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xs font-mono font-medium text-zinc-200 tabular-nums">
+              <div className="flex items-center gap-2.5 pl-2 sm:pl-3 border-l border-white/[0.08]">
+                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-white/[0.1] flex items-center justify-center text-xs font-mono font-medium text-zinc-200 tabular-nums shadow-inner">
                   {user.fullName.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-xs font-medium text-zinc-200 hidden md:inline max-w-[120px] truncate">
@@ -164,7 +164,7 @@ export function Navbar() {
                 </span>
                 <button
                   onClick={logout}
-                  className="text-zinc-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
+                  className="text-zinc-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer"
                   aria-label="Log out"
                   title="Logout"
                 >
@@ -176,13 +176,13 @@ export function Navbar() {
             <div className="flex items-center gap-2.5 text-xs">
               <Link
                 href="/login"
-                className="text-zinc-400 hover:text-zinc-200 px-2 py-1 rounded transition-colors duration-150"
+                className="text-zinc-400 hover:text-zinc-200 px-2.5 py-1.5 rounded-lg transition-colors"
               >
                 Log In
               </Link>
               <Link
                 href="/register"
-                className="px-3 py-1.5 bg-white text-zinc-950 font-medium rounded-lg hover:bg-zinc-200 transition-colors duration-150"
+                className="px-3.5 py-1.5 bg-white text-zinc-950 font-semibold rounded-lg hover:bg-zinc-200 transition-colors shadow-[0_0_12px_rgba(255,255,255,0.1)]"
               >
                 Sign Up
               </Link>

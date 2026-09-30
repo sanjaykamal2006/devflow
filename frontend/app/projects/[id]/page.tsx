@@ -15,6 +15,7 @@ import {
   Loader2,
   GitBranch,
   Trash2,
+  FolderGit2,
 } from 'lucide-react';
 
 export default function ProjectOverviewPage({
@@ -97,39 +98,45 @@ export default function ProjectOverviewPage({
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
       {/* Breadcrumb & Header */}
-      <div className="pb-6 border-b border-zinc-800">
-        <div className="flex items-center gap-2 text-sm font-mono text-zinc-400 mb-2">
+      <div className="pb-6 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 mb-2">
           {workspace && (
             <>
-              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150">
+              <Link href={`/workspaces/${workspace.id}`} className="hover:text-zinc-300 transition-colors">
                 {workspace.name}
               </Link>
-              <span aria-hidden="true">/</span>
+              <span>/</span>
             </>
           )}
-          <span className="text-zinc-200 font-bold">{project.key}</span>
+          <span className="text-zinc-200 font-semibold">{project.key}</span>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-white">{project.name}</h1>
-              <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 border border-zinc-700">
+              <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-white/[0.08]">
                 {project.key}
               </span>
+              {project.githubConnected && (
+                <span className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/60">
+                  <GitBranch className="w-3 h-3" aria-hidden="true" />
+                  <span>GitHub linked</span>
+                </span>
+              )}
             </div>
             {project.description && (
-              <p className="text-sm text-zinc-400 mt-1 max-w-2xl">{project.description}</p>
+              <p className="text-xs text-zinc-400 mt-1 max-w-2xl">{project.description}</p>
             )}
           </div>
 
           <div className="flex items-center gap-3">
             <Link
               href={`/projects/${project.id}/issues`}
-              className="h-10 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-2 shadow-sm"
+              className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
             >
-              <Kanban className="w-4 h-4" aria-hidden="true" />
-              <span>Issues & Board</span>
+              <Kanban className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Issues &amp; Board</span>
               <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </Link>
 
@@ -138,7 +145,7 @@ export default function ProjectOverviewPage({
                 type="button"
                 onClick={handleDeleteProject}
                 aria-label="Delete project"
-                className="h-10 w-10 flex items-center justify-center rounded-lg bg-zinc-900 border border-zinc-800 hover:border-rose-800 text-zinc-400 hover:text-rose-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
+                className="h-9 w-9 flex items-center justify-center rounded-lg bg-zinc-900/80 border border-white/[0.08] hover:border-rose-800 text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer"
                 title="Delete project"
               >
                 <Trash2 className="w-4 h-4" aria-hidden="true" />
@@ -149,25 +156,26 @@ export default function ProjectOverviewPage({
       </div>
 
       {error && (
-        <div role="alert" className="p-3 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
-          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
-            Total Issues
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="linear-card rounded-2xl p-4">
+          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <FolderGit2 className="w-3.5 h-3.5 text-zinc-400" />
+            <span>Total Issues</span>
           </div>
           <div className="text-2xl font-bold font-mono text-zinc-100 tabular-nums">
             {project.totalIssues}
           </div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
-          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3 text-sky-400" aria-hidden="true" />
+        <div className="linear-card rounded-2xl p-4">
+          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
             <span>Open Issues</span>
           </div>
           <div className="text-2xl font-bold font-mono text-sky-300 tabular-nums">
@@ -175,9 +183,9 @@ export default function ProjectOverviewPage({
           </div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
-          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3 text-emerald-400" aria-hidden="true" />
+        <div className="linear-card rounded-2xl p-4">
+          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" aria-hidden="true" />
             <span>Completed</span>
           </div>
           <div className="text-2xl font-bold font-mono text-emerald-300 tabular-nums">
@@ -185,9 +193,9 @@ export default function ProjectOverviewPage({
           </div>
         </div>
 
-        <div className="p-3.5 rounded-lg bg-zinc-900/40 border border-zinc-800">
-          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1 flex items-center gap-1">
-            <Clock className="w-3 h-3 text-zinc-400" aria-hidden="true" />
+        <div className="linear-card rounded-2xl p-4">
+          <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-zinc-400" aria-hidden="true" />
             <span>Completion Rate</span>
           </div>
           <div className="text-2xl font-bold font-mono text-zinc-200 tabular-nums">
@@ -197,9 +205,9 @@ export default function ProjectOverviewPage({
       </div>
 
       {/* GitHub Integration Panel */}
-      <div>
-        <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400 mb-3 flex items-center gap-1.5">
-          <GitBranch className="w-3.5 h-3.5 text-zinc-500" />
+      <div className="space-y-3">
+        <h2 className="text-xs font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-2 font-semibold">
+          <GitBranch className="w-3.5 h-3.5 text-emerald-400" />
           <span>GitHub Integration</span>
         </h2>
         <GitHubPanel

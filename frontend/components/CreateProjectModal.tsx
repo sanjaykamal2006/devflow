@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Project } from '@/types';
 import { api } from '@/lib/api';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, FolderGit2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface CreateProjectModalProps {
@@ -83,7 +83,7 @@ export function CreateProjectModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -92,29 +92,32 @@ export function CreateProjectModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-project-title"
-        className="bg-zinc-950/95 border border-zinc-800/90 rounded-2xl max-w-md w-full p-6 shadow-2xl backdrop-blur-2xl relative text-zinc-100"
+        className="bg-[#0c0c0e]/95 border border-white/[0.12] rounded-2xl max-w-md w-full p-6 shadow-2xl backdrop-blur-2xl relative text-zinc-100"
       >
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-800 mb-4">
-          <h2 id="create-project-title" className="text-sm font-semibold text-white">Create New Project</h2>
+        <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.06] mb-4">
+          <div className="flex items-center gap-2">
+            <FolderGit2 className="w-4 h-4 text-sky-400" />
+            <h2 id="create-project-title" className="text-sm font-semibold text-white">Create New Project</h2>
+          </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="text-zinc-500 hover:text-zinc-300 p-1 rounded hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+            className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-900 transition-colors"
           >
             <X className="w-4 h-4" aria-hidden="true" />
           </button>
         </div>
 
         {error && (
-          <div role="alert" className="mb-4 p-2.5 rounded bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs">
+          <div role="alert" className="mb-4 p-3 rounded-lg bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="project-name" className="block text-xs font-medium text-zinc-300 mb-1">
+            <label htmlFor="project-name" className="block text-xs font-medium text-zinc-300 mb-1.5">
               Project Name <span className="text-rose-400">*</span>
             </label>
             <input
@@ -126,15 +129,15 @@ export function CreateProjectModal({
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               placeholder="e.g. Backend Platform"
-              className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
             />
           </div>
 
           <div>
-            <label htmlFor="project-key" className="block text-xs font-medium text-zinc-300 mb-1">
+            <label htmlFor="project-key" className="block text-xs font-medium text-zinc-300 mb-1.5">
               Project Key <span className="text-rose-400">*</span>
               <span className="text-zinc-500 font-normal ml-1">
-                (Used as issue prefix, e.g. <span className="font-mono text-zinc-400">API-1</span>)
+                (Prefix for issues, e.g. <span className="font-mono text-zinc-400">API-1</span>)
               </span>
             </label>
             <input
@@ -147,34 +150,34 @@ export function CreateProjectModal({
               value={key}
               onChange={(e) => setKey(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
               placeholder="e.g. API"
-              className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs font-mono font-medium text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+              className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs font-mono font-medium text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
             />
           </div>
 
           <div>
-            <label htmlFor="project-desc" className="block text-xs font-medium text-zinc-300 mb-1">Description</label>
+            <label htmlFor="project-desc" className="block text-xs font-medium text-zinc-300 mb-1.5">Description</label>
             <textarea
               id="project-desc"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Short description of this project scope…"
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-md p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 resize-none transition-colors duration-150"
+              className="w-full bg-zinc-950 border border-white/[0.08] rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] resize-none transition-colors"
             />
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+          <div className="flex items-center justify-end gap-2 pt-3 border-t border-white/[0.06]">
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+              className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !name.trim() || !key.trim()}
-              className="px-3.5 py-1.5 rounded-md text-xs font-medium bg-white hover:bg-zinc-200 text-zinc-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
+              className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-[0_0_12px_rgba(255,255,255,0.1)]"
             >
               {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
               <span>Create Project</span>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { BrandLogo } from '@/components/BrandLogo';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -52,30 +52,34 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[82vh] flex items-center justify-center p-4">
-      <div className="w-full max-w-[360px]">
+    <div className="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Radiant Glow in Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[360px] bg-gradient-to-tr from-sky-500/10 via-indigo-500/10 to-transparent blur-[100px] pointer-events-none -z-10" />
+
+      <div className="w-full max-w-[380px] space-y-6">
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="flex justify-center mb-3">
+        <div className="text-center space-y-2">
+          <div className="flex justify-center mb-2">
             <BrandLogo size="lg" showText={false} />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight text-white">Create your account</h1>
-          <p className="text-xs text-zinc-400 mt-1">
-            Get started with DevFlow for your team
+          <h1 className="text-2xl font-bold tracking-tight text-white">Create your account</h1>
+          <p className="text-xs text-zinc-400">
+            Get started with high-velocity issue tracking for your team
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl p-6 shadow-sm">
+        <div className="linear-card rounded-2xl p-6 sm:p-7 shadow-2xl backdrop-blur-xl">
           {error && (
-            <div role="alert" className="mb-4 p-2.5 rounded-md bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-medium">
-              {error}
+            <div role="alert" className="mb-4 p-3 rounded-lg bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono flex items-start gap-2">
+              <span className="shrink-0">•</span>
+              <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="reg-fullname" className="block text-xs font-medium text-zinc-300 mb-1">
+              <label htmlFor="reg-fullname" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Full Name
               </label>
               <input
@@ -87,13 +91,13 @@ export default function RegisterPage() {
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Jane Doe"
-                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
               />
             </div>
 
             <div>
-              <label htmlFor="reg-email" className="block text-xs font-medium text-zinc-300 mb-1">
-                Email
+              <label htmlFor="reg-email" className="block text-xs font-medium text-zinc-300 mb-1.5">
+                Work Email
               </label>
               <input
                 id="reg-email"
@@ -105,12 +109,12 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
-                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
               />
             </div>
 
             <div>
-              <label htmlFor="reg-password" className="block text-xs font-medium text-zinc-300 mb-1">
+              <label htmlFor="reg-password" className="block text-xs font-medium text-zinc-300 mb-1.5">
                 Password
               </label>
               <input
@@ -121,38 +125,52 @@ export default function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 6 characters"
-                className="w-full h-9 bg-zinc-950 border border-zinc-800 rounded-md px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
               />
             </div>
 
-            <div className="pt-1.5 space-y-2">
+            <div className="pt-2 space-y-2.5">
               <button
                 type="submit"
                 disabled={loading || !fullName || !email || !password}
-                className="w-full h-9 bg-white hover:bg-zinc-200 text-zinc-950 font-medium rounded-md text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="w-full h-9 bg-white hover:bg-zinc-200 text-zinc-950 font-semibold rounded-lg text-xs transition-all duration-150 flex items-center justify-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] disabled:opacity-50 cursor-pointer"
               >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> : <span>Create Account</span>}
+                {loading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
+                ) : (
+                  <>
+                    <span>Create Account</span>
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                  </>
+                )}
               </button>
 
               <button
                 type="button"
                 onClick={handleGuestAccess}
                 disabled={loading}
-                className="w-full h-9 bg-zinc-950 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 font-medium rounded-md text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center justify-center gap-1.5"
+                className="w-full h-9 bg-zinc-900/80 hover:bg-zinc-850 border border-white/[0.08] hover:border-white/[0.16] text-zinc-300 hover:text-white font-medium rounded-lg text-xs transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Continue as Guest</span>
+                <Sparkles className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
+                <span>Instant Demo Access</span>
               </button>
             </div>
           </form>
 
-          <div className="mt-5 pt-4 border-t border-zinc-800/80 text-center">
+          <div className="mt-6 pt-4 border-t border-white/[0.06] text-center">
             <p className="text-xs text-zinc-400">
               Already have an account?{' '}
-              <Link href="/login" className="text-zinc-200 hover:text-white font-medium underline underline-offset-4 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded">
+              <Link href="/login" className="text-white hover:underline font-medium">
                 Sign in
               </Link>
             </p>
           </div>
+        </div>
+
+        {/* Security badge note */}
+        <div className="flex items-center justify-center gap-2 text-[11px] font-mono text-zinc-500">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Stateless JWT &amp; Cloud Neon PostgreSQL</span>
         </div>
       </div>
     </div>

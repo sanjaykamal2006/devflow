@@ -121,7 +121,7 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] px-4 bg-black/60 backdrop-blur-md transition-all duration-200"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] px-4 bg-black/80 backdrop-blur-md transition-all duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setOpen(false);
@@ -133,7 +133,7 @@ export function CommandPalette() {
         role="dialog"
         aria-modal="true"
         aria-label="Command Palette"
-        className="w-full max-w-xl bg-zinc-950/95 border border-zinc-800/90 shadow-2xl rounded-2xl overflow-hidden backdrop-blur-2xl text-zinc-100 flex flex-col max-h-[75vh] animate-in fade-in zoom-in-95 duration-150"
+        className="w-full max-w-xl bg-[#0c0c0e]/95 border border-white/[0.12] shadow-2xl rounded-2xl overflow-hidden backdrop-blur-2xl text-zinc-100 flex flex-col max-h-[75vh] animate-in fade-in zoom-in-95 duration-150"
       >
         <Command
           filter={(value, search) => {
@@ -143,7 +143,7 @@ export function CommandPalette() {
           className="flex flex-col flex-1 overflow-hidden"
         >
           {/* Search Header Input */}
-          <div className="flex items-center gap-3 px-4 py-3.5 border-b border-zinc-800/80 bg-zinc-900/30">
+          <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08] bg-zinc-950/60">
             {loading ? (
               <Loader2 className="w-4 h-4 text-zinc-500 animate-spin shrink-0" aria-hidden="true" />
             ) : (
@@ -156,7 +156,7 @@ export function CommandPalette() {
               placeholder="Search workspaces, projects, issues, or actions..."
               className="w-full bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
             />
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-800/80 border border-zinc-700/60 rounded">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-400 bg-zinc-900 border border-white/[0.08] rounded">
               ESC
             </kbd>
           </div>
@@ -177,13 +177,13 @@ export function CommandPalette() {
                     toast.info('Opening issue creator...', { duration: 1500 });
                   })
                 }
-                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Plus className="w-3.5 h-3.5 text-sky-400" />
                   <span className="font-medium text-zinc-200">Create New Issue</span>
                 </div>
-                <kbd className="text-[10px] font-mono text-zinc-400 bg-zinc-850 px-1.5 py-0.5 rounded border border-zinc-800">
+                <kbd className="text-[10px] font-mono text-zinc-400 bg-zinc-900 px-1.5 py-0.5 rounded border border-white/[0.08]">
                   C
                 </kbd>
               </Command.Item>
@@ -191,7 +191,7 @@ export function CommandPalette() {
               <Command.Item
                 value="Dashboard workspace overview"
                 onSelect={() => runCommand(() => router.push('/dashboard'))}
-                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <LayoutDashboard className="w-3.5 h-3.5 text-zinc-400" />
@@ -203,7 +203,7 @@ export function CommandPalette() {
               <Command.Item
                 value="Developer Settings API token profile"
                 onSelect={() => runCommand(() => router.push('/settings'))}
-                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Settings className="w-3.5 h-3.5 text-zinc-400" />
@@ -215,7 +215,7 @@ export function CommandPalette() {
               <Command.Item
                 value="Copy JWT Token API key auth header"
                 onSelect={() => runCommand(copyToken)}
-                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Key className="w-3.5 h-3.5 text-amber-400" />
@@ -228,7 +228,7 @@ export function CommandPalette() {
                 <Command.Item
                   value="Log Out sign out session"
                   onSelect={() => runCommand(logout)}
-                  className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-rose-300 hover:bg-rose-950/20 transition-colors"
+                  className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-rose-300 hover:bg-rose-950/20 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5">
                     <LogOut className="w-3.5 h-3.5 text-rose-400" />
@@ -247,7 +247,7 @@ export function CommandPalette() {
                     key={ws.id}
                     value={`Workspace ${ws.name} ${ws.slug}`}
                     onSelect={() => runCommand(() => router.push(`/workspaces/${ws.id}`))}
-                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       <Layers className="w-3.5 h-3.5 text-zinc-400" />
@@ -267,7 +267,7 @@ export function CommandPalette() {
                     key={proj.id}
                     value={`Project ${proj.name} ${proj.key}`}
                     onSelect={() => runCommand(() => router.push(`/projects/${proj.id}/issues`))}
-                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       <FolderGit2 className="w-3.5 h-3.5 text-sky-400" />
@@ -287,7 +287,7 @@ export function CommandPalette() {
                     key={iss.id}
                     value={`Issue ${iss.issueKey} ${iss.title}`}
                     onSelect={() => runCommand(() => router.push(`/issues/${iss.id}`))}
-                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-lg text-zinc-300 hover:text-white hover:bg-zinc-900/90 transition-colors cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5 min-w-0 pr-2">
                       <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
@@ -306,20 +306,20 @@ export function CommandPalette() {
           </Command.List>
 
           {/* Footer Shortcuts Hint */}
-          <div className="px-4 py-2 border-t border-zinc-800/80 bg-zinc-950 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+          <div className="px-4 py-2 border-t border-white/[0.08] bg-zinc-950 flex items-center justify-between text-[11px] text-zinc-400 font-mono">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[10px]">↑</kbd>
-                <kbd className="px-1 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[10px]">↓</kbd>
+                <kbd className="px-1 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-[10px]">↑</kbd>
+                <kbd className="px-1 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-[10px]">↓</kbd>
                 <span>navigate</span>
               </span>
               <span className="flex items-center gap-1">
-                <kbd className="px-1 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[10px]">↵</kbd>
+                <kbd className="px-1 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-[10px]">↵</kbd>
                 <span>select</span>
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <kbd className="px-1 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[10px]">ESC</kbd>
+              <kbd className="px-1 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-[10px]">ESC</kbd>
               <span>dismiss</span>
             </div>
           </div>

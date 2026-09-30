@@ -15,6 +15,8 @@ import {
   WorkspaceMember,
 } from '@/types';
 import { api } from '@/lib/api';
+import { PriorityBadge } from '@/components/PriorityBadge';
+import { TypeBadge } from '@/components/TypeBadge';
 import {
   MessageSquare,
   GitCommit,
@@ -28,6 +30,8 @@ import {
   Send,
   ArrowLeft,
   ExternalLink,
+  Calendar,
+  User as UserIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -276,25 +280,27 @@ export default function IssueDetailPage({
 
   return (
     <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6">
-      {/* Breadcrumb Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-zinc-800">
-        <div className="flex items-center gap-2 text-sm font-mono text-zinc-400">
+      {/* Top Header: Breadcrumbs & Actions */}
+      <div className="flex items-center justify-between pb-4 border-b border-white/[0.06]">
+        <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
           <Link
             href={`/projects/${issue.projectId}/issues`}
-            className="hover:text-zinc-200 flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded transition-colors duration-150"
+            className="hover:text-zinc-200 flex items-center gap-1.5 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
-            <span>{issue.projectName}</span>
+            <ArrowLeft className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>{issue.projectName || 'Issues'}</span>
           </Link>
-          <span aria-hidden="true">/</span>
-          <span className="font-bold text-zinc-200">{issue.issueKey}</span>
+          <span>/</span>
+          <span className="font-semibold text-zinc-200 bg-zinc-900 px-2 py-0.5 rounded-md border border-white/[0.08]">
+            {issue.issueKey}
+          </span>
         </div>
 
         <button
           type="button"
           onClick={handleDeleteIssue}
           aria-label="Delete issue"
-          className="text-zinc-500 hover:text-rose-400 p-1.5 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
+          className="text-zinc-500 hover:text-rose-400 p-2 rounded-lg hover:bg-zinc-900 border border-transparent hover:border-white/[0.06] transition-colors cursor-pointer"
           title="Delete issue"
         >
           <Trash2 className="w-4 h-4" aria-hidden="true" />
@@ -302,17 +308,17 @@ export default function IssueDetailPage({
       </div>
 
       {error && (
-        <div role="alert" className="p-2.5 rounded bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
-      {/* Main Content Layout: Two Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column (2 cols): Title, Description, Tabs (Comments / GitHub) */}
-        <div className="lg:col-span-2 space-y-5">
+      {/* Main Content Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        {/* Left Column (2 cols): Title, Description, Tabs */}
+        <div className="lg:col-span-2 space-y-6">
           {/* Title Area */}
-          <div>
+          <div className="linear-card rounded-2xl p-5">
             {editingTitle ? (
               <div className="flex items-center gap-2">
                 <input
@@ -321,13 +327,13 @@ export default function IssueDetailPage({
                   aria-label="Edit issue title"
                   value={titleInput}
                   onChange={(e) => setTitleInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-3 py-1.5 text-base font-semibold text-white transition-colors duration-150"
+                  className="w-full bg-zinc-950 border border-white/[0.12] focus:border-white/[0.25] rounded-lg px-3 py-1.5 text-base font-semibold text-white focus:outline-none transition-colors"
                 />
                 <button
                   type="button"
                   onClick={handleSaveTitle}
                   aria-label="Save title"
-                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                  className="p-2 rounded-lg bg-white text-zinc-950 hover:bg-zinc-200 transition-colors cursor-pointer shrink-0"
                 >
                   <Check className="w-4 h-4" aria-hidden="true" />
                 </button>
@@ -338,19 +344,21 @@ export default function IssueDetailPage({
                     setEditingTitle(false);
                   }}
                   aria-label="Cancel title editing"
-                  className="p-1.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                  className="p-2 rounded-lg bg-zinc-900 text-zinc-400 hover:text-white border border-white/[0.08] transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-start justify-between gap-3 group">
-                <h1 className="text-xl font-bold tracking-tight text-white">{issue.title}</h1>
+              <div className="flex items-start justify-between gap-4 group">
+                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white leading-snug">
+                  {issue.title}
+                </h1>
                 <button
                   type="button"
                   onClick={() => setEditingTitle(true)}
                   aria-label="Edit title"
-                  className="opacity-0 group-hover:opacity-100 p-1 text-zinc-500 hover:text-zinc-300 rounded focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition duration-150"
+                  className="opacity-0 group-hover:opacity-100 p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-900 border border-transparent hover:border-white/[0.08] transition-all cursor-pointer shrink-0"
                   title="Edit title"
                 >
                   <Edit2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -360,15 +368,15 @@ export default function IssueDetailPage({
           </div>
 
           {/* Description */}
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/30 p-4">
-            <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-800 text-xs font-mono uppercase text-zinc-500 tracking-wider">
+          <div className="linear-card rounded-2xl p-5">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/[0.06] text-xs font-mono uppercase text-zinc-400 tracking-wider">
               <span>Description</span>
               {!editingDesc && (
                 <button
                   type="button"
                   onClick={() => setEditingDesc(true)}
                   aria-label="Edit description"
-                  className="text-zinc-400 hover:text-zinc-200 text-xs font-sans normal-case flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1 transition-colors duration-150"
+                  className="text-zinc-400 hover:text-zinc-200 text-xs font-sans normal-case flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-zinc-900 transition-colors cursor-pointer"
                 >
                   <Edit2 className="w-3 h-3" aria-hidden="true" />
                   <span>Edit</span>
@@ -377,14 +385,14 @@ export default function IssueDetailPage({
             </div>
 
             {editingDesc ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <textarea
                   rows={6}
                   autoFocus
                   aria-label="Issue description"
                   value={descInput}
                   onChange={(e) => setDescInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-zinc-700 rounded p-2.5 text-xs text-zinc-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 resize-none font-sans transition-colors duration-150"
+                  className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-xl p-3 text-xs text-zinc-100 focus:outline-none resize-none font-sans transition-colors"
                 />
                 <div className="flex items-center justify-end gap-2">
                   <button
@@ -393,40 +401,40 @@ export default function IssueDetailPage({
                       setDescInput(issue.description || '');
                       setEditingDesc(false);
                     }}
-                    className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                    className="px-3 py-1.5 text-xs text-zinc-400 hover:text-zinc-200 rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveDesc}
-                    className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
+                    className="px-4 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all shadow-[0_0_12px_rgba(255,255,255,0.1)] cursor-pointer"
                   >
-                    Save
+                    Save Description
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">
+              <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed min-h-[48px]">
                 {issue.description || (
-                  <span className="text-zinc-600 italic">No description provided.</span>
+                  <span className="text-zinc-600 italic">No description provided for this issue.</span>
                 )}
               </div>
             )}
           </div>
 
           {/* Tabs: Comments vs GitHub Activity */}
-          <div>
-            <div className="flex items-center gap-4 border-b border-zinc-800 text-xs font-medium pb-2 mb-4" role="tablist" aria-label="Issue discussion tabs">
+          <div className="linear-card rounded-2xl p-5 space-y-4">
+            <div className="flex items-center gap-6 border-b border-white/[0.06] text-xs font-medium pb-3" role="tablist" aria-label="Issue discussion tabs">
               <button
                 type="button"
                 role="tab"
                 aria-selected={mainTab === 'comments'}
                 onClick={() => setMainTab('comments')}
-                className={`flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1.5 py-0.5 transition-colors duration-150 ${
+                className={`flex items-center gap-2 pb-1 border-b-2 transition-all cursor-pointer ${
                   mainTab === 'comments'
-                    ? 'text-white font-semibold'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'border-white text-white font-semibold'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <MessageSquare className="w-3.5 h-3.5" aria-hidden="true" />
@@ -438,10 +446,10 @@ export default function IssueDetailPage({
                 role="tab"
                 aria-selected={mainTab === 'github'}
                 onClick={() => setMainTab('github')}
-                className={`flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded px-1.5 py-0.5 transition-colors duration-150 ${
+                className={`flex items-center gap-2 pb-1 border-b-2 transition-all cursor-pointer ${
                   mainTab === 'github'
-                    ? 'text-white font-semibold'
-                    : 'text-zinc-500 hover:text-zinc-300'
+                    ? 'border-white text-white font-semibold'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
                 }`}
               >
                 <GitCommit className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
@@ -451,21 +459,21 @@ export default function IssueDetailPage({
 
             {/* Tab: Comments Thread */}
             {mainTab === 'comments' && (
-              <div className="space-y-4">
+              <div className="space-y-4 pt-1">
                 {comments.length === 0 ? (
-                  <div className="py-6 text-center text-xs text-zinc-600 font-mono">
-                    No comments yet. Start the discussion below.
+                  <div className="py-8 text-center text-xs text-zinc-500 font-mono border border-dashed border-white/[0.06] rounded-xl bg-zinc-950/40">
+                    No comments yet. Start the conversation below.
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {comments.map((comment) => (
                       <div
                         key={comment.id}
-                        className="rounded-lg border border-zinc-800 bg-zinc-950 p-3.5 space-y-2 group"
+                        className="rounded-xl border border-white/[0.06] bg-zinc-950/70 p-4 space-y-2 group"
                       >
                         <div className="flex items-center justify-between text-xs">
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center font-mono text-[10px] text-zinc-300 font-medium tabular-nums">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-white/[0.1] flex items-center justify-center font-mono text-[10px] text-zinc-200 font-medium tabular-nums shadow-inner">
                               {comment.author.fullName.charAt(0).toUpperCase()}
                             </div>
                             <span className="font-medium text-zinc-200">{comment.author.fullName}</span>
@@ -476,7 +484,7 @@ export default function IssueDetailPage({
 
                           {/* Comment actions */}
                           {user?.id === comment.author.id && (
-                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -484,7 +492,7 @@ export default function IssueDetailPage({
                                   setEditingCommentText(comment.content);
                                 }}
                                 aria-label="Edit comment"
-                                className="p-1 text-zinc-500 hover:text-zinc-300 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                                className="p-1 text-zinc-500 hover:text-zinc-300 rounded hover:bg-zinc-900 transition-colors"
                                 title="Edit comment"
                               >
                                 <Edit2 className="w-3 h-3" aria-hidden="true" />
@@ -493,7 +501,7 @@ export default function IssueDetailPage({
                                 type="button"
                                 onClick={() => handleDeleteComment(comment.id)}
                                 aria-label="Delete comment"
-                                className="p-1 text-zinc-500 hover:text-rose-400 rounded hover:bg-zinc-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500 transition-colors duration-150"
+                                className="p-1 text-zinc-500 hover:text-rose-400 rounded hover:bg-zinc-900 transition-colors"
                                 title="Delete comment"
                               >
                                 <Trash2 className="w-3 h-3" aria-hidden="true" />
@@ -509,27 +517,27 @@ export default function IssueDetailPage({
                               aria-label="Edit comment text"
                               value={editingCommentText}
                               onChange={(e) => setEditingCommentText(e.target.value)}
-                              className="w-full bg-zinc-900 border border-zinc-700 rounded p-2 text-xs text-zinc-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 resize-none font-sans transition-colors duration-150"
+                              className="w-full bg-zinc-900 border border-white/[0.12] rounded-lg p-2.5 text-xs text-zinc-100 focus:outline-none resize-none font-sans"
                             />
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 type="button"
                                 onClick={() => setEditingCommentId(null)}
-                                className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150"
+                                className="px-2.5 py-1 text-xs text-zinc-400 hover:text-zinc-200 rounded-lg hover:bg-zinc-800 transition-colors"
                               >
                                 Cancel
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleUpdateComment(comment.id)}
-                                className="px-3 py-1 bg-zinc-100 text-zinc-950 rounded text-xs font-medium hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150"
+                                className="px-3.5 py-1 bg-white text-zinc-950 rounded-lg text-xs font-semibold hover:bg-zinc-200 transition-all shadow-sm"
                               >
                                 Save
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed">
+                          <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed pl-8">
                             {comment.content}
                           </div>
                         )}
@@ -539,20 +547,20 @@ export default function IssueDetailPage({
                 )}
 
                 {/* Add Comment Input */}
-                <form onSubmit={handleAddComment} className="space-y-2 pt-2">
+                <form onSubmit={handleAddComment} className="space-y-2.5 pt-2">
                   <textarea
                     rows={3}
                     aria-label="Add a comment"
-                    placeholder="Write a comment…"
+                    placeholder="Write a comment or status update…"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full bg-zinc-950 border border-zinc-800 focus:border-zinc-500 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-600 resize-none font-sans transition-colors duration-150"
+                    className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-xl p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none resize-none font-sans transition-colors"
                   />
                   <div className="flex justify-end">
                     <button
                       type="submit"
                       disabled={postingComment || !newComment.trim()}
-                      className="px-3.5 py-1.5 rounded bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-colors duration-150 flex items-center gap-1.5 disabled:opacity-50"
+                      className="px-4 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-zinc-950 font-semibold text-xs transition-all flex items-center gap-1.5 disabled:opacity-50 shadow-[0_0_12px_rgba(255,255,255,0.1)] cursor-pointer"
                     >
                       {postingComment ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />
@@ -568,14 +576,14 @@ export default function IssueDetailPage({
 
             {/* Tab: GitHub Linked Activity */}
             {mainTab === 'github' && (
-              <div className="space-y-3">
+              <div className="space-y-3 pt-1">
                 {activities.length === 0 ? (
-                  <div className="border border-dashed border-zinc-800 rounded-lg p-8 text-center text-xs text-zinc-500">
+                  <div className="border border-dashed border-white/[0.08] rounded-xl p-8 text-center text-xs text-zinc-400 bg-zinc-950/40">
                     <GitCommit className="w-6 h-6 text-zinc-600 mx-auto mb-2" />
                     <p>No GitHub activity linked to this issue yet.</p>
-                    <p className="text-[11px] text-zinc-600 mt-1">
-                      Include <code className="font-mono text-zinc-400">#{issue.issueKey}</code> or{' '}
-                      <code className="font-mono text-zinc-400">{issue.issueKey}</code> in your commit message or PR title.
+                    <p className="text-[11px] text-zinc-500 mt-1">
+                      Include <code className="font-mono text-zinc-300">#{issue.issueKey}</code> or{' '}
+                      <code className="font-mono text-zinc-300">{issue.issueKey}</code> in your commit message or PR title.
                     </p>
                   </div>
                 ) : (
@@ -583,20 +591,20 @@ export default function IssueDetailPage({
                     {activities.map((act) => (
                       <div
                         key={act.id}
-                        className="rounded-lg border border-zinc-800 bg-zinc-950 p-3 flex items-start justify-between gap-3 text-xs"
+                        className="rounded-xl border border-white/[0.06] bg-zinc-950/70 p-3.5 flex items-start justify-between gap-3 text-xs"
                       >
-                        <div className="flex items-start gap-2.5 min-w-0">
+                        <div className="flex items-start gap-3 min-w-0">
                           {act.activityType === 'COMMIT' ? (
-                            <GitCommit className="w-4 h-4 text-sky-400 flex-shrink-0 mt-0.5" />
+                            <GitCommit className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
                           ) : (
-                            <GitPullRequest className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <GitPullRequest className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                           )}
                           <div className="min-w-0">
                             <a
                               href={act.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="font-medium text-zinc-200 hover:underline hover:text-white flex items-center gap-1 truncate"
+                              className="font-medium text-zinc-200 hover:underline hover:text-white flex items-center gap-1.5 truncate"
                             >
                               <span>{act.title}</span>
                               <ExternalLink className="w-3 h-3 text-zinc-500" />
@@ -609,7 +617,7 @@ export default function IssueDetailPage({
                           </div>
                         </div>
 
-                        <span className="text-[10px] font-mono text-zinc-500 flex-shrink-0">
+                        <span className="text-[10px] font-mono text-zinc-500 shrink-0 tabular-nums">
                           {new Date(act.eventTimestamp).toLocaleDateString()}
                         </span>
                       </div>
@@ -623,19 +631,21 @@ export default function IssueDetailPage({
 
         {/* Right Column (1 col): Metadata Sidebar */}
         <div className="space-y-4">
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4 space-y-4">
-            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 pb-2 border-b border-zinc-800">
+          <div className="linear-card rounded-2xl p-5 space-y-4">
+            <h3 className="text-xs font-mono uppercase tracking-wider text-zinc-400 pb-3 border-b border-white/[0.06] font-semibold">
               Issue Properties
             </h3>
 
             {/* Status Select */}
             <div>
-              <label htmlFor="issue-prop-status" className="block text-[11px] font-mono text-zinc-400 mb-1">Status</label>
+              <label htmlFor="issue-prop-status" className="block text-[11px] font-mono text-zinc-400 mb-1.5">
+                Status
+              </label>
               <select
                 id="issue-prop-status"
                 value={issue.status}
                 onChange={(e) => handleUpdateStatus(e.target.value as IssueStatus)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
+                className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none transition-colors"
               >
                 <option value="TODO">To Do</option>
                 <option value="IN_PROGRESS">In Progress</option>
@@ -646,12 +656,17 @@ export default function IssueDetailPage({
 
             {/* Priority Select */}
             <div>
-              <label htmlFor="issue-prop-priority" className="block text-[11px] font-mono text-zinc-400 mb-1">Priority</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="issue-prop-priority" className="block text-[11px] font-mono text-zinc-400">
+                  Priority
+                </label>
+                <PriorityBadge priority={issue.priority} size="sm" showIcon={false} />
+              </div>
               <select
                 id="issue-prop-priority"
                 value={issue.priority}
                 onChange={(e) => handleUpdatePriority(e.target.value as IssuePriority)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
+                className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none transition-colors"
               >
                 <option value="LOW">Low</option>
                 <option value="MEDIUM">Medium</option>
@@ -662,12 +677,17 @@ export default function IssueDetailPage({
 
             {/* Type Select */}
             <div>
-              <label htmlFor="issue-prop-type" className="block text-[11px] font-mono text-zinc-400 mb-1">Type</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="issue-prop-type" className="block text-[11px] font-mono text-zinc-400">
+                  Type
+                </label>
+                <TypeBadge type={issue.issueType} size="sm" />
+              </div>
               <select
                 id="issue-prop-type"
                 value={issue.issueType}
                 onChange={(e) => handleUpdateType(e.target.value as IssueType)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 font-medium transition-colors duration-150"
+                className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-lg px-3 py-1.5 text-xs text-zinc-200 font-mono focus:outline-none transition-colors"
               >
                 <option value="TASK">Task</option>
                 <option value="BUG">Bug</option>
@@ -677,12 +697,14 @@ export default function IssueDetailPage({
 
             {/* Assignee Select */}
             <div>
-              <label htmlFor="issue-prop-assignee" className="block text-[11px] font-mono text-zinc-400 mb-1">Assignee</label>
+              <label htmlFor="issue-prop-assignee" className="block text-[11px] font-mono text-zinc-400 mb-1.5">
+                Assignee
+              </label>
               <select
                 id="issue-prop-assignee"
                 value={issue.assignee?.id || ''}
                 onChange={(e) => handleAssign(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1 text-xs text-zinc-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 focus:border-zinc-500 transition-colors duration-150"
+                className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-lg px-3 py-1.5 text-xs text-zinc-200 focus:outline-none transition-colors"
               >
                 <option value="">Unassigned</option>
                 {members.map((m) => (
@@ -696,8 +718,8 @@ export default function IssueDetailPage({
             {/* Labels */}
             {availableLabels.length > 0 && (
               <div>
-                <span className="block text-[11px] font-mono text-zinc-400 mb-1.5 flex items-center gap-1">
-                  <Tag className="w-3 h-3" aria-hidden="true" />
+                <span className="block text-[11px] font-mono text-zinc-400 mb-2 flex items-center gap-1.5">
+                  <Tag className="w-3 h-3 text-zinc-500" aria-hidden="true" />
                   <span>Labels</span>
                 </span>
                 <div className="flex flex-wrap gap-1.5" role="group" aria-label="Available labels">
@@ -709,10 +731,10 @@ export default function IssueDetailPage({
                         type="button"
                         onClick={() => handleToggleLabel(lbl.id)}
                         aria-pressed={isAttached}
-                        className={`text-[10px] px-2 py-0.5 rounded border focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 transition-colors duration-150 ${
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded-md border transition-all cursor-pointer ${
                           isAttached
-                            ? 'bg-zinc-800 text-white border-zinc-600'
-                            : 'bg-zinc-950 text-zinc-400 border-zinc-800 hover:border-zinc-700'
+                            ? 'bg-zinc-800 text-white border-white/[0.2]'
+                            : 'bg-zinc-950 text-zinc-400 border-white/[0.08] hover:border-white/[0.16]'
                         }`}
                       >
                         {lbl.name}
@@ -724,13 +746,19 @@ export default function IssueDetailPage({
             )}
 
             {/* Metadata Timestamps */}
-            <div className="pt-3 border-t border-zinc-800 text-[11px] text-zinc-500 space-y-1.5 font-mono">
+            <div className="pt-3 border-t border-white/[0.06] text-[11px] text-zinc-500 space-y-2 font-mono">
               <div className="flex items-center justify-between">
-                <span>Reporter:</span>
+                <span className="flex items-center gap-1.5">
+                  <UserIcon className="w-3 h-3 text-zinc-500" />
+                  <span>Reporter:</span>
+                </span>
                 <span className="text-zinc-300 font-sans">{issue.reporter.fullName}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Created:</span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3 h-3 text-zinc-500" />
+                  <span>Created:</span>
+                </span>
                 <span className="tabular-nums">{new Date(issue.createdAt).toLocaleDateString()}</span>
               </div>
               <div className="flex items-center justify-between">
