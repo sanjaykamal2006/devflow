@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { api, getToken } from '@/lib/api';
 import { User as UserIcon, Key, Copy, Check, LogOut, Loader2, Save } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function SettingsPage() {
   const { user, refreshUser, logout } = useAuth();
@@ -30,9 +31,13 @@ export default function SettingsPage() {
         avatarUrl: avatarUrl.trim() || undefined,
       });
       await refreshUser();
-      setSuccess('Profile updated successfully');
+      const msg = 'Profile updated successfully';
+      setSuccess(msg);
+      toast.success(msg);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      const msg = err instanceof Error ? err.message : 'Failed to update profile';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -42,7 +47,10 @@ export default function SettingsPage() {
     if (token) {
       navigator.clipboard.writeText(token);
       setCopiedToken(true);
+      toast.success('API JWT Token copied to clipboard');
       setTimeout(() => setCopiedToken(false), 2000);
+    } else {
+      toast.error('No token available');
     }
   };
 

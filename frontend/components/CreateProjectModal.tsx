@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Project } from '@/types';
 import { api } from '@/lib/api';
 import { X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface CreateProjectModalProps {
   workspaceId: string;
@@ -66,12 +67,15 @@ export function CreateProjectModal({
       });
 
       onCreated(project);
+      toast.success(`Project ${project.name} (${project.key}) created`);
       onClose();
       setName('');
       setKey('');
       setDescription('');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create project');
+      const msg = err instanceof Error ? err.message : 'Failed to create project';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -79,7 +83,7 @@ export function CreateProjectModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -88,7 +92,7 @@ export function CreateProjectModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-project-title"
-        className="bg-zinc-900 border border-zinc-800 rounded-lg max-w-md w-full p-5 shadow-2xl relative text-zinc-100"
+        className="bg-zinc-950/95 border border-zinc-800/90 rounded-2xl max-w-md w-full p-6 shadow-2xl backdrop-blur-2xl relative text-zinc-100"
       >
         <div className="flex items-center justify-between pb-3 border-b border-zinc-800 mb-4">
           <h2 id="create-project-title" className="text-sm font-semibold text-white">Create New Project</h2>

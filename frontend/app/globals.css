@@ -30,3 +30,51 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
 }
+
+/* Linear-grade Surface Elevation & Inset Highlights */
+.linear-card {
+  background-color: #0c0c0e;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05) inset, 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.linear-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.glass-panel {
+  background: rgba(18, 18, 21, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Subtle Engineering Grid Background */
+.bg-grid-subtle {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-radial-gradient {
+  background: radial-gradient(circle at 50% 0%, rgba(120, 119, 198, 0.07), transparent 60%);
+}
+
+/* Cmdk styling reset & selection */
+[cmdk-root] {
+  font-family: inherit;
+}
+
+[cmdk-item][data-selected='true'] {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+[cmdk-item] {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.1s ease;
+}

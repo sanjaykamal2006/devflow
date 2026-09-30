@@ -29,6 +29,7 @@ import {
   ArrowLeft,
   ExternalLink,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function IssueDetailPage({
   params,
@@ -99,8 +100,11 @@ export default function IssueDetailPage({
     try {
       const updated = await api.issues.changeStatus(issue.id, newStatus);
       setIssue((prev) => (prev ? { ...prev, status: updated.status } : null));
+      toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to change status');
+      const msg = err instanceof Error ? err.message : 'Failed to change status';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -109,8 +113,11 @@ export default function IssueDetailPage({
     try {
       const updated = await api.issues.update(issue.id, { priority: newPriority });
       setIssue((prev) => (prev ? { ...prev, priority: updated.priority } : null));
+      toast.success(`Priority updated to ${newPriority}`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to change priority');
+      const msg = err instanceof Error ? err.message : 'Failed to change priority';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -119,8 +126,11 @@ export default function IssueDetailPage({
     try {
       const updated = await api.issues.update(issue.id, { issueType: newType });
       setIssue((prev) => (prev ? { ...prev, issueType: updated.issueType } : null));
+      toast.success(`Type changed to ${newType}`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to change type');
+      const msg = err instanceof Error ? err.message : 'Failed to change type';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -129,8 +139,11 @@ export default function IssueDetailPage({
     try {
       const updated = await api.issues.assign(issue.id, assigneeId || undefined);
       setIssue((prev) => (prev ? { ...prev, assignee: updated.assignee } : null));
+      toast.success('Assignee updated');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to update assignee');
+      const msg = err instanceof Error ? err.message : 'Failed to update assignee';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -140,8 +153,11 @@ export default function IssueDetailPage({
       const updated = await api.issues.update(issue.id, { title: titleInput.trim() });
       setIssue((prev) => (prev ? { ...prev, title: updated.title } : null));
       setEditingTitle(false);
+      toast.success('Title updated');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to update title');
+      const msg = err instanceof Error ? err.message : 'Failed to update title';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -151,8 +167,11 @@ export default function IssueDetailPage({
       const updated = await api.issues.update(issue.id, { description: descInput.trim() });
       setIssue((prev) => (prev ? { ...prev, description: updated.description } : null));
       setEditingDesc(false);
+      toast.success('Description updated');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to update description');
+      const msg = err instanceof Error ? err.message : 'Failed to update description';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -167,8 +186,11 @@ export default function IssueDetailPage({
         updated = await api.issues.attachLabel(issue.id, labelId);
       }
       setIssue((prev) => (prev ? { ...prev, labels: updated.labels } : null));
+      toast.success('Labels updated');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to toggle label');
+      const msg = err instanceof Error ? err.message : 'Failed to toggle label';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -177,9 +199,12 @@ export default function IssueDetailPage({
     if (!confirm(`Are you sure you want to delete ${issue.issueKey}?`)) return;
     try {
       await api.issues.delete(issue.id);
+      toast.success(`Deleted issue ${issue.issueKey}`);
       router.push(`/projects/${issue.projectId}/issues`);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to delete issue');
+      const msg = err instanceof Error ? err.message : 'Failed to delete issue';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -192,8 +217,11 @@ export default function IssueDetailPage({
       const added = await api.comments.create(issue.id, { content: newComment.trim() });
       setComments((prev) => [...prev, added]);
       setNewComment('');
+      toast.success('Comment posted');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to post comment');
+      const msg = err instanceof Error ? err.message : 'Failed to post comment';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setPostingComment(false);
     }
@@ -206,8 +234,11 @@ export default function IssueDetailPage({
       setComments((prev) => prev.map((c) => (c.id === commentId ? updated : c)));
       setEditingCommentId(null);
       setEditingCommentText('');
+      toast.success('Comment updated');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to edit comment');
+      const msg = err instanceof Error ? err.message : 'Failed to edit comment';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -216,8 +247,11 @@ export default function IssueDetailPage({
     try {
       await api.comments.delete(commentId);
       setComments((prev) => prev.filter((c) => c.id !== commentId));
+      toast.success('Comment deleted');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to delete comment');
+      const msg = err instanceof Error ? err.message : 'Failed to delete comment';
+      setError(msg);
+      toast.error(msg);
     }
   };
 

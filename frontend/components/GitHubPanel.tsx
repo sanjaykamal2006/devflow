@@ -15,6 +15,7 @@ import {
   Unlink,
   Loader2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface GitHubPanelProps {
   projectId: string;
@@ -51,13 +52,17 @@ export function GitHubPanel({
         name: name.trim(),
         webhookSecret: webhookSecret.trim() || undefined,
       });
-      setSuccessMsg('GitHub repository connected successfully');
+      const successText = `Connected ${owner}/${name} successfully`;
+      setSuccessMsg(successText);
+      toast.success(successText);
       setOwner('');
       setName('');
       setWebhookSecret('');
       onRepoUpdated();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to connect repository');
+      const msg = err instanceof Error ? err.message : 'Failed to connect repository';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setConnecting(false);
     }
@@ -67,9 +72,12 @@ export function GitHubPanel({
     if (!confirm('Are you sure you want to disconnect this repository?')) return;
     try {
       await api.github.disconnect(projectId);
+      toast.success('GitHub repository disconnected');
       onRepoUpdated();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to disconnect');
+      const msg = err instanceof Error ? err.message : 'Failed to disconnect';
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -79,10 +87,14 @@ export function GitHubPanel({
     setSuccessMsg(null);
     try {
       const res = await api.github.sync(projectId);
-      setSuccessMsg(`Synced! Linked ${res.newlyLinkedCommits} new commit(s).`);
+      const successText = `Synced! Linked ${res.newlyLinkedCommits} new commit(s).`;
+      setSuccessMsg(successText);
+      toast.success(successText);
       onRepoUpdated();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to sync commits');
+      const msg = err instanceof Error ? err.message : 'Failed to sync commits';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSyncing(false);
     }

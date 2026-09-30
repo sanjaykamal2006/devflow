@@ -3,6 +3,8 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 import { Navbar } from '@/components/Navbar';
+import { CommandPalette } from '@/components/CommandPalette';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
@@ -30,6 +32,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jetbrains.variable} font-sans bg-[#09090b] text-zinc-100 antialiased min-h-screen flex flex-col selection:bg-zinc-800 selection:text-white`}>
         <AuthProvider>
           <Navbar />
+          <CommandPalette />
+          <Toaster theme="dark" position="bottom-right" richColors closeButton />
           <main className="flex-1">{children}</main>
         </AuthProvider>
       </body>
