@@ -9,14 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@fiddle-digital/string-tune": "^1.2.5",
+    "canvas-confetti": "^1.9.4",
+    "cmdk": "^1.1.1",
     "lucide-react": "^1.47.0",
+    "motion": "^13.4.6",
     "next": "^15.1.12",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sonner": "^2.0.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
