@@ -7,12 +7,11 @@ spring:
   application:
     name: devflow-backend
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:prod}
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:h2:mem:devflowdb;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
     username: ${SPRING_DATASOURCE_USERNAME:sa}
     password: ${SPRING_DATASOURCE_PASSWORD:}
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.h2.Driver}
   jpa:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
@@ -35,7 +34,7 @@ spring:
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
   cache:
-    type: ${CACHE_TYPE:redis}
+    type: ${CACHE_TYPE:none}
     redis:
       time-to-live: 600000ms # 10 minutes default
       cache-null-values: false
@@ -60,3 +59,6 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+  health:
+    redis:
+      enabled: false

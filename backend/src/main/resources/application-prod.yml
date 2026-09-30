@@ -16,6 +16,11 @@ spring:
   cache:
     type: ${CACHE_TYPE:none}
 
+management:
+  health:
+    redis:
+      enabled: false
+
 devflow:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,https://devflow-eight-beta.vercel.app}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001,https://devflow-eight-beta.vercel.app}

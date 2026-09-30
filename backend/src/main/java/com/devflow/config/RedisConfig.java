@@ -28,6 +28,7 @@ import java.util.Map;
 
 @Configuration
 @EnableCaching
+@ConditionalOnProperty(name = "spring.cache.type", havingValue = "redis")
 public class RedisConfig implements CachingConfigurer {
 
     private static final Logger log = LoggerFactory.getLogger(RedisConfig.class);
