@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Command } from 'cmdk';
 import { useAuth } from '@/lib/auth-context';
@@ -27,34 +27,35 @@ export function CommandPalette() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [loading, setLoading] = useState(false);
+  const dataLoadedRef = useRef(false);
   const router = useRouter();
   const { user, logout } = useAuth();
 
-  // Load workspaces and recent projects/issues when opened
+  // Load workspaces and recent projects/issues lazily and cache
   const loadData = useCallback(async () => {
-    if (!user) return;
+    if (!user || dataLoadedRef.current) return;
     try {
       setLoading(true);
       const wsList = await api.workspaces.list();
       setWorkspaces(wsList);
 
       if (wsList.length > 0) {
-        // Collect projects from first few workspaces
-        const projectPromises = wsList.slice(0, 3).map((ws) =>
-          api.projects.list(ws.id).catch(() => [])
+        const projectArrays = await Promise.all(
+          wsList.slice(0, 3).map((ws) => api.projects.list(ws.id).catch(() => []))
         );
-        const projectArrays = await Promise.all(projectPromises);
         const allProjects = projectArrays.flat();
         setProjects(allProjects);
 
-        // Fetch issues from the first project
         if (allProjects.length > 0) {
-          const firstProjIssues = await api.issues.list(allProjects[0].id).catch(() => ({ content: [] }));
+          const firstProjIssues = await api.issues
+            .list(allProjects[0].id, { size: 10 })
+            .catch(() => ({ content: [] }));
           setIssues(firstProjIssues.content || []);
         }
       }
+      dataLoadedRef.current = true;
     } catch {
-      // Graceful fallback for offline / mock
+      // Graceful fallback
     } finally {
       setLoading(false);
     }
@@ -69,7 +70,6 @@ export function CommandPalette() {
   // Global Keyboard Shortcuts (Cmd+K / Ctrl+K and custom event)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input/textarea/editable
       const target = e.target as HTMLElement | null;
       const isInput =
         target &&
@@ -121,7 +121,7 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] px-4 bg-black/80 backdrop-blur-md transition-all duration-200"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[12vh] px-4 bg-black/75 backdrop-blur-sm transition-all duration-150"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setOpen(false);
@@ -133,7 +133,7 @@ export function CommandPalette() {
         role="dialog"
         aria-modal="true"
         aria-label="Command Palette"
-        className="w-full max-w-xl bg-[#0c0c0e]/95 border border-white/[0.12] shadow-2xl rounded-2xl overflow-hidden backdrop-blur-2xl text-zinc-100 flex flex-col max-h-[75vh] animate-in fade-in zoom-in-95 duration-150"
+        className="w-full max-w-xl bg-[#0c0c0e] border border-white/[0.12] shadow-2xl rounded-2xl overflow-hidden text-zinc-100 flex flex-col max-h-[75vh] animate-in fade-in zoom-in-95 duration-100"
       >
         <Command
           filter={(value, search) => {
@@ -143,7 +143,7 @@ export function CommandPalette() {
           className="flex flex-col flex-1 overflow-hidden"
         >
           {/* Search Header Input */}
-          <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08] bg-zinc-950/60">
+          <div className="flex items-center gap-3 px-4 py-3.5 border-b border-white/[0.08] bg-zinc-950/80">
             {loading ? (
               <Loader2 className="w-4 h-4 text-zinc-500 animate-spin shrink-0" aria-hidden="true" />
             ) : (

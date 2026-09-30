@@ -23,7 +23,7 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      await login(email, password);
+      await login(email.trim(), password);
       router.push('/dashboard');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Invalid credentials. Please try again.');
@@ -37,9 +37,9 @@ export default function LoginPage() {
     setError(null);
     try {
       try {
-        await login('demo@devflow.io', 'demo123');
-      } catch {
         await login('sanjaykamal2006@gmail.com', 'password123');
+      } catch {
+        await login('demo@devflow.io', 'demo123');
       }
       router.push('/dashboard');
     } catch (err: unknown) {
@@ -51,8 +51,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Radiant Glow in Background */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[480px] h-[360px] bg-gradient-to-tr from-sky-500/10 via-indigo-500/10 to-transparent blur-[100px] pointer-events-none -z-10" />
+      {/* Subtle Radiant Glow in Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[300px] bg-gradient-to-tr from-sky-500/10 via-indigo-500/10 to-transparent blur-[60px] pointer-events-none -z-10" />
 
       <div className="w-full max-w-[380px] space-y-6">
         {/* Header */}
@@ -67,7 +67,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="linear-card rounded-2xl p-6 sm:p-7 shadow-2xl backdrop-blur-xl">
+        <div className="linear-card rounded-2xl p-6 sm:p-7 shadow-2xl">
           {error && (
             <div role="alert" className="mb-4 p-3 rounded-lg bg-rose-950/60 border border-rose-800/80 text-rose-300 text-xs font-mono flex items-start gap-2">
               <span className="shrink-0">•</span>

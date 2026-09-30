@@ -13,7 +13,6 @@ import {
   Plus,
   Search,
   X,
-  Loader2,
   ChevronLeft,
   ChevronRight,
   GitBranch,
@@ -128,8 +127,21 @@ export default function ProjectIssuesPage({
 
   if (loading && !project) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+      <div className="w-full px-6 lg:px-8 py-6 space-y-5 animate-pulse">
+        <div className="flex justify-between items-center pb-4 border-b border-white/[0.06]">
+          <div className="space-y-2">
+            <div className="h-4 bg-zinc-900 rounded w-32" />
+            <div className="h-7 bg-zinc-900 rounded w-48" />
+          </div>
+          <div className="h-9 bg-zinc-900 rounded-lg w-28" />
+        </div>
+        <div className="h-10 bg-zinc-900/60 border border-white/[0.06] rounded-xl w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="h-80 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+          <div className="h-80 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+          <div className="h-80 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+          <div className="h-80 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+        </div>
       </div>
     );
   }

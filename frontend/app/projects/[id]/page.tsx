@@ -12,7 +12,6 @@ import {
   Clock,
   AlertCircle,
   ArrowRight,
-  Loader2,
   GitBranch,
   Trash2,
   FolderGit2,
@@ -74,8 +73,21 @@ export default function ProjectOverviewPage({
 
   if (loading && !project) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6 animate-pulse">
+        <div className="pb-6 border-b border-white/[0.06] space-y-3">
+          <div className="h-4 bg-zinc-900 rounded w-36" />
+          <div className="flex justify-between items-center">
+            <div className="h-8 bg-zinc-900 rounded-lg w-56" />
+            <div className="h-9 bg-zinc-900 rounded-lg w-32" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+        </div>
+        <div className="h-64 bg-zinc-900/40 border border-white/[0.06] rounded-2xl" />
       </div>
     );
   }

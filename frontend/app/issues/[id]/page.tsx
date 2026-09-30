@@ -261,8 +261,21 @@ export default function IssueDetailPage({
 
   if (loading && !issue) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-6 h-6 animate-spin text-zinc-500" />
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6 animate-pulse">
+        <div className="flex justify-between items-center pb-4 border-b border-white/[0.06]">
+          <div className="h-5 bg-zinc-900 rounded w-40" />
+          <div className="h-9 bg-zinc-900 rounded-lg w-24" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="h-10 bg-zinc-900/80 rounded-xl w-3/4" />
+            <div className="h-32 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+            <div className="h-48 bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-4" />
+          </div>
+          <div className="space-y-4">
+            <div className="h-72 bg-zinc-900/50 border border-white/[0.06] rounded-2xl p-5" />
+          </div>
+        </div>
       </div>
     );
   }

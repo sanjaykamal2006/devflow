@@ -45,12 +45,33 @@ export function setToken(token: string): void {
 export function clearToken(): void {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('devflow_token');
+  clearApiCache();
 }
 
 let demoModeActive = false;
 
 export function isDemoMode(): boolean {
   return demoModeActive;
+}
+
+// In-Memory Fast Cache for sub-millisecond route transitions
+interface CacheEntry {
+  data: unknown;
+  timestamp: number;
+}
+const apiCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
+export function clearApiCache(): void {
+  apiCache.clear();
+}
+
+export function invalidateCachePrefix(prefix: string): void {
+  for (const key of apiCache.keys()) {
+    if (key.startsWith(prefix) || prefix === '*') {
+      apiCache.delete(key);
+    }
+  }
 }
 
 function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
@@ -244,7 +265,18 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method || 'GET').toUpperCase();
   const token = getToken();
+  const cacheKey = `${method}:${endpoint}:${token || 'anon'}`;
+
+  // Serve GET requests instantly from memory cache if fresh
+  if (method === 'GET' && !options.headers) {
+    const cached = apiCache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return cached.data as T;
+    }
+  }
+
   const headers = new Headers(options.headers || {});
 
   if (!headers.has('Content-Type') && !(options.body instanceof FormData)) {
@@ -257,8 +289,9 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
   const url = `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
 
+  // Fast failover timeout (4.5s max instead of 12s) to prevent UI freezing
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 12000);
+  const timeoutId = setTimeout(() => controller.abort(), 4500);
 
   try {
     const response = await fetch(url, {
@@ -287,17 +320,46 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
       throw new ApiError(status, errorCode, message, fieldErrors);
     }
 
+    let resultData: T;
     if (body && typeof body === 'object' && 'data' in body) {
-      return (body as ApiResponse<T>).data;
+      resultData = (body as ApiResponse<T>).data;
+    } else {
+      resultData = body as T;
     }
 
-    return body as T;
+    // Cache successful GET responses
+    if (method === 'GET') {
+      apiCache.set(cacheKey, { data: resultData, timestamp: Date.now() });
+    } else {
+      // Invalidate cache on mutations
+      if (endpoint.includes('/workspaces')) invalidateCachePrefix('GET:/api/workspaces');
+      if (endpoint.includes('/projects')) {
+        invalidateCachePrefix('GET:/api/projects');
+        invalidateCachePrefix('GET:/api/workspaces');
+      }
+      if (endpoint.includes('/issues')) {
+        invalidateCachePrefix('GET:/api/issues');
+        invalidateCachePrefix('GET:/api/projects');
+      }
+    }
+
+    return resultData;
   } catch (networkError: unknown) {
+    clearTimeout(timeoutId);
     if (networkError instanceof ApiError) {
       throw networkError;
     }
-    // If fetch failed due to offline backend / CORS / mixed content, seamlessly fall back to client-side mock store
-    return handleMockFallback<T>(endpoint, options);
+    // Return stale cache if available when network/server is slow
+    const stale = apiCache.get(cacheKey);
+    if (stale && method === 'GET') {
+      return stale.data as T;
+    }
+    // Seamlessly fall back to client-side store without blocking
+    const fallbackData = handleMockFallback<T>(endpoint, options);
+    if (method === 'GET') {
+      apiCache.set(cacheKey, { data: fallbackData, timestamp: Date.now() });
+    }
+    return fallbackData;
   }
 }
 

@@ -122,8 +122,17 @@ export default function WorkspaceDetailPage({
 
   if (loading && !workspace) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 animate-pulse space-y-6">
+        <div className="h-10 bg-zinc-900 rounded-lg w-64" />
+        <div className="flex gap-4 border-b border-white/[0.06] pb-3">
+          <div className="h-5 bg-zinc-900 rounded w-24" />
+          <div className="h-5 bg-zinc-900 rounded w-24" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+        </div>
       </div>
     );
   }

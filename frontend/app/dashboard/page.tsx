@@ -84,10 +84,15 @@ export default function DashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [creatingWs]);
 
-  if (authLoading || (loading && !workspaces.length && !error)) {
+  if (authLoading) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <Loader2 className="w-5 h-5 animate-spin text-zinc-500" aria-hidden="true" />
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 animate-pulse">
+        <div className="h-8 bg-zinc-900 rounded-lg w-48 mb-6" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+        </div>
       </div>
     );
   }
@@ -129,7 +134,7 @@ export default function DashboardPage() {
       {/* Create Workspace Modal */}
       {creatingWs && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-100"
           onClick={(e) => {
             if (e.target === e.currentTarget) setCreatingWs(false);
           }}
@@ -209,7 +214,13 @@ export default function DashboardPage() {
 
       {/* Workspaces Grid */}
       <div className="mt-6">
-        {workspaces.length === 0 ? (
+        {loading && workspaces.length === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
+            <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+            <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+            <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
+          </div>
+        ) : workspaces.length === 0 ? (
           <div className="border border-dashed border-white/[0.08] rounded-2xl p-12 text-center bg-zinc-950/40">
             <Layers className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-zinc-200">No workspaces found</h3>
