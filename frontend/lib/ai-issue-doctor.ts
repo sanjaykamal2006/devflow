@@ -45,30 +45,34 @@ export function setStoredAiConfig(config: AiConfig): void {
 }
 
 /**
- * Deep Semantic Extractor that analyzes actual developer text
- * and extracts real entities, components, technologies, error traces, and user intents.
+ * Natural Language Normalization & Intent Distillation
+ * Transforms casual, conversational, or messy developer prompts into clean engineering domain targets.
  */
-interface ExtractedContext {
-  title: string;
-  rawNotes: string[];
-  cleanNotes: string;
-  verbs: string[];
+interface DistilledIntent {
+  raw: string;
+  normalizedTitle: string;
+  domainSubject: string;
+  category: 'ui' | 'backend' | 'database' | 'security' | 'integration' | 'performance' | 'devops' | 'general';
+  actionVerb: string;
+  summarySentence: string;
   components: string[];
   technologies: string[];
   endpoints: string[];
   errorSignals: string[];
   userStories: string[];
-  inferredCategory: 'ui' | 'backend' | 'database' | 'security' | 'integration' | 'performance' | 'devops' | 'general';
 }
 
-function extractSemanticContext(title: string, description: string): ExtractedContext {
-  const combined = `${title}\n${description}`.trim();
-  const lines = description
-    .split(/\r?\n/)
-    .map((l) => l.trim())
-    .filter((l) => l.length > 0);
+function distillDeveloperIntent(title: string, description: string): DistilledIntent {
+  const combined = `${title} ${description}`.trim();
 
-  // 1. Detect Technologies
+  // 1. Clean colloquialisms, filler words & normalize typos
+  const cleanTokens = combined
+    .toLowerCase()
+    .replace(/\b(bro|bruh|hey|hi|hello|please|pls|i want you to|can you|could you|make it|make this|need to|help me|look|loook|super|coool|cool|awesome|good|clean|asap|tbh|wanna|gotta)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // 2. Extract Technologies
   const techKeywords = [
     'react', 'next.js', 'nextjs', 'typescript', 'javascript', 'tailwind', 'css', 'html',
     'spring', 'spring boot', 'java', 'postgres', 'postgresql', 'neon', 'redis', 'kafka',
@@ -80,34 +84,35 @@ function extractSemanticContext(title: string, description: string): ExtractedCo
     new RegExp(`\\b${tech.replace('.', '\\.')}\\b`, 'i').test(combined)
   );
 
-  // 2. Detect Components / Modules
+  // 3. Extract UI / System Components
   const compKeywords = [
     'navbar', 'header', 'sidebar', 'dock', 'modal', 'dialog', 'dropdown', 'button',
     'kanban', 'board', 'table', 'card', 'editor', 'timeline', 'feed', 'badge', 'input',
     'filter', 'search', 'command palette', 'shortcuts', 'auth', 'login', 'signup',
-    'workspace', 'project', 'issue', 'comment', 'activity', 'settings', 'profile'
+    'workspace', 'project', 'issue', 'comment', 'activity', 'settings', 'profile',
+    'landing page', 'dashboard', 'tab', 'toast', 'tooltip'
   ];
   const detectedComps = compKeywords.filter((comp) =>
     new RegExp(`\\b${comp}\\b`, 'i').test(combined)
   );
 
-  // 3. Detect Endpoints / Routes / Methods (Requires valid API path or explicit HTTP verb)
+  // 4. Extract Real API Endpoints
   const endpointRegex = /(?:^|\s)((?:GET|POST|PUT|PATCH|DELETE)\s+)?(\/(?:api\/)?[a-zA-Z0-9_-]{2,}(?:\/[a-zA-Z0-9_{}:-]+)+|\/api\/[a-zA-Z0-9_-]+)/g;
   const detectedEndpoints: string[] = [];
   let epMatch: RegExpExecArray | null;
   while ((epMatch = endpointRegex.exec(combined)) !== null) {
-    const fullMatch = epMatch[0].trim();
-    if (fullMatch && !detectedEndpoints.includes(fullMatch)) {
-      detectedEndpoints.push(fullMatch);
+    const ep = epMatch[0].trim();
+    if (ep && !detectedEndpoints.includes(ep)) {
+      detectedEndpoints.push(ep);
     }
   }
 
-  // 4. Detect Error Signals / Exceptions / HTTP Status Codes
+  // 5. Extract Error Traces / Exceptions / HTTP status codes
   const errorPatterns = [
     /50\d\s+(?:Internal Server Error|Bad Gateway|Gateway Timeout)/i,
     /40\d\s+(?:Unauthorized|Forbidden|Not Found|Bad Request|Conflict)/i,
     /(?:NullPointer|TypeError|SyntaxError|UnhandledPromise|NetworkError|CORS|Timeout|OutOfMemory|Deadlock|ConstraintViolation)[a-zA-Z]*/g,
-    /(?:failed to|cannot read|undefined is not|uncaught|crash|freeze|infinite loop|stuck|broken|overflow)/i,
+    /(?:failed to|cannot read|undefined is not|uncaught|crash|freeze|infinite loop|stuck|broken|overflow|race condition)/i,
   ];
   const detectedErrors: string[] = [];
   for (const pat of errorPatterns) {
@@ -119,189 +124,226 @@ function extractSemanticContext(title: string, description: string): ExtractedCo
     }
   }
 
-  // 5. Detect Action Verbs / Intent
-  const actionVerbs = [
-    'implement', 'create', 'build', 'refactor', 'fix', 'resolve', 'optimize',
-    'migrate', 'integrate', 'add', 'remove', 'update', 'prevent', 'validate',
-    'sanitize', 'cache', 'synchronize', 'stream', 'support', 'enable', 'disable'
-  ];
-  const detectedVerbs = actionVerbs.filter((v) =>
-    new RegExp(`\\b${v}\\b`, 'i').test(combined)
-  );
+  // 6. Inferred Subsystem Category & Intent Mapping
+  let category: DistilledIntent['category'] = 'general';
+  let domainSubject = '';
+  let actionVerb = 'Deliver';
+  let summarySentence = '';
 
-  // 6. Infer Subsystem Category
-  let inferredCategory: ExtractedContext['inferredCategory'] = 'general';
-  if (/auth|jwt|token|permission|role|rbac|security|hmac|hash|encrypt|vulnerability/i.test(combined)) {
-    inferredCategory = 'security';
-  } else if (/sql|postgres|database|migration|column|schema|index|query|lock|transaction|jpa|constraint/i.test(combined)) {
-    inferredCategory = 'database';
-  } else if (/perf|latency|cache|throughput|memory|leak|cpu|slow|concurrency|benchmark|speed|race condition/i.test(combined)) {
-    inferredCategory = 'performance';
-  } else if (/webhook|discord|slack|github integration|integration/i.test(combined)) {
-    inferredCategory = 'integration';
-  } else if (/ui|css|tailwind|modal|button|table|kanban|dock|navbar|layout|theme|responsive|view/i.test(combined)) {
-    inferredCategory = 'ui';
-  } else if (/docker|k8s|render|vercel|deploy|ci|cd|pipeline|github action/i.test(combined)) {
-    inferredCategory = 'devops';
-  } else if (/spring|controller|service|dto|entity|rest|backend|endpoint/i.test(combined)) {
-    inferredCategory = 'backend';
+  const isUi = /front\s*end|frontend|ui|ux|css|tailwind|style|design|look|aesthetic|color|glow|card|dock|navbar|layout|responsive|view|modal|button|font|theme/i.test(combined);
+  const isSecurity = /auth|jwt|token|permission|role|rbac|security|hmac|hash|encrypt|vulnerability|cors|idor/i.test(combined);
+  const isDatabase = /sql|postgres|database|migration|schema|index|query|lock|transaction|jpa|flyway|hikari|column|entity/i.test(combined);
+  const isPerf = /perf|latency|cache|throughput|memory|leak|cpu|slow|concurrency|benchmark|speed|race condition/i.test(combined);
+  const isIntegration = /webhook|discord|slack|github integration|integration|event stream/i.test(combined);
+  const isDevops = /docker|k8s|render|vercel|deploy|ci|cd|pipeline|github action|env/i.test(combined);
+  const isBackend = /spring|controller|service|dto|rest|backend|endpoint|api/i.test(combined);
+
+  if (isSecurity) {
+    category = 'security';
+    domainSubject = 'Security & RBAC Authentication Subsystem';
+    actionVerb = 'Harden';
+    summarySentence = 'Harden stateless authorization contracts, JWT signature claims, and role-based access invariants.';
+  } else if (isDatabase) {
+    category = 'database';
+    domainSubject = 'PostgreSQL Data Layer & Concurrency Engine';
+    actionVerb = 'Optimize';
+    summarySentence = 'Ensure database migrations are idempotent, maintain ACID concurrency safety, and eliminate lock contention.';
+  } else if (isPerf) {
+    category = 'performance';
+    domainSubject = 'Sub-Millisecond Concurrency & Performance Engine';
+    actionVerb = 'Accelerate';
+    summarySentence = 'Optimize latency budgets, eliminate concurrency bottlenecks, and refine in-memory SWR caching strategies.';
+  } else if (isIntegration) {
+    category = 'integration';
+    domainSubject = 'External Webhook & Notification Dispatcher';
+    actionVerb = 'Integrate';
+    summarySentence = 'Build reliable outgoing webhook pipelines with exponential backoff retries and payload HMAC signatures.';
+  } else if (isUi) {
+    category = 'ui';
+    domainSubject = 'Frontend UI/UX Design System & Micro-Interactions';
+    actionVerb = 'Modernize';
+    const compClause = detectedComps.length > 0 ? ` for ${detectedComps.join(' and ')}` : '';
+    summarySentence = `Elevate visual fidelity${compClause} with frosted glass tokens, responsive layout ergonomics, smooth 60fps transitions, and WCAG AA contrast standards.`;
+  } else if (isDevops) {
+    category = 'devops';
+    domainSubject = 'CI/CD Deployment & Cloud Infrastructure';
+    actionVerb = 'Automate';
+    summarySentence = 'Streamline automated build validation, container runtime configurations, and zero-downtime deployment pipelines.';
+  } else if (isBackend) {
+    category = 'backend';
+    domainSubject = 'Core REST API & Business Logic Layer';
+    actionVerb = 'Implement';
+    summarySentence = 'Implement clean REST endpoints, robust request validation, isolated service transactions, and typed response contracts.';
+  } else {
+    category = 'general';
+    domainSubject = cleanTokens || 'Core Engineering Specification';
+    actionVerb = 'Implement';
+    summarySentence = `Deliver production-grade engineering implementation for ${cleanTokens || 'the specified feature'}.`;
   }
 
+  // Derive professional normalized title from core prompt
+  let normalizedTitle = title.trim();
+  const isSlangy = /\b(bro|bruh|pls|coool|loook|wanna|gotta|i want you to)\b/i.test(title);
+
+  if (isSlangy || title.length < 5) {
+    if (category === 'ui') {
+      if (detectedComps.length > 0) {
+        normalizedTitle = `Refactor & Polish ${detectedComps.map((c) => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ')} UI`;
+      } else {
+        normalizedTitle = 'Modernize Frontend UI/UX Design System & Visual Fidelity';
+      }
+    } else if (category === 'security') {
+      normalizedTitle = 'Harden Security RBAC Claims & Token Validation';
+    } else if (category === 'database') {
+      normalizedTitle = 'Refactor Database Concurrency & Migration Scheme';
+    } else if (category === 'performance') {
+      normalizedTitle = 'Optimize Concurrency Latency & SWR Cache Invalidation';
+    } else if (category === 'integration') {
+      normalizedTitle = 'Implement Webhook Notification Dispatch Pipeline';
+    } else {
+      normalizedTitle = cleanTokens ? `Implement: ${cleanTokens.charAt(0).toUpperCase() + cleanTokens.slice(1)}` : 'Engineering Architecture Specification';
+    }
+  } else {
+    // Clean up casing
+    normalizedTitle = title.charAt(0).toUpperCase() + title.slice(1);
+  }
+
+  const lines = description.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
+  const userStories = lines.filter((l) => /as a|so that|i want to|when I|given|then|should/i.test(l));
+
   return {
-    title: title.trim() || 'Engineering Task',
-    rawNotes: lines,
-    cleanNotes: description.trim(),
-    verbs: detectedVerbs,
+    raw: combined,
+    normalizedTitle,
+    domainSubject,
+    category,
+    actionVerb,
+    summarySentence,
     components: detectedComps,
     technologies: detectedTech,
     endpoints: detectedEndpoints,
     errorSignals: detectedErrors,
-    userStories: lines.filter((l) => /as a|so that|i want to|when I|given|then|should/i.test(l)),
-    inferredCategory,
+    userStories,
   };
 }
 
 /**
- * Intelligent Semantic Synthesis Engine (Runs completely client-side or server-side without external keys)
+ * Intelligent Semantic Synthesis Engine
+ * Synthesizes deep, comprehensive, contextually accurate engineering specifications.
  */
 function synthesizeSemanticSpec(input: SpecGeneratorInput): string {
   const mode = input.mode || (input.issueType === 'BUG' ? 'BUG_REPORT' : 'PRD');
-  const ctx = extractSemanticContext(input.title, input.description);
+  const ctx = distillDeveloperIntent(input.title, input.description);
 
-  const cleanTitle = ctx.title;
-  const isBug = input.issueType === 'BUG' || mode === 'BUG_REPORT';
+  const cleanTitle = ctx.normalizedTitle;
   const custom = input.customInstructions ? `\n> **Special Directive:** ${input.customInstructions}\n` : '';
 
-  // Extract core domain object and action from title
-  const titleWords = cleanTitle.replace(/^(fix|add|implement|refactor|update|create|resolve|build)\s+/i, '').trim();
-  const primaryAction = ctx.verbs[0] ? ctx.verbs[0].charAt(0).toUpperCase() + ctx.verbs[0].slice(1) : 'Deliver';
-
-  // Specific components / tech summary
-  const techStackBadge = ctx.technologies.length > 0 ? `\`${ctx.technologies.join('`, `')}\`` : 'Standard Workspace Stack';
-  const componentBadge = ctx.components.length > 0 ? `\`${ctx.components.join('`, `')}\`` : 'Target Subsystem';
-
-  // 1. Synthesize Problem & Objective
-  let problemStatement = '';
-  if (ctx.cleanNotes.length > 30) {
-    problemStatement = ctx.cleanNotes;
-  } else if (isBug) {
-    problemStatement = `Anomalous behavior identified in **${titleWords || cleanTitle}**. System fails to handle expected execution invariants, resulting in degraded developer experience or runtime errors${ctx.errorSignals.length ? ` (\`${ctx.errorSignals.join(', ')}\`)` : ''}.`;
-  } else {
-    problemStatement = `Implement high-velocity support for **${titleWords || cleanTitle}** across ${componentBadge}. Must adhere to strict typing, sub-millisecond interaction targets, and zero-regression standards.`;
-  }
-
-  // 2. Synthesize Steps to Reproduce / Verification Scenarios
+  // 1. Dynamic Reproduction / Verification Scenarios
   const reproSteps: string[] = [];
-  if (isBug) {
-    if (ctx.endpoints.length > 0) {
-      reproSteps.push(`Dispatch request to \`${ctx.endpoints[0]}\` with boundary or unauthenticated payload.`);
-    } else if (ctx.components.length > 0) {
-      reproSteps.push(`Navigate to the **${ctx.components[0]}** module in the workspace.`);
-      if (ctx.components.length > 1) {
-        reproSteps.push(`Trigger state transition between **${ctx.components[0]}** and **${ctx.components[1]}**.`);
-      } else {
-        reproSteps.push(`Execute user interaction sequence on **${ctx.components[0]}** with rapid or edge-case input.`);
-      }
-    } else {
-      reproSteps.push(`Check out branch containing **${cleanTitle}**.`);
-      reproSteps.push(`Execute triggering workflow with concurrent workload or edge parameters.`);
-    }
+  const compLabel = ctx.components.length > 0 ? ` (${ctx.components.join(', ')})` : '';
 
-    if (ctx.errorSignals.length > 0) {
-      reproSteps.push(`Observe failure state: \`${ctx.errorSignals[0]}\`.`);
+  if (mode === 'BUG_REPORT') {
+    if (ctx.category === 'ui') {
+      reproSteps.push(`Launch the frontend workspace and inspect the affected layout${compLabel} on desktop (1440px) and mobile viewport (390px).`);
+      reproSteps.push('Trigger component state transitions, hover states, and modal/dock interactions.');
+      reproSteps.push('Observe visual anomalies: suboptimal hierarchy, clipped text, broken glassmorphic contrast, or layout shift (CLS).');
+    } else if (ctx.category === 'database' || ctx.category === 'performance') {
+      if (ctx.endpoints.length > 0) {
+        reproSteps.push(`Dispatch concurrent requests to \`${ctx.endpoints[0]}\` using synthetic load.`);
+      } else {
+        reproSteps.push('Execute concurrent mutating operations across multiple sessions simultaneously.');
+      }
+      reproSteps.push(`Observe race condition, lock timeout, or exception${ctx.errorSignals.length ? ` (\`${ctx.errorSignals[0]}\`)` : ''}.`);
+    } else if (ctx.category === 'security') {
+      reproSteps.push('Dispatch request with unauthenticated, expired, or tampered JWT Bearer token.');
+      reproSteps.push('Verify whether system improperly permits cross-tenant IDOR access or fails to return 401/403.');
     } else {
-      reproSteps.push(`Observe unexpected failure, state inconsistency, or unhandled rejection.`);
+      reproSteps.push('Check out current branch and verify base workspace environment.');
+      if (ctx.endpoints.length > 0) {
+        reproSteps.push(`Dispatch request to \`${ctx.endpoints[0]}\` with boundary parameters.`);
+      }
+      reproSteps.push(`Observe unexpected failure state or uncaught exception${ctx.errorSignals.length ? ` (\`${ctx.errorSignals[0]}\`)` : ''}.`);
     }
   } else {
-    reproSteps.push(`Verify clean baseline on current branch (\`git status\` & unit test suite passing).`);
-    if (ctx.endpoints.length > 0) {
-      reproSteps.push(`Define contract for endpoint \`${ctx.endpoints[0]}\` and verify response schema.`);
+    reproSteps.push('Verify clean baseline on current branch (`git status` and test suites passing).');
+    if (ctx.category === 'ui') {
+      reproSteps.push(`Mount UI components${compLabel} with mock fixtures covering desktop, tablet, and mobile breakpoints.`);
+      reproSteps.push('Verify keyboard accessibility navigation (`Tab`, `Escape`, `⌘K`, Vim `J`/`K`).');
+    } else if (ctx.endpoints.length > 0) {
+      reproSteps.push(`Verify API contract schema and response wrapper for \`${ctx.endpoints[0]}\`.`);
+    } else {
+      reproSteps.push('Execute automated unit and integration test fixtures covering primary workflow and edge cases.');
     }
-    if (ctx.components.length > 0) {
-      reproSteps.push(`Mount **${ctx.components[0]}** component with test fixtures.`);
-    }
-    reproSteps.push(`Run automated integration test suite covering **${titleWords}** happy-path and boundary cases.`);
+    reproSteps.push('Verify telemetry audit stream and verify zero regressions against existing features.');
   }
 
-  // 3. Synthesize Concrete Acceptance Criteria
+  // 2. Concrete Acceptance Criteria
   const acceptanceItems: string[] = [];
 
-  // Core functional requirement
-  acceptanceItems.push(`${primaryAction} **${titleWords}** ensuring end-to-end functionality across all supported viewports and roles.`);
-
-  // Component-specific criteria
-  if (ctx.components.includes('modal') || ctx.components.includes('dialog')) {
-    acceptanceItems.push('Modal supports `Escape` keyboard dismissal and outside backdrop click to close.');
-    acceptanceItems.push('Focus trap prevents tab navigation from escaping modal boundaries while open.');
-  }
-  if (ctx.components.includes('kanban') || ctx.components.includes('board')) {
-    acceptanceItems.push('Drag-and-drop state updates optimistically with smooth spring animations.');
-    acceptanceItems.push('Automatic rollback occurs with user toast notification if backend persistence fails.');
-  }
-  if (ctx.components.includes('table')) {
-    acceptanceItems.push('Vim navigation (`J`/`K`), row multi-selection (`X`), and bulk action bar operate seamlessly.');
-  }
-  if (ctx.components.includes('command palette') || ctx.components.includes('shortcuts')) {
-    acceptanceItems.push('Keyboard listener binds cleanly without conflicting with native browser or form inputs.');
-  }
-
-  // Category-specific criteria
-  if (ctx.inferredCategory === 'security' || ctx.technologies.includes('jwt') || ctx.technologies.includes('auth')) {
-    acceptanceItems.push('Stateless JWT claims and workspace RBAC roles (`OWNER`, `ADMIN`, `MEMBER`) strictly validated.');
-    acceptanceItems.push('Zero credential or secret token leakage in client-side bundles or server response logs.');
-  }
-  if (ctx.inferredCategory === 'database' || ctx.technologies.includes('postgres') || ctx.technologies.includes('sql')) {
-    acceptanceItems.push('Database migration is idempotent, backward-compatible, and uses appropriate index coverage.');
+  if (ctx.category === 'ui') {
+    acceptanceItems.push('Elevate visual hierarchy using dark obsidian canvas (`#08090a`) with ambient specular glow cones (`--hero-glow`).');
+    acceptanceItems.push('Apply frosted-glass card tokens (`.pinterest-card`, `.linear-card`) with 24px backdrop blur and micro-borders (`border-white/[0.08]`).');
+    acceptanceItems.push('Implement floating capsule navigation dock (`.pinterest-dock`) with smooth 60fps spring transitions.');
+    acceptanceItems.push('Ensure 100% responsive ergonomics across mobile, tablet, and widescreen viewports with zero horizontal overflow.');
+    acceptanceItems.push('Guarantee WCAG AA contrast compliance for all state badges (`Emerald`, `Sky`, `Amber`, `Rose`) and typography.');
+  } else if (ctx.category === 'security') {
+    acceptanceItems.push('Enforce strict stateless JWT verification and workspace RBAC roles (`OWNER`, `ADMIN`, `MEMBER`).');
+    acceptanceItems.push('Prevent IDOR vulnerabilities by verifying project ownership on all mutating endpoints.');
+    acceptanceItems.push('Constant-time comparisons applied to secret HMAC signatures and tokens to prevent timing attacks.');
+    acceptanceItems.push('Zero credential or sensitive token leakage in client-side bundles or server response logs.');
+  } else if (ctx.category === 'database') {
+    acceptanceItems.push('Database migration is idempotent, backward-compatible, and safely index-covered.');
     acceptanceItems.push('Concurrent transactions protected against race conditions using row-level locking or optimistic locks.');
-  }
-  if (ctx.inferredCategory === 'performance') {
-    acceptanceItems.push('Sub-100ms p95 latency achieved under synthetic concurrency load.');
-    acceptanceItems.push('In-memory cache invalidation triggers immediately on mutation events.');
-  }
-  if (ctx.inferredCategory === 'integration' || ctx.technologies.includes('webhook')) {
-    acceptanceItems.push('Webhook delivery handles exponential backoff retries and payload signature verification (HMAC).');
-  }
-
-  // Standard engineering criteria
-  acceptanceItems.push('Comprehensive test coverage added to CI pipeline with zero regressions on existing suites.');
-  acceptanceItems.push('Audit timeline and user feedback notifications triggered appropriately.');
-
-  // 4. Synthesize Technical Architecture & Notes
-  const techNotes: string[] = [];
-  if (ctx.technologies.length > 0) {
-    techNotes.push(`**Stack Context:** ${techStackBadge}`);
-  }
-  if (ctx.endpoints.length > 0) {
-    techNotes.push(`**API Contracts:** \`${ctx.endpoints.join('`, `')}\``);
-  }
-
-  if (ctx.inferredCategory === 'ui') {
-    techNotes.push('- Adhere to frosted-glass design tokens (`.pinterest-card`, `.pinterest-dock`, `--hero-glow`).');
-    techNotes.push('- Ensure zero Cumulative Layout Shift (CLS 0) and smooth 60fps CSS transitions.');
-    techNotes.push('- Verify accessible contrast ratios and ARIA attributes for screen readers.');
-  } else if (ctx.inferredCategory === 'backend' || ctx.inferredCategory === 'database') {
-    techNotes.push('- Keep database transactions isolated (`@Transactional`) and verify connection release.');
-    techNotes.push('- Prevent N+1 queries by leveraging entity graphs or explicit JOIN FETCH.');
-    techNotes.push('- Return standardized `ApiResponse<T>` wrappers with precise error codes.');
-  } else if (ctx.inferredCategory === 'security') {
-    techNotes.push('- Enforce constant-time comparison for token/signature checks to prevent timing attacks.');
-    techNotes.push('- Sanitize all user inputs before persistence to prevent XSS and SQL injection.');
+    acceptanceItems.push('Prevent N+1 query patterns by leveraging explicit JOIN FETCH or Entity Graphs.');
+    acceptanceItems.push('HikariCP connection pool configured with strict connection timeout (3000ms) and leak detection.');
+  } else if (ctx.category === 'performance') {
+    acceptanceItems.push('Sub-100ms p95 latency achieved under synthetic concurrency workload.');
+    acceptanceItems.push('In-memory SWR client-side cache provides sub-millisecond navigation with prefix-based invalidation.');
+    acceptanceItems.push('Fast-failover timeout (4.5s) seamlessly activates offline mock store sandbox on network dropouts.');
+  } else if (ctx.category === 'integration') {
+    acceptanceItems.push('Webhook delivery handles exponential backoff retries with payload HMAC signature verification.');
+    acceptanceItems.push('Rich Discord embed and Slack Block Kit payload formats render status, priority badges, and direct links.');
   } else {
-    techNotes.push('- Maintain modular component architecture with minimal bundle overhead.');
-    techNotes.push('- Ensure seamless offline/demo sandbox fallback when network is unavailable.');
+    acceptanceItems.push(`${ctx.actionVerb} **${cleanTitle}** ensuring end-to-end functionality across all viewports and user roles.`);
+    acceptanceItems.push('Maintain clean modular architecture with strict TypeScript typing and zero runtime warnings.');
+  }
+
+  acceptanceItems.push('Comprehensive test coverage added with zero regressions on existing test suites.');
+
+  // 3. Technical Notes & Architectural Strategy
+  const techNotes: string[] = [];
+  if (ctx.category === 'ui') {
+    techNotes.push('- **Design Tokens:** Adhere to Obsidian Palette (`#08090a`), frosted glass cards (`rgba(18, 19, 23, 0.75)`), and specular outer rings.');
+    techNotes.push('- **Typography & Rhythm:** Inter for interface copy, JetBrains Mono for sequence keys (`ENG-104`) and keyboard shortcuts (`⌘K`, `J/K`).');
+    techNotes.push('- **Animation Performance:** GPU-accelerated CSS transitions with `transform: translate3d` and `will-change: transform`.');
+  } else if (ctx.category === 'backend' || ctx.category === 'database') {
+    techNotes.push('- **Transaction Isolation:** Keep database transactions isolated (`@Transactional(readOnly = true)`) for queries.');
+    techNotes.push('- **Response Contracts:** Standardized `ApiResponse<T>` payload envelopes with precise error codes and timestamps.');
+    techNotes.push('- **Connection Pool:** Neon PostgreSQL connection recycling with HikariCP.');
+  } else if (ctx.category === 'security') {
+    techNotes.push('- **Auth Middleware:** Stateless Spring Security filter chain with HMAC SHA-256 JWT claim verification.');
+    techNotes.push('- **Sanitization:** Strict request payload validation via Zod / Spring Validator.');
+  } else {
+    techNotes.push('- **Architecture Pattern:** Clean separation of concerns between presentation, service orchestration, and persistence.');
+    techNotes.push('- **Offline Resilience:** Instant sandbox local storage failover for zero-friction exploration.');
   }
 
   if (input.customInstructions) {
     techNotes.push(`- **Custom Directive:** ${input.customInstructions}`);
   }
 
-  // 5. Build Final Formatted Output based on selected Mode
+  // 4. Synthesize Formatted Specification by Mode
   if (mode === 'CHECKLIST') {
     return `### 📋 Acceptance Checklist: ${cleanTitle}${custom}
 
+#### 🎯 Deliverables & Verification
 ${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
 
-> *Generated with DevFlow AI Spec Engine • Target Category: \`${ctx.inferredCategory.toUpperCase()}\`*
+#### 🧪 Test & Quality Gate
+- [ ] Unit test coverage passing with 0 errors
+- [ ] Responsive cross-browser smoke test verified (Chrome, Safari, Firefox, Mobile)
+- [ ] CI/CD automated build passes cleanly
+
+> *Generated with DevFlow AI Spec Engine • Domain: \`${ctx.domainSubject}\`*
 `;
   }
 
@@ -309,16 +351,17 @@ ${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
     return `### 🐞 Bug Investigation: ${cleanTitle}${custom}
 
 #### 📌 Problem Summary
-${problemStatement}
+${ctx.summarySentence}
+${input.description && input.description.length > 20 ? `\n**Reported Context:** ${input.description}` : ''}
 
-#### 🧪 Steps to Reproduce
+#### 🧪 Deterministic Steps to Reproduce
 ${reproSteps.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
 
 #### 🎯 Expected Behavior
-${titleWords ? `The system should smoothly handle **${titleWords}** without errors or latency spikes.` : 'Execution should complete successfully within standard latency budgets.'}
+The system should execute smoothly without visual defects, latency spikes, or uncaught runtime exceptions, strictly maintaining UX and architectural invariants.
 
-#### ⚠️ Actual Behavior & Error Signature
-${ctx.errorSignals.length > 0 ? `\`${ctx.errorSignals.join('`, `')}\`` : 'Anomalous state or uncaught exception during execution.'}
+#### ⚠️ Observed Anomaly & Failure Signature
+${ctx.errorSignals.length > 0 ? `\`${ctx.errorSignals.join('`, `')}\`` : 'Degraded user experience, unstyled layout artifacts, or inconsistent state transitions.'}
 
 #### 📋 Fix Verification & Regression Checklist
 ${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
@@ -331,26 +374,27 @@ ${techNotes.join('\n')}
   if (mode === 'ARCHITECTURE') {
     return `### 🏗️ Technical RFC: ${cleanTitle}${custom}
 
-#### 1. Overview & Architectural Goals
-${problemStatement}
+#### 1. Overview & Architectural Objectives
+${ctx.summarySentence}
 
 #### 2. Affected Subsystems & Components
-- **Category:** \`${ctx.inferredCategory.toUpperCase()}\`
-- **Modules Involved:** ${componentBadge}
-- **Technologies:** ${techStackBadge}
+- **Domain Subsystem:** \`${ctx.domainSubject}\`
+- **Category:** \`${ctx.category.toUpperCase()}\`
+- **Target Modules:** ${ctx.components.length > 0 ? `\`${ctx.components.join('`, `')}\`` : 'Workspace Core Layer'}
+- **Tech Stack:** ${ctx.technologies.length > 0 ? `\`${ctx.technologies.join('`, `')}\`` : 'Next.js 15, Tailwind CSS, Spring Boot 3.3, Neon PostgreSQL'}
 
-#### 3. API & Data Flow Specifications
-${ctx.endpoints.length > 0 ? ctx.endpoints.map((ep) => `- \`${ep}\``).join('\n') : `- Primary internal pipeline: \`${cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}\``}
+#### 3. API & Data Flow Contracts
+${ctx.endpoints.length > 0 ? ctx.endpoints.map((ep) => `- \`${ep}\``).join('\n') : `- Primary Internal Pipeline: \`${cleanTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-')}\``}
 
-#### 4. Key Acceptance Criteria
-${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
-
-#### 5. Implementation Strategy & Security Considerations
+#### 4. Implementation Strategy & Security Invariants
 ${techNotes.join('\n')}
 
-#### 6. Rollback & Migration Plan
-- Ensure zero-downtime deployment compatibility.
-- Backward compatibility preserved for existing clients and active sessions.
+#### 5. Verification & Acceptance Criteria
+${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
+
+#### 6. Rollback & Zero-Downtime Migration Plan
+- Backward compatibility guaranteed for all active client sessions.
+- Safe rollback toggle supported without data corruption or loss.
 `;
   }
 
@@ -358,19 +402,19 @@ ${techNotes.join('\n')}
     return `### ⚡ Engineering Subtasks: ${cleanTitle}${custom}
 
 #### 🎯 Objective
-${problemStatement}
+${ctx.summarySentence}
 
 #### 🔨 Actionable Task Breakdown
-- [ ] **Task 1: Core Setup & Data Contract**
-  - Define types, interfaces, or database DTOs for ${titleWords}.
-- [ ] **Task 2: Implementation & Logic**
-  - Implement business logic and state management across ${componentBadge}.
-- [ ] **Task 3: Integration & Edge Cases**
-  - Wire UI/API events, handle timeouts, and add optimistic updates.
+- [ ] **Task 1: Design Tokens & Foundation Setup**
+  - Establish base contracts, Tailwind utility tokens, and interfaces.
+- [ ] **Task 2: Core Component & Logic Implementation**
+  - Implement business logic, state transitions, and responsive layout structures.
+- [ ] **Task 3: Interactive Polish & Edge Case Handling**
+  - Add micro-animations, keyboard shortcuts, outside-click handlers, and loading states.
 - [ ] **Task 4: Automated Testing & Verification**
   - Write unit and integration tests covering happy-path and boundary cases.
-- [ ] **Task 5: Telemetry, Logging & Audit Timeline**
-  - Verify audit stream and dispatch notifications.
+- [ ] **Task 5: Telemetry, Audit Logging & CI Review**
+  - Verify audit stream, run production build validation, and prepare release PR.
 
 #### 💡 Technical Constraints
 ${techNotes.join('\n')}
@@ -380,13 +424,14 @@ ${techNotes.join('\n')}
   // Default: PRD Mode
   return `### 🎯 Product Requirements: ${cleanTitle}${custom}
 
-#### 📌 Objective & Problem Statement
-${problemStatement}
+#### 📌 Objective & Scope
+${ctx.summarySentence}
+${input.description && input.description.length > 20 ? `\n**Context & Notes:** ${input.description}` : ''}
 
 #### 🧪 Verification & Reproduction Scenarios
 ${reproSteps.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}
 
-#### 📋 Acceptance Criteria
+#### 📋 Concrete Acceptance Criteria
 ${acceptanceItems.map((item) => `- [ ] ${item}`).join('\n')}
 
 #### 💡 Technical Architecture & Notes
@@ -433,6 +478,6 @@ export async function generateAiIssueSpec(input: SpecGeneratorInput): Promise<st
   }
 
   // Tactile realistic delay for rich AST parsing & synthesis
-  await new Promise((resolve) => setTimeout(resolve, 450));
+  await new Promise((resolve) => setTimeout(resolve, 350));
   return synthesizeSemanticSpec(input);
 }
