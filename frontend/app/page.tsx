@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
+import { generateAiIssueSpec, SpecMode } from '@/lib/ai-issue-doctor';
+import { MarkdownContent } from '@/components/MarkdownContent';
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -103,8 +105,10 @@ export default function HomePage() {
   const [sequenceCount, setSequenceCount] = useState(108);
   const [activeVimKey, setActiveVimKey] = useState<string>('J');
   const [specInput, setSpecInput] = useState('Build automated Discord notifications for critical bugs');
+  const [specMode, setSpecMode] = useState<SpecMode>('PRD');
   const [specSynthesizing, setSpecSynthesizing] = useState(false);
   const [specGenerated, setSpecGenerated] = useState(false);
+  const [synthesizedMarkdown, setSynthesizedMarkdown] = useState('');
   const [copiedCli, setCopiedCli] = useState(false);
 
   const handleExploreDemo = async () => {
@@ -161,13 +165,23 @@ export default function HomePage() {
     });
   };
 
-  const handleSynthesizeSpec = () => {
+  const handleSynthesizeSpec = async () => {
+    if (!specInput.trim()) return;
     setSpecSynthesizing(true);
-    setTimeout(() => {
-      setSpecSynthesizing(false);
+    try {
+      const result = await generateAiIssueSpec({
+        title: specInput.trim(),
+        description: specInput.trim(),
+        mode: specMode,
+      });
+      setSynthesizedMarkdown(result);
       setSpecGenerated(true);
-      toast.success('AI Spec Doctor synthesized structured PRD with acceptance criteria!');
-    }, 600);
+      toast.success('AI Spec Doctor synthesized structured specification!');
+    } catch {
+      toast.error('Failed to synthesize specification');
+    } finally {
+      setSpecSynthesizing(false);
+    }
   };
 
   const handleCopyCli = () => {
@@ -583,19 +597,63 @@ export default function HomePage() {
                 AI Spec Doctor & Markdown Engine
               </h3>
               <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl">
-                Transform brief developer one-liners into structured technical specifications with acceptance criteria and architecture notes.
+                Transform brief developer one-liners and bug traces into structured technical specifications, acceptance criteria, and architecture RFCs.
               </p>
             </div>
 
             <button
               type="button"
               onClick={handleSynthesizeSpec}
-              disabled={specSynthesizing}
+              disabled={specSynthesizing || !specInput.trim()}
               className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-200 text-zinc-950 font-bold text-xs rounded-xl hover:brightness-105 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.25)] shrink-0 cursor-pointer disabled:opacity-60"
             >
               {specSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 fill-zinc-950" />}
-              <span>{specSynthesizing ? 'Synthesizing...' : 'Synthesize Spec PRD'}</span>
+              <span>{specSynthesizing ? 'Synthesizing Spec...' : `Synthesize ${specMode}`}</span>
             </button>
+          </div>
+
+          {/* Mode Tabs & Sample Chips */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-1.5 p-1 bg-zinc-950/80 border border-white/[0.08] rounded-xl text-xs font-mono">
+              {(['PRD', 'BUG_REPORT', 'CHECKLIST', 'ARCHITECTURE', 'SUBTASKS'] as SpecMode[]).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setSpecMode(m)}
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
+                    specMode === m
+                      ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30 font-semibold'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  {m === 'BUG_REPORT' ? 'Bug RCA' : m}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono">
+              <span className="text-zinc-500">Quick test:</span>
+              {[
+                'Discord Webhook signature check',
+                'Fix Safari navbar dropdown overflow',
+                'Atomic sequence counter concurrency lock',
+                'Migrate Neon PostgreSQL pool to HikariCP',
+              ].map((sample) => (
+                <button
+                  key={sample}
+                  type="button"
+                  onClick={() => {
+                    setSpecInput(sample);
+                    if (sample.includes('Fix')) setSpecMode('BUG_REPORT');
+                    else if (sample.includes('Migrate') || sample.includes('lock')) setSpecMode('ARCHITECTURE');
+                    else setSpecMode('PRD');
+                  }}
+                  className="px-2 py-0.5 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-300 hover:text-white transition-all cursor-pointer whitespace-nowrap"
+                >
+                  {sample.split(' ')[0]} {sample.split(' ')[1]}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -606,38 +664,43 @@ export default function HomePage() {
                 <textarea
                   value={specInput}
                   onChange={(e) => setSpecInput(e.target.value)}
-                  rows={4}
-                  className="w-full bg-zinc-900/60 border border-white/[0.08] rounded-lg p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-amber-400/40"
-                  placeholder="Enter brief task note..."
+                  rows={6}
+                  className="w-full bg-zinc-900/60 border border-white/[0.08] rounded-lg p-3 text-xs text-zinc-200 font-mono focus:outline-none focus:border-amber-400/40 resize-none transition-colors"
+                  placeholder="Enter raw technical requirement or error trace..."
                 />
               </div>
-              <div className="text-[10px] text-zinc-500 font-mono mt-2">
-                Click &quot;Synthesize Spec PRD&quot; to test AI transformation
+              <div className="text-[10px] text-zinc-500 font-mono mt-2 flex items-center justify-between">
+                <span>Edit any text above and click Synthesize</span>
+                <span className="text-amber-400/80">Mode: {specMode}</span>
               </div>
             </div>
 
             {/* Synthesized Output Side */}
-            <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-4 font-mono text-xs">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-semibold">Structured Technical Spec</span>
-                <span className="text-[10px] text-zinc-500">Markdown Format</span>
+            <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-4 font-mono text-xs flex flex-col justify-between min-h-[220px]">
+              <div>
+                <div className="flex items-center justify-between mb-3 pb-2 border-b border-white/[0.06]">
+                  <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Structured Spec Output</span>
+                  </span>
+                  <span className="text-[10px] text-zinc-500 font-mono">Live Rendered</span>
+                </div>
+
+                <div className="max-h-[220px] overflow-y-auto pr-1">
+                  {specGenerated && synthesizedMarkdown ? (
+                    <div className="animate-in fade-in duration-200">
+                      <MarkdownContent content={synthesizedMarkdown} />
+                    </div>
+                  ) : (
+                    <div className="h-40 flex flex-col items-center justify-center text-zinc-500 text-center space-y-2">
+                      <Bot className="w-6 h-6 text-zinc-600" />
+                      <p className="text-xs text-zinc-400 max-w-xs">
+                        Press <span className="text-amber-300 font-semibold">&quot;Synthesize {specMode}&quot;</span> to run the live semantic AI engine on your custom note.
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-              {specGenerated ? (
-                <div className="space-y-2 text-zinc-300 animate-in fade-in duration-300">
-                  <div className="text-sky-400 font-bold">### Summary & Context</div>
-                  <div className="text-zinc-400 text-[11px]">Integrate Discord webhook pipeline triggered on CRITICAL issue creations.</div>
-                  <div className="text-sky-400 font-bold">### Acceptance Criteria</div>
-                  <div className="text-zinc-400 text-[11px] space-y-0.5">
-                    <div>- [x] Webhook payload dispatches in &lt;100ms background thread</div>
-                    <div>- [x] Embed color set to #f43f5e for critical severity</div>
-                    <div>- [x] Direct link button to /issues/ENG-xxx</div>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-28 flex items-center justify-center text-zinc-600 text-center">
-                  Press &quot;Synthesize Spec PRD&quot; above to preview AI transformation output.
-                </div>
-              )}
             </div>
           </div>
         </div>
