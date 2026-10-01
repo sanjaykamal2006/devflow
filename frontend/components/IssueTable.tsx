@@ -6,9 +6,12 @@ import { Issue, IssuePriority, IssueStatus, WorkspaceMember } from '@/types';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
 import { TypeBadge } from './TypeBadge';
-import { MessageSquare, GitCommit, CheckSquare, Square, Trash2, UserCheck, X, Loader2 } from 'lucide-react';
+import { MessageSquare, GitCommit, CheckSquare, Square, Trash2, UserCheck, X, Loader2, Keyboard } from 'lucide-react';
 import { api } from '@/lib/api';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/auth-context';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { ShortcutsModal } from './ShortcutsModal';
 
 interface IssueTableProps {
   issues: Issue[];
@@ -17,22 +20,16 @@ interface IssueTableProps {
 }
 
 export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps) {
+  const { user } = useAuth();
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [batchActionLoading, setBatchActionLoading] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
 
   // Status and Priority Dropdown state for bulk actions
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
   const [priorityDropdownOpen, setPriorityDropdownOpen] = useState(false);
   const [assignDropdownOpen, setAssignDropdownOpen] = useState(false);
-
-  if (issues.length === 0) {
-    return (
-      <div className="border border-dashed border-white/[0.08] rounded-2xl p-12 text-center bg-zinc-950/40">
-        <p className="text-zinc-300 text-xs font-medium">No issues match the selected filter criteria.</p>
-        <p className="text-zinc-500 text-[11px] font-mono mt-1">Try clearing active filters or create a new issue.</p>
-      </div>
-    );
-  }
 
   const allSelected = issues.length > 0 && selectedIds.size === issues.length;
   const someSelected = selectedIds.size > 0 && !allSelected;
@@ -138,6 +135,83 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
       setBatchActionLoading(false);
     }
   };
+
+  // Wire Vim power-user keyboard shortcuts
+  useKeyboardShortcuts({
+    onNextIssue: () => {
+      setFocusedIndex((prev) => (prev === null || prev >= issues.length - 1 ? 0 : prev + 1));
+    },
+    onPrevIssue: () => {
+      setFocusedIndex((prev) => (prev === null || prev <= 0 ? issues.length - 1 : prev - 1));
+    },
+    onToggleSelect: () => {
+      if (focusedIndex !== null && issues[focusedIndex]) {
+        const id = issues[focusedIndex].id;
+        setSelectedIds((prev) => {
+          const next = new Set(prev);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+        });
+      }
+    },
+    onAssignMe: async () => {
+      if (focusedIndex !== null && issues[focusedIndex] && user) {
+        const issue = issues[focusedIndex];
+        try {
+          await api.issues.assign(issue.id, user.id);
+          toast.success(`Assigned ${issue.issueKey} to you`);
+          onRefresh?.();
+        } catch (err: unknown) {
+          toast.error(err instanceof Error ? err.message : 'Failed to assign issue');
+        }
+      }
+    },
+    onSetPriority: async (priority: IssuePriority) => {
+      if (focusedIndex !== null && issues[focusedIndex]) {
+        const issue = issues[focusedIndex];
+        try {
+          await api.issues.update(issue.id, { priority });
+          toast.success(`Updated ${issue.issueKey} priority to ${priority}`);
+          onRefresh?.();
+        } catch (err: unknown) {
+          toast.error(err instanceof Error ? err.message : 'Failed to update priority');
+        }
+      }
+    },
+    onDeleteIssue: async () => {
+      if (selectedIds.size > 0) {
+        handleBulkDelete();
+        return;
+      }
+      if (focusedIndex !== null && issues[focusedIndex]) {
+        const issue = issues[focusedIndex];
+        if (confirm(`Delete issue ${issue.issueKey}?`)) {
+          try {
+            await api.issues.delete(issue.id);
+            toast.success(`Deleted ${issue.issueKey}`);
+            onRefresh?.();
+          } catch (err: unknown) {
+            toast.error(err instanceof Error ? err.message : 'Failed to delete issue');
+          }
+        }
+      }
+    },
+    onToggleShortcuts: () => setShortcutsOpen((prev) => !prev),
+    enabled: true,
+  });
+
+  if (issues.length === 0) {
+    return (
+      <>
+        <div className="border border-dashed border-white/[0.08] rounded-2xl p-12 text-center bg-zinc-950/40">
+          <p className="text-zinc-300 text-xs font-medium">No issues match the selected filter criteria.</p>
+          <p className="text-zinc-500 text-[11px] font-mono mt-1">Try clearing active filters or create a new issue.</p>
+        </div>
+        <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      </>
+    );
+  }
 
   return (
     <div className="relative border border-white/[0.08] rounded-2xl overflow-hidden bg-[#0c0c0e]">
@@ -307,14 +381,20 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.04]">
-            {issues.map((issue) => {
+            {issues.map((issue, index) => {
               const isSelected = selectedIds.has(issue.id);
+              const isFocused = index === focusedIndex;
 
               return (
                 <tr
                   key={issue.id}
-                  onClick={(e) => toggleSelectOne(issue.id, e)}
-                  className={`transition-colors duration-150 cursor-pointer group ${
+                  onClick={(e) => {
+                    setFocusedIndex(index);
+                    toggleSelectOne(issue.id, e);
+                  }}
+                  className={`transition-colors duration-150 cursor-pointer group relative ${
+                    isFocused ? 'ring-1 ring-cyan-500/70 bg-cyan-950/20' : ''
+                  } ${
                     isSelected ? 'bg-sky-950/20' : 'hover:bg-zinc-900/40'
                   }`}
                 >
@@ -430,6 +510,44 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
           </tbody>
         </table>
       </div>
+
+      {/* Power-User Keyboard Hints Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] bg-zinc-950/80 text-[11px] font-mono text-zinc-400">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-1.5 text-zinc-300">
+            <Keyboard className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-semibold text-white">Vim Engine</span>
+          </span>
+          <span className="text-zinc-600 hidden sm:inline">•</span>
+          <span className="hidden sm:inline">
+            <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-zinc-300 text-[10px]">J</kbd> <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-zinc-300 text-[10px]">K</kbd> navigate
+          </span>
+          <span className="text-zinc-600 hidden sm:inline">•</span>
+          <span className="hidden sm:inline">
+            <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-zinc-300 text-[10px]">X</kbd> select
+          </span>
+          <span className="text-zinc-600 hidden sm:inline">•</span>
+          <span className="hidden sm:inline">
+            <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-zinc-300 text-[10px]">Space</kbd> assign
+          </span>
+          <span className="text-zinc-600 hidden md:inline">•</span>
+          <span className="hidden md:inline">
+            <kbd className="px-1 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-zinc-300 text-[10px]">1-4</kbd> priority
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShortcutsOpen(true)}
+          className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer text-zinc-400"
+        >
+          <span>Press</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-cyan-300 font-bold text-[10px]">?</kbd>
+          <span>for shortcuts</span>
+        </button>
+      </div>
+
+      <ShortcutsModal isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>
   );
 }

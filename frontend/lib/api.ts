@@ -51,7 +51,41 @@ export function clearToken(): void {
 let demoModeActive = false;
 
 export function isDemoMode(): boolean {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('devflow_demo_mode') === 'true' || demoModeActive;
+  }
   return demoModeActive;
+}
+
+export function setDemoMode(active: boolean): void {
+  demoModeActive = active;
+  if (typeof window !== 'undefined') {
+    if (active) {
+      localStorage.setItem('devflow_demo_mode', 'true');
+    } else {
+      localStorage.removeItem('devflow_demo_mode');
+    }
+  }
+}
+
+export function enterDemoSandbox(): { accessToken: string; user: User } {
+  const result = mockStore.initDemoSandbox();
+  setDemoMode(true);
+  setToken(result.accessToken);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('devflow_user', JSON.stringify(result.user));
+  }
+  clearApiCache();
+  return result;
+}
+
+export function exitDemoSandbox(): void {
+  setDemoMode(false);
+  clearToken();
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('devflow_user');
+  }
+  clearApiCache();
 }
 
 // In-Memory Fast Cache for sub-millisecond route transitions
@@ -266,6 +300,12 @@ function handleMockFallback<T>(endpoint: string, options: RequestInit = {}): T {
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method || 'GET').toUpperCase();
+
+  // If in demo sandbox mode, short-circuit network directly to mockStore
+  if (isDemoMode()) {
+    return handleMockFallback<T>(endpoint, options);
+  }
+
   const token = getToken();
   const cacheKey = `${method}:${endpoint}:${token || 'anon'}`;
 

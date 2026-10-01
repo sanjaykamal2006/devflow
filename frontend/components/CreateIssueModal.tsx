@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { MarkdownEditor } from './MarkdownContent';
+import { getWebhookConfig, sendWebhookNotification } from '@/lib/webhook-dispatcher';
 
 interface CreateIssueModalProps {
   projectId: string;
@@ -75,6 +76,22 @@ export function CreateIssueModal({
 
       onCreated(newIssue);
       toast.success(`Created issue ${newIssue.issueKey}`);
+
+      // Outgoing webhook automation
+      const webhookConfig = getWebhookConfig(projectId);
+      if (webhookConfig.enabled) {
+        sendWebhookNotification(webhookConfig, {
+          eventType: 'ISSUE_CREATED',
+          projectKey,
+          projectName: projectKey,
+          issueKey: newIssue.issueKey,
+          issueTitle: newIssue.title,
+          issuePriority: newIssue.priority,
+          issueStatus: newIssue.status,
+          authorName: 'Engineering Team',
+        }).catch(() => {});
+      }
+
       onClose();
       // Reset form
       setTitle('');
@@ -242,6 +259,9 @@ export function CreateIssueModal({
               onChange={setDescription}
               placeholder="Provide technical context, reproduction steps, or requirements in markdown…"
               minRows={4}
+              enableAiPolish={true}
+              issueTitle={title}
+              issueType={issueType}
             />
           </div>
 

@@ -10,7 +10,7 @@ import { BrandLogo } from './BrandLogo';
 import { Layers, LogOut, Settings, Plus, ChevronDown, Check, Search } from 'lucide-react';
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, isDemo, exitDemoSandbox } = useAuth();
   const pathname = usePathname();
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [wsDropdownOpen, setWsDropdownOpen] = useState(false);
@@ -38,6 +38,24 @@ export function Navbar() {
 
   return (
     <header className="border-b border-white/[0.06] bg-[#08090a]/80 backdrop-blur-xl sticky top-0 z-40 text-zinc-100">
+      {/* Top Banner Indicator for Demo Sandbox Mode */}
+      {isDemo && (
+        <div className="bg-gradient-to-r from-amber-500/15 via-amber-500/25 to-amber-500/15 border-b border-amber-500/30 px-4 py-1.5 text-xs text-amber-200 flex items-center justify-between gap-3 shadow-inner">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
+            <span className="font-semibold text-amber-300 shrink-0">⚡ Demo Sandbox Mode</span>
+            <span className="text-zinc-400 hidden sm:inline truncate">— Changes are saved locally in your browser.</span>
+          </div>
+          <button
+            type="button"
+            onClick={exitDemoSandbox}
+            className="shrink-0 px-2.5 py-0.5 rounded-md bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/40 text-amber-100 font-medium text-[11px] transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <span>Exit Demo / Create Free Account</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      )}
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">
         {/* Left: Brand & Workspace Selector */}
         <div className="flex items-center gap-3 sm:gap-4 shrink-0">

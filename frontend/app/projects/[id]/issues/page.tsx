@@ -17,6 +17,8 @@ import {
   ChevronRight,
   GitBranch,
 } from 'lucide-react';
+import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
+import { ShortcutsModal } from '@/components/ShortcutsModal';
 
 export default function ProjectIssuesPage({
   params,
@@ -49,9 +51,17 @@ export default function ProjectIssuesPage({
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
 
-  // Modal
+  // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Power-user global shortcuts on issues board
+  useKeyboardShortcuts({
+    onNewIssue: () => setCreateModalOpen(true),
+    onToggleShortcuts: () => setShortcutsModalOpen((prev) => !prev),
+    enabled: !createModalOpen,
+  });
 
   const loadInitialData = useCallback(async () => {
     try {
@@ -245,10 +255,13 @@ export default function ProjectIssuesPage({
           <button
             type="button"
             onClick={() => setCreateModalOpen(true)}
-            className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
+            className="h-9 px-3.5 sm:px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden="true" />
             <span>New Issue</span>
+            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-900 border border-zinc-300 font-mono text-[10px] font-bold">
+              C
+            </kbd>
           </button>
         </div>
       </div>
@@ -434,6 +447,12 @@ export default function ProjectIssuesPage({
           setIssues((prev) => [newIssue, ...prev]);
           setTotalElements((cnt) => cnt + 1);
         }}
+      />
+
+      {/* Keyboard Shortcuts Cheatsheet Modal */}
+      <ShortcutsModal
+        isOpen={shortcutsModalOpen}
+        onClose={() => setShortcutsModalOpen(false)}
       />
     </div>
   );

@@ -18,6 +18,7 @@ import { api } from '@/lib/api';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { TypeBadge } from '@/components/TypeBadge';
 import { MarkdownContent, MarkdownEditor } from '@/components/MarkdownContent';
+import { getWebhookConfig, sendWebhookNotification } from '@/lib/webhook-dispatcher';
 import {
   MessageSquare,
   GitCommit,
@@ -123,6 +124,21 @@ export default function IssueDetailPage({
       const updated = await api.issues.changeStatus(issue.id, newStatus);
       setIssue((prev) => (prev ? { ...prev, status: updated.status } : null));
       toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
+
+      // Outgoing webhook automation
+      const webhookConfig = getWebhookConfig(issue.projectId);
+      if (webhookConfig.enabled) {
+        sendWebhookNotification(webhookConfig, {
+          eventType: 'STATUS_CHANGED',
+          projectKey: issue.projectKey || issue.issueKey.split('-')[0],
+          projectName: issue.projectKey || 'DevFlow',
+          issueKey: issue.issueKey,
+          issueTitle: issue.title,
+          issuePriority: issue.priority,
+          issueStatus: newStatus,
+          authorName: user?.fullName || 'Engineer',
+        }).catch(() => {});
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to change status';
       setError(msg);
@@ -238,6 +254,21 @@ export default function IssueDetailPage({
     try {
       const added = await api.comments.create(issue.id, { content: newComment.trim() });
       setComments((prev) => [...prev, added]);
+
+      // Outgoing webhook automation
+      const webhookConfig = getWebhookConfig(issue.projectId);
+      if (webhookConfig.enabled) {
+        sendWebhookNotification(webhookConfig, {
+          eventType: 'COMMENT_ADDED',
+          projectKey: issue.projectKey || issue.issueKey.split('-')[0],
+          projectName: issue.projectKey || 'DevFlow',
+          issueKey: issue.issueKey,
+          issueTitle: issue.title,
+          authorName: user?.fullName || 'Engineer',
+          commentBody: newComment.trim(),
+        }).catch(() => {});
+      }
+
       setNewComment('');
       toast.success('Comment posted');
     } catch (err: unknown) {
@@ -483,6 +514,9 @@ export default function IssueDetailPage({
                   onChange={setDescInput}
                   minRows={6}
                   placeholder="Issue description in Markdown…"
+                  enableAiPolish={true}
+                  issueTitle={issue.title}
+                  issueType={issue.issueType}
                 />
                 <div className="flex items-center justify-end gap-2">
                   <button

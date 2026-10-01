@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Project, GitHubRepository, Workspace } from '@/types';
 import { api } from '@/lib/api';
 import { GitHubPanel } from '@/components/GitHubPanel';
+import { WebhookSettingsCard } from '@/components/WebhookSettingsCard';
 import {
   Kanban,
   CheckCircle2,
@@ -227,6 +228,16 @@ export default function ProjectOverviewPage({
           repository={gitHubRepo}
           canManage={canManage}
           onRepoUpdated={loadData}
+        />
+      </div>
+
+      {/* Webhook Notifications Panel */}
+      <div className="space-y-3">
+        <WebhookSettingsCard
+          projectId={projectId}
+          projectKey={project.key}
+          projectName={project.name}
+          canManage={canManage}
         />
       </div>
     </div>

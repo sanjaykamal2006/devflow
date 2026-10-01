@@ -13,7 +13,6 @@ import {
   Shield,
   GitBranch,
   Loader2,
-  Sparkles,
   Zap,
   CheckCircle2,
   GitCommit,
@@ -93,7 +92,7 @@ const INITIAL_DEMO_CARDS: DemoCard[] = [
 ];
 
 export default function HomePage() {
-  const { user, login } = useAuth();
+  const { user, enterDemoSandbox } = useAuth();
   const router = useRouter();
   const [demoLoading, setDemoLoading] = useState(false);
   const [demoCards, setDemoCards] = useState<DemoCard[]>(INITIAL_DEMO_CARDS);
@@ -104,16 +103,8 @@ export default function HomePage() {
   const handleExploreDemo = async () => {
     setDemoLoading(true);
     try {
-      if (user) {
-        router.push('/dashboard');
-        return;
-      }
-      try {
-        await login('demo@devflow.io', 'demo123');
-      } catch {
-        await login('sanjaykamal2006@gmail.com', 'password123');
-      }
-      toast.success('Signed in to DevFlow workspace');
+      await enterDemoSandbox();
+      toast.success('⚡ Sandbox activated! Welcome to HyperScale Core');
       router.push('/dashboard');
     } catch {
       router.push('/dashboard');
@@ -225,10 +216,10 @@ export default function HomePage() {
                   type="button"
                   onClick={handleExploreDemo}
                   disabled={demoLoading}
-                  className="px-3.5 py-1.5 bg-white text-zinc-950 font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-all shadow-[0_0_16px_rgba(255,255,255,0.14)] flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-200 text-zinc-950 font-bold text-xs rounded-lg hover:brightness-105 transition-all shadow-[0_0_16px_rgba(251,191,36,0.25)] flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
                 >
-                  {demoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 text-zinc-900" />}
-                  <span>Open Demo</span>
+                  {demoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5 fill-zinc-950" />}
+                  <span>⚡ Instant Sandbox</span>
                 </button>
               </>
             )}
@@ -265,10 +256,10 @@ export default function HomePage() {
             type="button"
             onClick={handleExploreDemo}
             disabled={demoLoading}
-            className="w-full sm:w-auto px-6 py-3 bg-white text-zinc-950 font-semibold text-sm rounded-xl hover:bg-zinc-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(255,255,255,0.18)] cursor-pointer disabled:opacity-60"
+            className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-zinc-950 font-bold text-sm rounded-xl hover:brightness-105 transition-all flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(251,191,36,0.35)] cursor-pointer disabled:opacity-60 ring-1 ring-amber-300/50"
           >
             {demoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-zinc-950" />}
-            <span>Launch Workspace</span>
+            <span>⚡ Try Live Demo (Instant Sandbox)</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
