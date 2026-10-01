@@ -51,11 +51,11 @@ export function TypeBadge({ type, className = '', showIcon = true, size = 'md' }
   };
 
   const current = meta[type] || meta.TASK;
-  const padding = size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-xs';
+  const padding = size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-0.5 text-xs';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md font-medium border select-none backdrop-blur-sm ${padding} ${current.bg} ${current.border} ${current.color} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium border select-none backdrop-blur-sm shadow-sm ${padding} ${current.bg} ${current.border} ${current.color} ${className}`}
     >
       {showIcon && current.icon}
       <span>{current.label}</span>

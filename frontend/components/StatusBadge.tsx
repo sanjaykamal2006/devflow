@@ -62,11 +62,11 @@ export function StatusBadge({ status, className = '', size = 'md' }: StatusBadge
   };
 
   const current = configs[status] || configs.TODO;
-  const padding = size === 'sm' ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-0.5 text-xs';
+  const padding = size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-0.5 text-xs';
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md font-medium border font-sans select-none backdrop-blur-sm ${padding} ${current.bg} ${current.border} ${current.text} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium border font-sans select-none backdrop-blur-sm shadow-sm ${padding} ${current.bg} ${current.border} ${current.text} ${className}`}
     >
       {current.icon}
       <span>{current.label}</span>

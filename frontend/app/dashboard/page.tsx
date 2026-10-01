@@ -118,7 +118,7 @@ export default function DashboardPage() {
         <button
           type="button"
           onClick={() => setCreatingWs(true)}
-          className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-150 shadow-[0_0_16px_rgba(255,255,255,0.12)] flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+          className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-full text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-95 transition-all duration-150 shadow-[0_0_16px_rgba(255,255,255,0.15)] flex items-center gap-2 self-start sm:self-auto cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5" aria-hidden="true" />
           <span>New Workspace</span>
@@ -230,7 +230,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => setCreatingWs(true)}
-              className="mt-4 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 transition-all shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
+              className="mt-4 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 active:scale-95 transition-all shadow-[0_0_16px_rgba(255,255,255,0.15)] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Create Workspace</span>
@@ -242,14 +242,14 @@ export default function DashboardPage() {
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="linear-card rounded-2xl p-5 flex flex-col justify-between group"
+                className="pinterest-card p-5 flex flex-col justify-between group cursor-pointer"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-base font-semibold text-zinc-100 group-hover:text-white truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-zinc-900 border border-white/[0.08] text-zinc-300 shrink-0">
+                    <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white/[0.05] border border-white/[0.08] text-zinc-300 shrink-0">
                       <Shield className="w-3 h-3 text-zinc-400" aria-hidden="true" />
                       <span>{ws.currentUserRole}</span>
                     </span>

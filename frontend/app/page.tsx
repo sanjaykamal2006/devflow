@@ -167,40 +167,40 @@ export default function HomePage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[480px] bg-hero-glow pointer-events-none -z-10" />
       <div className="absolute top-[280px] left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-radial-subtle pointer-events-none -z-10" />
 
-      {/* 1. Header Navigation */}
-      <header className="border-b border-white/[0.06] bg-[#08090a]/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-7">
-            <Link href="/" className="hover:opacity-90 transition">
+      {/* 1. Floating Header Navigation Dock */}
+      <header className="sticky top-3 sm:top-4 z-50 px-3 sm:px-6 w-full max-w-6xl mx-auto">
+        <div className="pinterest-dock rounded-full px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6 sm:gap-8">
+            <Link href="/" className="hover:opacity-90 transition p-1 rounded-full flex items-center">
               <BrandLogo size="md" showText={true} />
             </Link>
 
-            <nav className="hidden sm:flex items-center gap-6 text-xs font-medium text-zinc-400">
-              <a href="#demo" className="hover:text-zinc-100 transition-colors">
+            <nav className="hidden sm:flex items-center gap-1 bg-white/[0.03] p-1 rounded-full border border-white/[0.05]">
+              <a href="#demo" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
                 Live Demo
               </a>
-              <a href="#features" className="hover:text-zinc-100 transition-colors">
+              <a href="#features" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
                 Features
               </a>
-              <a href="#architecture" className="hover:text-zinc-100 transition-colors">
+              <a href="#architecture" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
                 Architecture
               </a>
               <a
                 href="https://github.com/sanjaykamal2006/devflow"
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-zinc-100 transition-colors flex items-center gap-1"
+                className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all flex items-center gap-1"
               >
                 GitHub
               </a>
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <Link
                 href="/dashboard"
-                className="px-3.5 py-1.5 bg-white text-zinc-950 font-semibold text-xs rounded-lg hover:bg-zinc-200 transition-all shadow-[0_0_16px_rgba(255,255,255,0.12)]"
+                className="px-4 py-1.5 bg-white text-zinc-950 font-semibold text-xs rounded-full hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_16px_rgba(255,255,255,0.15)]"
               >
                 Go to Dashboard
               </Link>
@@ -208,7 +208,7 @@ export default function HomePage() {
               <>
                 <Link
                   href="/login"
-                  className="text-xs text-zinc-400 hover:text-white px-2.5 py-1.5 transition-colors"
+                  className="text-xs font-medium text-zinc-300 hover:text-white px-3 py-1.5 rounded-full hover:bg-white/[0.06] transition-all"
                 >
                   Sign In
                 </Link>
@@ -216,7 +216,7 @@ export default function HomePage() {
                   type="button"
                   onClick={handleExploreDemo}
                   disabled={demoLoading}
-                  className="px-3.5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-200 text-zinc-950 font-bold text-xs rounded-lg hover:brightness-105 transition-all shadow-[0_0_16px_rgba(251,191,36,0.25)] flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                  className="px-4 py-1.5 bg-gradient-to-r from-amber-400 to-amber-200 text-zinc-950 font-bold text-xs rounded-full hover:brightness-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(251,191,36,0.3)] flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
                 >
                   {demoLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5 fill-zinc-950" />}
                   <span>⚡ Instant Sandbox</span>

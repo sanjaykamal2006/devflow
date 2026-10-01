@@ -200,17 +200,17 @@ export default function ProjectIssuesPage({
 
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white font-mono">{project.key} Issues</h1>
-            <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-300 tabular-nums">
+            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-zinc-300 tabular-nums">
               {totalElements} total
             </span>
-            <span className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-500 bg-zinc-900/60 px-2 py-0.5 rounded-md border border-white/[0.06]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-300 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] animate-pulse" />
               <span>Live Sync</span>
             </span>
             {project.githubConnected && (
               <Link
                 href={`/projects/${project.id}`}
-                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/60 hover:border-emerald-500/60 transition-colors"
+                className="flex items-center gap-1.5 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-800/60 hover:border-emerald-500/60 transition-colors"
               >
                 <GitBranch className="w-3 h-3" aria-hidden="true" />
                 <span>GitHub linked</span>
@@ -221,16 +221,16 @@ export default function ProjectIssuesPage({
 
         {/* View Toggle & New Issue Button */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-zinc-900/90 p-1 rounded-lg border border-white/[0.08]" role="group" aria-label="View layout switch">
+          <div className="flex items-center bg-white/[0.03] p-1 rounded-full border border-white/[0.08]" role="group" aria-label="View layout switch">
             <button
               type="button"
               onClick={() => setViewMode('kanban')}
               aria-pressed={viewMode === 'kanban'}
               aria-label="Board view"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
                 viewMode === 'kanban'
-                  ? 'bg-zinc-800 text-white shadow-sm font-semibold'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-white/[0.12] text-white shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.15)] font-semibold'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
               }`}
             >
               <Kanban className="w-3.5 h-3.5" aria-hidden="true" />
@@ -241,10 +241,10 @@ export default function ProjectIssuesPage({
               onClick={() => setViewMode('table')}
               aria-pressed={viewMode === 'table'}
               aria-label="List view"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-150 cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-150 cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-zinc-800 text-white shadow-sm font-semibold'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  ? 'bg-white/[0.12] text-white shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.15)] font-semibold'
+                  : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" aria-hidden="true" />
@@ -255,11 +255,11 @@ export default function ProjectIssuesPage({
           <button
             type="button"
             onClick={() => setCreateModalOpen(true)}
-            className="h-9 px-3.5 sm:px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
+            className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-full text-xs font-semibold active:scale-95 transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.15)] cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden="true" />
             <span>New Issue</span>
-            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-zinc-200 text-zinc-900 border border-zinc-300 font-mono text-[10px] font-bold">
+            <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded-full bg-zinc-200 text-zinc-900 border border-zinc-300 font-mono text-[10px] font-bold">
               C
             </kbd>
           </button>

@@ -126,8 +126,8 @@ function SortableIssueCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`linear-card rounded-xl p-3.5 transition-all duration-200 group relative ${
-        isDragging ? 'opacity-20 border-dashed border-sky-400/80 scale-[0.98]' : 'hover:border-white/[0.18]'
+      className={`pinterest-card !p-3.5 !rounded-2xl transition-all duration-200 group relative ${
+        isDragging ? 'opacity-20 border-dashed border-sky-400/80 scale-[0.98]' : 'hover:border-white/[0.2]'
       }`}
     >
       {/* Drag handle & top row */}
@@ -136,7 +136,7 @@ function SortableIssueCard({
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-zinc-500 hover:text-zinc-200 rounded transition-colors touch-none"
+            className="cursor-grab active:cursor-grabbing p-1 -ml-1 text-zinc-500 hover:text-zinc-200 rounded-full transition-colors touch-none"
             title="Drag to reposition"
             aria-label="Drag handle"
           >
@@ -170,8 +170,8 @@ function SortableIssueCard({
           {issue.labels.map((lbl) => (
             <span
               key={lbl.id}
-              className="text-[10px] px-1.5 py-0.5 rounded border border-white/[0.08] bg-zinc-950/80 text-zinc-400 font-mono"
-              style={{ borderColor: lbl.color ? `${lbl.color}40` : undefined }}
+              className="text-[10px] px-2 py-0.5 rounded-full border border-white/[0.08] bg-white/[0.04] text-zinc-300 font-mono shadow-sm"
+              style={{ borderColor: lbl.color ? `${lbl.color}50` : undefined }}
             >
               {lbl.name}
             </span>
@@ -180,11 +180,11 @@ function SortableIssueCard({
       )}
 
       {/* Footer: Assignee + Counts + Quick Step Buttons */}
-      <div className="flex items-center justify-between pt-2 border-t border-white/[0.06] text-xs text-zinc-500">
+      <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-xs text-zinc-500">
         <div className="flex items-center gap-2 min-w-0">
           {issue.assignee ? (
             <div
-              className="w-5 h-5 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-white/[0.12] flex items-center justify-center text-[10px] text-zinc-200 font-mono font-medium tabular-nums shrink-0 shadow-inner"
+              className="w-5 h-5 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-700 border border-white/[0.14] flex items-center justify-center text-[10px] text-zinc-200 font-mono font-medium tabular-nums shrink-0 shadow-inner"
               title={`Assignee: ${issue.assignee.fullName}`}
             >
               {issue.assignee.fullName.charAt(0).toUpperCase()}
@@ -217,7 +217,7 @@ function SortableIssueCard({
             <button
               type="button"
               onClick={() => onStatusChange(issue.id, prevStatus)}
-              className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+              className="p-1 hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 rounded-full transition-colors cursor-pointer"
               title={`Move back to ${COLUMN_NAMES[prevStatus]}`}
               aria-label={`Move ${issue.issueKey} to ${COLUMN_NAMES[prevStatus]}`}
             >
@@ -227,8 +227,11 @@ function SortableIssueCard({
           {nextStatus && (
             <button
               type="button"
-              onClick={() => onStatusChange(issue.id, nextStatus)}
-              className="p-1 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+              onClick={() => {
+                onStatusChange(issue.id, nextStatus);
+                if (nextStatus === 'DONE') triggerCompletionCelebration();
+              }}
+              className="p-1 hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 rounded-full transition-colors cursor-pointer"
               title={`Advance to ${COLUMN_NAMES[nextStatus]}`}
               aria-label={`Move ${issue.issueKey} to ${COLUMN_NAMES[nextStatus]}`}
             >
@@ -298,7 +301,7 @@ function DroppableColumn({
             {col.title}
           </span>
         </div>
-        <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-zinc-300 tabular-nums">
+        <span className="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-zinc-300 tabular-nums shadow-sm">
           {issues.length}
         </span>
       </div>

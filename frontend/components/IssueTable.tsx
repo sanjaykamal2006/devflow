@@ -217,15 +217,15 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
     <div className="relative border border-white/[0.08] rounded-2xl overflow-hidden bg-[#0c0c0e]">
       {/* Floating Bulk Action Bar */}
       {selectedIds.size > 0 && (
-        <div className="sticky top-0 z-30 bg-zinc-950/95 border-b border-sky-500/30 px-4 py-2.5 backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in duration-150">
+        <div className="sticky top-0 z-30 bg-zinc-950/95 border-b border-sky-500/30 px-4 py-2.5 backdrop-blur-2xl flex flex-wrap items-center justify-between gap-3 animate-in fade-in duration-150">
           <div className="flex items-center gap-2.5">
-            <span className="px-2 py-0.5 rounded-full bg-sky-950/80 border border-sky-500/40 text-sky-400 font-mono text-[11px] font-semibold tabular-nums">
+            <span className="px-3 py-0.5 rounded-full bg-sky-950/80 border border-sky-500/40 text-sky-400 font-mono text-[11px] font-semibold tabular-nums shadow-sm">
               {selectedIds.size} selected
             </span>
             <button
               type="button"
               onClick={clearSelection}
-              className="text-zinc-500 hover:text-zinc-300 text-xs flex items-center gap-1 transition-colors"
+              className="text-zinc-500 hover:text-zinc-300 text-xs flex items-center gap-1 transition-colors px-2 py-0.5 rounded-full hover:bg-white/[0.05]"
             >
               <X className="w-3.5 h-3.5" />
               <span>Deselect all</span>
@@ -244,19 +244,19 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
                   setPriorityDropdownOpen(false);
                   setAssignDropdownOpen(false);
                 }}
-                className="px-2.5 py-1 text-xs font-medium rounded-lg bg-zinc-900 hover:bg-zinc-850 border border-white/[0.08] text-zinc-200 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1 text-xs font-medium rounded-full bg-white/[0.05] hover:bg-white/[0.1] active:scale-95 border border-white/[0.08] text-zinc-200 transition-all flex items-center gap-1.5"
               >
                 <span>Status</span>
                 <span className="text-zinc-500 text-[10px]">▾</span>
               </button>
               {statusDropdownOpen && (
-                <div className="absolute left-0 mt-1 w-36 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl py-1 z-40">
+                <div className="absolute left-0 mt-1 w-36 bg-[#0c0d10]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl p-1 z-40">
                   {(['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'] as IssueStatus[]).map((st) => (
                     <button
                       key={st}
                       type="button"
                       onClick={() => handleBulkStatus(st)}
-                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors"
+                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.08] hover:text-white rounded-xl transition-colors"
                     >
                       {st.replace('_', ' ')}
                     </button>
@@ -274,19 +274,19 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
                   setStatusDropdownOpen(false);
                   setAssignDropdownOpen(false);
                 }}
-                className="px-2.5 py-1 text-xs font-medium rounded-lg bg-zinc-900 hover:bg-zinc-855 border border-white/[0.08] text-zinc-200 transition-colors flex items-center gap-1.5"
+                className="px-3 py-1 text-xs font-medium rounded-full bg-white/[0.05] hover:bg-white/[0.1] active:scale-95 border border-white/[0.08] text-zinc-200 transition-all flex items-center gap-1.5"
               >
                 <span>Priority</span>
                 <span className="text-zinc-500 text-[10px]">▾</span>
               </button>
               {priorityDropdownOpen && (
-                <div className="absolute left-0 mt-1 w-32 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl py-1 z-40">
+                <div className="absolute left-0 mt-1 w-32 bg-[#0c0d10]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl p-1 z-40">
                   {(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as IssuePriority[]).map((pr) => (
                     <button
                       key={pr}
                       type="button"
                       onClick={() => handleBulkPriority(pr)}
-                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors"
+                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.08] hover:text-white rounded-xl transition-colors"
                     >
                       {pr}
                     </button>
@@ -305,28 +305,28 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
                     setStatusDropdownOpen(false);
                     setPriorityDropdownOpen(false);
                   }}
-                  className="px-2.5 py-1 text-xs font-medium rounded-lg bg-zinc-900 hover:bg-zinc-850 border border-white/[0.08] text-zinc-200 transition-colors flex items-center gap-1.5"
+                  className="px-3 py-1 text-xs font-medium rounded-full bg-white/[0.05] hover:bg-white/[0.1] active:scale-95 border border-white/[0.08] text-zinc-200 transition-all flex items-center gap-1.5"
                 >
                   <UserCheck className="w-3.5 h-3.5 text-zinc-400" />
                   <span>Assign</span>
                   <span className="text-zinc-500 text-[10px]">▾</span>
                 </button>
                 {assignDropdownOpen && (
-                  <div className="absolute right-0 mt-1 w-44 bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl py-1 z-40 max-h-48 overflow-y-auto">
+                  <div className="absolute right-0 mt-1 w-44 bg-[#0c0d10]/95 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-2xl p-1 z-40 max-h-48 overflow-y-auto">
                     <button
                       type="button"
                       onClick={() => handleBulkAssign(null)}
-                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors"
+                      className="w-full text-left px-3 py-1.5 text-xs text-zinc-400 hover:bg-white/[0.08] hover:text-white rounded-xl transition-colors"
                     >
                       Unassigned
                     </button>
-                    <div className="border-t border-zinc-800 my-1" />
+                    <div className="border-t border-white/[0.08] my-1" />
                     {members.map((m) => (
                       <button
                         key={m.id}
                         type="button"
                         onClick={() => handleBulkAssign(m.user.id)}
-                        className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-900 hover:text-white truncate transition-colors"
+                        className="w-full text-left px-3 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.08] hover:text-white truncate rounded-xl transition-colors"
                       >
                         {m.user.fullName}
                       </button>
@@ -340,7 +340,7 @@ export function IssueTable({ issues, members = [], onRefresh }: IssueTableProps)
             <button
               type="button"
               onClick={handleBulkDelete}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-rose-950/60 hover:bg-rose-900 border border-rose-800/60 text-rose-300 hover:text-white transition-colors flex items-center gap-1.5"
+              className="px-3 py-1 text-xs font-medium rounded-full bg-rose-950/60 hover:bg-rose-900 active:scale-95 border border-rose-800/60 text-rose-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
               title="Delete selected issues"
             >
               <Trash2 className="w-3.5 h-3.5" />

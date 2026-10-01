@@ -169,7 +169,7 @@ export default function WorkspaceDetailPage({
           <button
             type="button"
             onClick={() => setCreateProjectOpen(true)}
-            className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 transition-all duration-150 shadow-[0_0_16px_rgba(255,255,255,0.12)] flex items-center gap-2 self-start sm:self-auto cursor-pointer"
+            className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-full text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 active:scale-95 transition-all duration-150 shadow-[0_0_16px_rgba(255,255,255,0.15)] flex items-center gap-2 self-start sm:self-auto cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden="true" />
             <span>New Project</span>
@@ -178,28 +178,28 @@ export default function WorkspaceDetailPage({
       </div>
 
       {error && (
-        <div role="alert" className="my-4 p-3 rounded-lg bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div role="alert" className="my-4 p-3 rounded-2xl bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
       {success && (
-        <div role="status" className="my-4 p-3 rounded-lg bg-emerald-950/50 border border-emerald-800/80 text-emerald-300 text-xs font-mono">
+        <div role="status" className="my-4 p-3 rounded-2xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-300 text-xs font-mono">
           {success}
         </div>
       )}
 
-      {/* Tabs */}
-      <div className="flex items-center gap-6 mt-6 border-b border-white/[0.06] text-xs font-medium" role="tablist" aria-label="Workspace tabs">
+      {/* Pinterest-Style Segmented Tabs */}
+      <div className="flex items-center gap-2 mt-6 p-1 bg-white/[0.03] border border-white/[0.06] rounded-full max-w-fit text-xs font-medium" role="tablist" aria-label="Workspace tabs">
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'projects'}
           onClick={() => setActiveTab('projects')}
-          className={`pb-3 flex items-center gap-2 border-b-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-t transition-all duration-150 ${
+          className={`px-4 py-1.5 rounded-full flex items-center gap-2 transition-all duration-150 cursor-pointer ${
             activeTab === 'projects'
-              ? 'border-white text-white font-semibold'
-              : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              ? 'bg-white/[0.12] text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.15)]'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
           }`}
         >
           <FolderGit2 className="w-3.5 h-3.5" aria-hidden="true" />
@@ -211,10 +211,10 @@ export default function WorkspaceDetailPage({
           role="tab"
           aria-selected={activeTab === 'members'}
           onClick={() => setActiveTab('members')}
-          className={`pb-3 flex items-center gap-2 border-b-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 rounded-t transition-all duration-150 ${
+          className={`px-4 py-1.5 rounded-full flex items-center gap-2 transition-all duration-150 cursor-pointer ${
             activeTab === 'members'
-              ? 'border-white text-white font-semibold'
-              : 'border-transparent text-zinc-400 hover:text-zinc-200'
+              ? 'bg-white/[0.12] text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.15)]'
+              : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04]'
           }`}
         >
           <Users className="w-3.5 h-3.5" aria-hidden="true" />
@@ -237,7 +237,7 @@ export default function WorkspaceDetailPage({
                 <button
                   type="button"
                   onClick={() => setCreateProjectOpen(true)}
-                  className="mt-4 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_0_16px_rgba(255,255,255,0.12)] transition-all duration-150 cursor-pointer"
+                  className="mt-4 px-4 py-2 bg-white hover:bg-zinc-200 text-zinc-950 rounded-full text-xs font-semibold inline-flex items-center gap-1.5 shadow-[0_0_16px_rgba(255,255,255,0.15)] active:scale-95 transition-all duration-150 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>Create Project</span>
@@ -250,12 +250,12 @@ export default function WorkspaceDetailPage({
                 <Link
                   key={proj.id}
                   href={`/projects/${proj.id}/issues`}
-                  className="linear-card rounded-2xl p-5 flex flex-col justify-between group"
+                  className="pinterest-card p-5 flex flex-col justify-between group cursor-pointer"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="min-w-0">
-                        <span className="font-mono text-xs font-semibold px-2 py-0.5 rounded-md bg-zinc-900 text-zinc-300 border border-white/[0.08] mb-2 inline-block">
+                        <span className="font-mono text-xs font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.06] text-zinc-200 border border-white/[0.08] mb-2 inline-block">
                           {proj.key}
                         </span>
                         <h3 className="text-base font-semibold text-zinc-100 group-hover:text-white truncate">
@@ -263,7 +263,7 @@ export default function WorkspaceDetailPage({
                         </h3>
                       </div>
                       {proj.githubConnected && (
-                        <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-800/60" title="Connected to GitHub">
+                        <span className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-800/60" title="Connected to GitHub">
                           <GitBranch className="w-3 h-3" aria-hidden="true" />
                           <span>GitHub</span>
                         </span>
