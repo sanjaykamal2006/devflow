@@ -84,10 +84,18 @@ export default function DashboardPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [creatingWs]);
 
+  const totalProjects = workspaces.reduce((sum, ws) => sum + (ws.projectCount || 0), 0);
+  const totalMembers = workspaces.reduce((sum, ws) => sum + (ws.memberCount || 0), 0);
+
   if (authLoading) {
     return (
-      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 animate-pulse">
-        <div className="h-8 bg-zinc-900 rounded-lg w-48 mb-6" />
+      <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 animate-pulse space-y-6">
+        <div className="h-8 bg-zinc-900 rounded-lg w-48" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+          <div className="h-24 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
           <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl" />
@@ -98,16 +106,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8">
-      {/* Header */}
+    <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-8">
+      {/* Top Header: Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-white/[0.06]">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white">
-              Workspaces
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-white font-mono">
+              Engineering Workspaces
             </h1>
-            <span className="text-xs font-mono text-zinc-400 px-2 py-0.5 rounded-full bg-zinc-900 border border-white/[0.08]">
-              {workspaces.length} total
+            <span className="text-xs font-mono font-medium px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-zinc-300 tabular-nums">
+              {workspaces.length} active
             </span>
           </div>
           <p className="text-xs text-zinc-400 mt-1">
@@ -126,15 +134,48 @@ export default function DashboardPage() {
       </div>
 
       {error && (
-        <div role="alert" className="my-4 p-3 rounded-lg bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-mono">
+        <div role="alert" className="p-3.5 rounded-xl bg-rose-950/50 border border-rose-800/80 text-rose-300 text-xs font-mono">
           {error}
         </div>
       )}
 
+      {/* Metric Stats Banner */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="pinterest-card !p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Total Workspaces</div>
+            <div className="text-2xl font-bold font-mono text-white mt-1 tabular-nums">{workspaces.length}</div>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+            <Layers className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="pinterest-card !p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Linked Projects</div>
+            <div className="text-2xl font-bold font-mono text-white mt-1 tabular-nums">{totalProjects}</div>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+            <FolderGit2 className="w-5 h-5" />
+          </div>
+        </div>
+
+        <div className="pinterest-card !p-4 flex items-center justify-between">
+          <div>
+            <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Team Capacity</div>
+            <div className="text-2xl font-bold font-mono text-white mt-1 tabular-nums">{totalMembers} Members</div>
+          </div>
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+            <Users className="w-5 h-5" />
+          </div>
+        </div>
+      </div>
+
       {/* Create Workspace Modal */}
       {creatingWs && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-100"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-150"
           onClick={(e) => {
             if (e.target === e.currentTarget) setCreatingWs(false);
           }}
@@ -143,7 +184,7 @@ export default function DashboardPage() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="create-ws-title"
-            className="bg-[#0e0e11] border border-white/[0.12] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-zinc-100"
+            className="bg-[#0c0d10] border border-white/[0.14] rounded-2xl max-w-md w-full p-6 shadow-2xl relative text-zinc-100 animate-in zoom-in-95 duration-150"
           >
             <div className="flex items-center justify-between mb-4 pb-3 border-b border-white/[0.06]">
               <div className="flex items-center gap-2">
@@ -171,10 +212,10 @@ export default function DashboardPage() {
                   required
                   autoFocus
                   autoComplete="off"
-                  placeholder="e.g. Core Engineering"
+                  placeholder="e.g. Core Platform Engineering"
                   value={wsName}
                   onChange={(e) => setWsName(e.target.value)}
-                  className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] transition-colors"
+                  className="w-full h-9 bg-zinc-950 border border-white/[0.08] rounded-lg px-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/20 transition-all"
                 />
               </div>
 
@@ -186,7 +227,7 @@ export default function DashboardPage() {
                   placeholder="What repositories or systems does this workspace encompass?"
                   value={wsDescription}
                   onChange={(e) => setWsDescription(e.target.value)}
-                  className="w-full bg-zinc-950 border border-white/[0.08] rounded-lg p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] resize-none transition-colors"
+                  className="w-full bg-zinc-950 border border-white/[0.08] rounded-lg p-2.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/20 resize-none transition-all"
                 />
               </div>
 
@@ -194,14 +235,14 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setCreatingWs(false)}
-                  className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting || !wsName.trim()}
-                  className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-[0_0_12px_rgba(255,255,255,0.1)]"
+                  className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-zinc-200 text-zinc-950 transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer shadow-[0_0_12px_rgba(255,255,255,0.1)] active:scale-95"
                 >
                   {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
                   <span>Create Workspace</span>
@@ -213,7 +254,7 @@ export default function DashboardPage() {
       )}
 
       {/* Workspaces Grid */}
-      <div className="mt-6">
+      <div>
         {loading && workspaces.length === 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-pulse">
             <div className="h-44 bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-5" />
@@ -225,7 +266,7 @@ export default function DashboardPage() {
             <Layers className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
             <h3 className="text-sm font-semibold text-zinc-200">No workspaces found</h3>
             <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-              You do not belong to any workspaces yet. Create your first workspace to start collaborating on projects and issues.
+              You do not belong to any workspaces yet. Create your first workspace to start organizing issues and tracking sprints.
             </p>
             <button
               type="button"
@@ -242,14 +283,14 @@ export default function DashboardPage() {
               <Link
                 key={ws.id}
                 href={`/workspaces/${ws.id}`}
-                className="pinterest-card p-5 flex flex-col justify-between group cursor-pointer"
+                className="pinterest-card p-5 flex flex-col justify-between group cursor-pointer active:scale-98"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-base font-semibold text-zinc-100 group-hover:text-white truncate">
                       {ws.name}
                     </h3>
-                    <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-white/[0.05] border border-white/[0.08] text-zinc-300 shrink-0">
+                    <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-white/[0.06] border border-white/[0.09] text-zinc-300 shrink-0">
                       <Shield className="w-3 h-3 text-zinc-400" aria-hidden="true" />
                       <span>{ws.currentUserRole}</span>
                     </span>
@@ -263,7 +304,7 @@ export default function DashboardPage() {
                 <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-zinc-400 font-mono">
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.projectCount} projects`}>
-                      <FolderGit2 className="w-3.5 h-3.5 text-zinc-500" aria-hidden="true" />
+                      <FolderGit2 className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
                       <span>{ws.projectCount} {ws.projectCount === 1 ? 'project' : 'projects'}</span>
                     </span>
                     <span className="flex items-center gap-1.5 tabular-nums" title={`${ws.memberCount} members`}>
@@ -273,7 +314,7 @@ export default function DashboardPage() {
                   </div>
 
                   <span className="text-zinc-500 group-hover:text-zinc-200 group-hover:translate-x-0.5 transition-all duration-150 flex items-center gap-1 text-xs">
-                    <span>Enter</span>
+                    <span>Explore</span>
                     <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </span>
                 </div>

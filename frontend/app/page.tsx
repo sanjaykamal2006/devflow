@@ -11,15 +11,18 @@ import {
   ArrowRight,
   Command as CommandIcon,
   Shield,
-  GitBranch,
   Loader2,
   Zap,
-  CheckCircle2,
-  GitCommit,
   Terminal,
   ChevronRight,
   Users,
   Search,
+  Sparkles,
+  Bot,
+  Activity,
+  Copy,
+  Check,
+  Keyboard,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
@@ -47,7 +50,6 @@ interface DemoCard {
   tag: string;
 }
 
-// Sample interactive cards for the Hero Live Preview
 const INITIAL_DEMO_CARDS: DemoCard[] = [
   {
     id: 'demo-1',
@@ -82,7 +84,7 @@ const INITIAL_DEMO_CARDS: DemoCard[] = [
   {
     id: 'demo-4',
     key: 'ENG-107',
-    title: 'Command palette keyboard listener with fuzzy match caching',
+    title: 'Global command palette keyboard listener with fuzzy match caching',
     status: 'TODO',
     priority: 'LOW',
     type: 'TASK',
@@ -99,12 +101,17 @@ export default function HomePage() {
   const [selectedRole, setSelectedRole] = useState<'OWNER' | 'ADMIN' | 'MEMBER'>('OWNER');
   const [paletteQuery, setPaletteQuery] = useState('');
   const [sequenceCount, setSequenceCount] = useState(108);
+  const [activeVimKey, setActiveVimKey] = useState<string>('J');
+  const [specInput, setSpecInput] = useState('Build automated Discord notifications for critical bugs');
+  const [specSynthesizing, setSpecSynthesizing] = useState(false);
+  const [specGenerated, setSpecGenerated] = useState(false);
+  const [copiedCli, setCopiedCli] = useState(false);
 
   const handleExploreDemo = async () => {
     setDemoLoading(true);
     try {
       await enterDemoSandbox();
-      toast.success('⚡ Sandbox activated! Welcome to HyperScale Core');
+      toast.success('⚡ Sandbox activated! Welcome to DevFlow');
       router.push('/dashboard');
     } catch {
       router.push('/dashboard');
@@ -129,15 +136,15 @@ export default function HomePage() {
         if (nextStatus === 'DONE') {
           try {
             confetti({
-              particleCount: 35,
-              spread: 50,
+              particleCount: 40,
+              spread: 55,
               origin: { y: 0.65 },
               colors: ['#34d399', '#38bdf8', '#fbbf24', '#f472b6'],
-              ticks: 120,
+              ticks: 150,
               disableForReducedMotion: true,
             });
           } catch {
-            // Non-blocking
+            // Non-blocking fallback
           }
           toast.success(`${card.key} moved to Done!`, { duration: 2000 });
         }
@@ -154,6 +161,22 @@ export default function HomePage() {
     });
   };
 
+  const handleSynthesizeSpec = () => {
+    setSpecSynthesizing(true);
+    setTimeout(() => {
+      setSpecSynthesizing(false);
+      setSpecGenerated(true);
+      toast.success('AI Spec Doctor synthesized structured PRD with acceptance criteria!');
+    }, 600);
+  };
+
+  const handleCopyCli = () => {
+    navigator.clipboard.writeText('npx devflow start ENG-104');
+    setCopiedCli(true);
+    toast.success('CLI command copied to clipboard!');
+    setTimeout(() => setCopiedCli(false), 2000);
+  };
+
   const paletteItems = [
     { title: 'Create new issue in Core Engine', shortcut: 'C', icon: '⚡' },
     { title: 'Switch to Frontend Workspace', shortcut: 'G W', icon: '📁' },
@@ -161,13 +184,23 @@ export default function HomePage() {
     { title: 'Open Sprint Kanban Board', shortcut: 'B', icon: '📊' },
   ].filter((item) => item.title.toLowerCase().includes(paletteQuery.toLowerCase()));
 
+  const vimShortcuts: Record<string, { label: string; desc: string }> = {
+    J: { label: 'Navigate Down', desc: 'Moves focus to next issue row in table view' },
+    K: { label: 'Navigate Up', desc: 'Moves focus to previous issue row in table view' },
+    X: { label: 'Toggle Select', desc: 'Selects or unselects current issue for bulk action bar' },
+    C: { label: 'Quick Create', desc: 'Opens instantaneous Create Issue modal from anywhere' },
+    Space: { label: 'Quick Status', desc: 'Advances focused issue to next workflow stage' },
+    '1-4': { label: 'Assign Priority', desc: 'Sets priority (1=Low, 2=Med, 3=High, 4=Crit)' },
+  };
+
   return (
     <div className="min-h-screen bg-[#08090a] text-zinc-100 flex flex-col selection:bg-sky-500/20 selection:text-sky-200 relative overflow-x-hidden">
-      {/* Ambient Radiant Lighting Cones */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[480px] bg-hero-glow pointer-events-none -z-10" />
-      <div className="absolute top-[280px] left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-radial-subtle pointer-events-none -z-10" />
+      {/* Radiant Lighting Atmosphere */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[520px] bg-hero-glow pointer-events-none -z-10" />
+      <div className="absolute top-[320px] left-1/2 -translate-x-1/2 w-[900px] h-[350px] bg-radial-subtle pointer-events-none -z-10" />
+      <div className="absolute inset-0 bg-grid-pattern pointer-events-none -z-10 opacity-60" />
 
-      {/* 1. Floating Header Navigation Dock */}
+      {/* 1. Floating Island Capsule Dock */}
       <header className="sticky top-3 sm:top-4 z-50 px-3 sm:px-6 w-full max-w-6xl mx-auto">
         <div className="pinterest-dock rounded-full px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 sm:gap-8">
@@ -180,18 +213,13 @@ export default function HomePage() {
                 Live Demo
               </a>
               <a href="#features" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
-                Features
+                Capabilities
+              </a>
+              <a href="#spec-doctor" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
+                AI Spec
               </a>
               <a href="#architecture" className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all">
                 Architecture
-              </a>
-              <a
-                href="https://github.com/sanjaykamal2006/devflow"
-                target="_blank"
-                rel="noreferrer"
-                className="px-3 py-1 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-all flex items-center gap-1"
-              >
-                GitHub
               </a>
             </nav>
           </div>
@@ -202,7 +230,7 @@ export default function HomePage() {
                 href="/dashboard"
                 className="px-4 py-1.5 bg-white text-zinc-950 font-semibold text-xs rounded-full hover:bg-zinc-200 active:scale-95 transition-all shadow-[0_0_16px_rgba(255,255,255,0.15)]"
               >
-                Go to Dashboard
+                Dashboard
               </Link>
             ) : (
               <>
@@ -227,27 +255,27 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 2. Hero Section */}
-      <section className="pt-16 pb-12 px-4 sm:px-6 max-w-5xl mx-auto text-center flex flex-col items-center relative">
-        {/* Release / Status Pill */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/90 border border-white/[0.08] text-xs font-mono text-zinc-300 mb-6 shadow-inner backdrop-blur-md">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
-          <span className="text-zinc-200">DevFlow 1.0</span>
+      {/* 2. Hero Section: High-Velocity Engineering */}
+      <section className="pt-16 sm:pt-20 pb-12 px-4 sm:px-6 max-w-5xl mx-auto text-center flex flex-col items-center relative">
+        {/* Status Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900/90 border border-white/[0.1] text-xs font-mono text-zinc-300 mb-6 shadow-inner backdrop-blur-md animate-in fade-in slide-in-from-top-3 duration-300">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)] animate-pulse" />
+          <span className="text-zinc-200 font-semibold">DevFlow 2.0</span>
           <span className="text-zinc-600">•</span>
           <span className="text-zinc-400">Zero-Latency Engineering Workspace</span>
         </div>
 
         {/* Hero Title */}
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white mb-5 leading-[1.1] max-w-3xl">
-          Issue tracking built for <br />
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.08] max-w-4xl">
+          Issue tracking engineered for <br />
           <span className="bg-gradient-to-b from-white via-zinc-200 to-zinc-500 bg-clip-text text-transparent">
-            high-velocity engineering.
+            high-velocity software teams.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto mb-8 leading-relaxed font-sans">
-          Streamlined Kanban workflows, pessimistic concurrency issue keys, GitHub bidirectional webhook linking, and instant keyboard command navigation.
+        <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto mb-9 leading-relaxed font-sans">
+          Streamlined Kanban velocity, Vim keyboard navigation, AI PRD synthesis, and bidirectional GitHub webhooks. Built for developers who refuse to wait.
         </p>
 
         {/* CTAs */}
@@ -256,7 +284,7 @@ export default function HomePage() {
             type="button"
             onClick={handleExploreDemo}
             disabled={demoLoading}
-            className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-zinc-950 font-bold text-sm rounded-xl hover:brightness-105 transition-all flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(251,191,36,0.35)] cursor-pointer disabled:opacity-60 ring-1 ring-amber-300/50"
+            className="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-zinc-950 font-bold text-sm rounded-xl hover:brightness-105 transition-all flex items-center justify-center gap-2 shadow-[0_0_28px_rgba(251,191,36,0.35)] cursor-pointer disabled:opacity-60 ring-1 ring-amber-300/50 active:scale-97"
           >
             {demoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-zinc-950" />}
             <span>⚡ Try Live Demo (Instant Sandbox)</span>
@@ -265,7 +293,7 @@ export default function HomePage() {
 
           <Link
             href="/register"
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-850 border border-white/[0.08] hover:border-white/[0.16] text-zinc-200 text-sm font-medium transition-all flex items-center justify-center"
+            className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/[0.16] text-zinc-200 text-sm font-medium transition-all flex items-center justify-center active:scale-97"
           >
             Create Free Account
           </Link>
@@ -274,19 +302,29 @@ export default function HomePage() {
             href="https://github.com/sanjaykamal2006/devflow"
             target="_blank"
             rel="noreferrer"
-            className="w-full sm:w-auto px-4 py-3 rounded-xl bg-zinc-900/80 hover:bg-zinc-850 border border-white/[0.08] hover:border-white/[0.16] text-zinc-300 text-sm font-medium transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-4 py-3.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.08] hover:border-white/[0.16] text-zinc-300 text-sm font-medium transition-all flex items-center justify-center gap-2 active:scale-97"
           >
             <GitHubIcon className="w-4 h-4 text-zinc-400" />
             <span>Star on GitHub</span>
           </a>
         </div>
 
-        {/* Keyboard shortcut hint */}
-        <div className="mt-6 flex items-center gap-2 text-xs text-zinc-500 font-mono">
-          <span>Command menu:</span>
-          <kbd className="px-1.5 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-zinc-300 text-[11px]">⌘K</kbd>
-          <span>• Quick create:</span>
-          <kbd className="px-1.5 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-zinc-300 text-[11px]">C</kbd>
+        {/* Keyboard Quick Navigation Badge */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3 text-xs text-zinc-500 font-mono">
+          <span className="flex items-center gap-1.5">
+            <kbd className="px-2 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-zinc-300 text-[11px]">⌘K</kbd>
+            <span>Command Palette</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1.5">
+            <kbd className="px-2 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-zinc-300 text-[11px]">C</kbd>
+            <span>New Issue</span>
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1.5">
+            <kbd className="px-2 py-0.5 bg-zinc-900 border border-white/[0.08] rounded text-zinc-300 text-[11px]">J / K</kbd>
+            <span>Vim Navigation</span>
+          </span>
         </div>
       </section>
 
@@ -299,13 +337,13 @@ export default function HomePage() {
               <div className="w-3 h-3 rounded-full bg-rose-500/80" />
               <div className="w-3 h-3 rounded-full bg-amber-500/80" />
               <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-              <span className="text-xs font-mono text-zinc-500 ml-2">devflow-workspace // Core-Engine</span>
+              <span className="text-xs font-mono text-zinc-400 ml-2">devflow-workspace // Core-Engine</span>
             </div>
 
             <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
               <span className="text-[11px] text-zinc-500 hidden sm:inline">Click card status to cycle:</span>
-              <span className="px-2 py-0.5 rounded bg-zinc-900 border border-white/[0.08] text-sky-400 text-[11px]">
-                Interactive Preview
+              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-[11px] font-semibold">
+                Interactive Board Preview
               </span>
             </div>
           </div>
@@ -316,7 +354,7 @@ export default function HomePage() {
               <div
                 key={card.id}
                 onClick={() => cycleCardStatus(card.id)}
-                className="bg-zinc-950/90 border border-white/[0.08] hover:border-white/[0.22] hover:bg-zinc-900/90 rounded-xl p-3.5 cursor-pointer transition-all duration-150 flex flex-col justify-between group shadow-sm"
+                className="bg-zinc-950/90 border border-white/[0.08] hover:border-white/[0.22] hover:bg-zinc-900/90 rounded-xl p-3.5 cursor-pointer transition-all duration-150 flex flex-col justify-between group shadow-sm active:scale-98"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -344,17 +382,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. Bento Grid: High-Craft Feature Showcase */}
+      {/* 4. Bento Grid: High-Craft Capabilities Suite */}
       <section id="features" className="px-4 sm:px-6 max-w-5xl mx-auto w-full py-12 scroll-mt-14">
         <div className="mb-10 text-center sm:text-left">
           <span className="text-xs font-mono text-sky-400 font-semibold tracking-wider uppercase">
             ENGINEERING CAPABILITIES
           </span>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">
-            Engineered for precision and speed.
+            Engineered for precision, velocity, and zero lag.
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl">
-            From atomic sequence locks to GitHub webhooks, DevFlow eliminates friction in your development loop.
+            From atomic sequence locks to AI PRD generation, DevFlow eliminates friction in your development loop.
           </p>
         </div>
 
@@ -394,7 +432,7 @@ export default function HomePage() {
                   {paletteItems.map((item, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-zinc-900 text-xs text-zinc-300"
+                      className="flex items-center justify-between px-2 py-1.5 rounded-lg hover:bg-zinc-900 text-xs text-zinc-300 transition-colors"
                     >
                       <span className="flex items-center gap-2">
                         <span>{item.icon}</span>
@@ -420,7 +458,7 @@ export default function HomePage() {
                 Atomic Issue Keys
               </h3>
               <p className="text-xs text-zinc-400 mb-4">
-                Pessimistic locking (<code className="text-sky-300 font-mono">SELECT FOR UPDATE</code>) prevents race conditions in high-concurrency teams.
+                Pessimistic locking (<code className="text-sky-300 font-mono">SELECT FOR UPDATE</code>) guarantees zero sequence collisions.
               </p>
 
               {/* Interactive Key Generator */}
@@ -432,7 +470,7 @@ export default function HomePage() {
                 <button
                   type="button"
                   onClick={generateNextSequenceKey}
-                  className="mt-3 w-full py-1.5 bg-zinc-900 hover:bg-zinc-800 text-xs font-mono font-medium text-sky-400 rounded-lg border border-sky-500/20 transition-colors"
+                  className="mt-3 w-full py-1.5 bg-zinc-900 hover:bg-zinc-800 text-xs font-mono font-medium text-sky-400 rounded-lg border border-sky-500/20 transition-colors cursor-pointer"
                 >
                   + Generate Next Key
                 </button>
@@ -440,29 +478,42 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Bento 3: GitHub Bidirectional Webhook Linker */}
+          {/* Bento 3: Vim Keyboard Matrix */}
           <div className="linear-card rounded-2xl p-5 flex flex-col justify-between">
             <div>
-              <div className="w-8 h-8 rounded-lg bg-purple-950/60 border border-purple-800/60 flex items-center justify-center text-purple-400 mb-3">
-                <GitBranch className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400 mb-3">
+                <Keyboard className="w-4 h-4" />
               </div>
               <h3 className="text-base font-semibold text-white mb-1">
-                GitHub Webhooks
+                Vim Keyboard Matrix
               </h3>
               <p className="text-xs text-zinc-400 mb-3">
-                HMAC-SHA256 authenticated webhooks automatically link commits and PRs to your issue keys.
+                Never take your hands off the keyboard. Navigate and triage issues at lightspeed.
               </p>
 
-              <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-2.5 font-mono text-[11px] text-zinc-400 space-y-1.5">
-                <div className="flex items-center gap-2 text-zinc-300">
-                  <GitCommit className="w-3.5 h-3.5 text-sky-400" />
-                  <span>commit <span className="text-zinc-500">8f21ab</span></span>
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {Object.keys(vimShortcuts).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setActiveVimKey(k)}
+                    className={`px-2 py-1 rounded text-xs font-mono font-bold transition-all ${
+                      activeVimKey === k
+                        ? 'bg-emerald-400 text-zinc-950 shadow-sm'
+                        : 'bg-zinc-900 border border-white/[0.08] text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-2.5 font-mono text-xs">
+                <div className="text-emerald-300 font-semibold mb-0.5">
+                  {vimShortcuts[activeVimKey]?.label}
                 </div>
-                <div className="text-[10px] text-emerald-400 pl-5">
-                  &quot;fix(auth): auto-close ENG-105&quot;
-                </div>
-                <div className="text-[10px] text-zinc-500 pl-5">
-                  Status transitioned to <span className="text-emerald-300 font-semibold">DONE</span>
+                <div className="text-[11px] text-zinc-400">
+                  {vimShortcuts[activeVimKey]?.desc}
                 </div>
               </div>
             </div>
@@ -519,45 +570,141 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Dual-Mode Architecture Spec */}
-      <section id="architecture" className="px-4 sm:px-6 max-w-5xl mx-auto w-full py-12 scroll-mt-14">
-        <div className="linear-card rounded-2xl p-6 sm:p-8 border border-white/[0.1]">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+      {/* 5. AI Spec Doctor Showcase Section */}
+      <section id="spec-doctor" className="px-4 sm:px-6 max-w-5xl mx-auto w-full py-12 scroll-mt-14">
+        <div className="linear-card rounded-2xl p-6 sm:p-8 border border-white/[0.1] relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 mb-6">
             <div>
-              <span className="text-xs font-mono text-sky-400 uppercase tracking-wider font-semibold">
-                SYSTEM ARCHITECTURE
-              </span>
-              <h3 className="text-xl font-bold text-white mt-1">
-                Next.js 15 Client & Spring Boot 3.3 REST API
+              <div className="flex items-center gap-2 text-xs font-mono text-amber-400 font-semibold mb-1">
+                <Bot className="w-4 h-4" />
+                <span>INTELLIGENT SPEC SYNTHESIS</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-bold text-white">
+                AI Spec Doctor & Markdown Engine
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl leading-relaxed">
-                Seamlessly connects to a live containerized Spring Boot REST API with PostgreSQL and Redis caching, or runs fully client-side with persistent storage for instant zero-cost demo access.
+              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl">
+                Transform brief developer one-liners into structured technical specifications with acceptance criteria and architecture notes.
               </p>
             </div>
 
-            <div className="flex flex-col gap-2.5 shrink-0 text-xs font-mono text-zinc-300">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Next.js 15 App Router & React 19</span>
+            <button
+              type="button"
+              onClick={handleSynthesizeSpec}
+              disabled={specSynthesizing}
+              className="px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-200 text-zinc-950 font-bold text-xs rounded-xl hover:brightness-105 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.25)] shrink-0 cursor-pointer disabled:opacity-60"
+            >
+              {specSynthesizing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4 fill-zinc-950" />}
+              <span>{specSynthesizing ? 'Synthesizing...' : 'Synthesize Spec PRD'}</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Input Side */}
+            <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-4 flex flex-col justify-between">
+              <div>
+                <div className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-2">Raw Developer Note</div>
+                <textarea
+                  value={specInput}
+                  onChange={(e) => setSpecInput(e.target.value)}
+                  rows={4}
+                  className="w-full bg-zinc-900/60 border border-white/[0.08] rounded-lg p-2.5 text-xs text-zinc-200 font-mono focus:outline-none focus:border-amber-400/40"
+                  placeholder="Enter brief task note..."
+                />
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Spring Boot 3.3.4 / Java 21 LTS</span>
+              <div className="text-[10px] text-zinc-500 font-mono mt-2">
+                Click &quot;Synthesize Spec PRD&quot; to test AI transformation
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Neon Serverless PostgreSQL (11 Tables)</span>
+            </div>
+
+            {/* Synthesized Output Side */}
+            <div className="bg-zinc-950/80 border border-white/[0.08] rounded-xl p-4 font-mono text-xs">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] text-emerald-400 uppercase tracking-wider font-semibold">Structured Technical Spec</span>
+                <span className="text-[10px] text-zinc-500">Markdown Format</span>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Zero-Cost $0 Operation Budget</span>
+              {specGenerated ? (
+                <div className="space-y-2 text-zinc-300 animate-in fade-in duration-300">
+                  <div className="text-sky-400 font-bold">### Summary & Context</div>
+                  <div className="text-zinc-400 text-[11px]">Integrate Discord webhook pipeline triggered on CRITICAL issue creations.</div>
+                  <div className="text-sky-400 font-bold">### Acceptance Criteria</div>
+                  <div className="text-zinc-400 text-[11px] space-y-0.5">
+                    <div>- [x] Webhook payload dispatches in &lt;100ms background thread</div>
+                    <div>- [x] Embed color set to #f43f5e for critical severity</div>
+                    <div>- [x] Direct link button to /issues/ENG-xxx</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="h-28 flex items-center justify-center text-zinc-600 text-center">
+                  Press &quot;Synthesize Spec PRD&quot; above to preview AI transformation output.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. CLI Companion & Sub-Millisecond Architecture */}
+      <section id="architecture" className="px-4 sm:px-6 max-w-5xl mx-auto w-full py-12 scroll-mt-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* CLI Terminal Showcase */}
+          <div className="linear-card rounded-2xl p-6 border border-white/[0.1] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Terminal className="w-4 h-4 text-sky-400" />
+                  <span className="text-xs font-mono font-semibold text-white">DevFlow CLI Companion</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyCli}
+                  className="p-1.5 rounded-lg bg-zinc-900 border border-white/[0.08] hover:border-white/[0.16] text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  title="Copy command"
+                >
+                  {copiedCli ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+              <p className="text-xs text-zinc-400 mb-4">
+                Start working on issues straight from your terminal. Automatically creates git branches linked to issue keys.
+              </p>
+              <div className="bg-zinc-950 rounded-xl p-3 font-mono text-xs text-zinc-300 border border-white/[0.08] space-y-1">
+                <div className="text-zinc-500">$ npx devflow start ENG-104</div>
+                <div className="text-emerald-400">✔ Fetched issue: Migrate connection pool to HikariCP</div>
+                <div className="text-sky-400">✔ Created branch &apos;feature/ENG-104-hikaricp&apos;</div>
+                <div className="text-zinc-400">✔ Issue status transitioned to IN_PROGRESS</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Architecture Spec */}
+          <div className="linear-card rounded-2xl p-6 border border-white/[0.1] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <Activity className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-mono font-semibold text-white">Sub-Millisecond Engine</span>
+              </div>
+              <p className="text-xs text-zinc-400 mb-4">
+                Full-stack architecture optimized for instant SWR navigation and high-concurrency throughput.
+              </p>
+              <div className="space-y-2 text-xs font-mono text-zinc-300">
+                <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-950/80 border border-white/[0.06]">
+                  <span className="text-zinc-400">Frontend Stack</span>
+                  <span className="text-emerald-300 font-semibold">Next.js 15 + React 19</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-950/80 border border-white/[0.06]">
+                  <span className="text-zinc-400">Backend Engine</span>
+                  <span className="text-sky-300 font-semibold">Spring Boot 3.3 / Java 21</span>
+                </div>
+                <div className="flex items-center justify-between p-2 rounded-lg bg-zinc-950/80 border border-white/[0.06]">
+                  <span className="text-zinc-400">Database Layer</span>
+                  <span className="text-purple-300 font-semibold">Neon Serverless PostgreSQL</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 6. Minimalist High-Craft Footer */}
+      {/* 7. Minimalist High-Craft Footer */}
       <footer className="border-t border-white/[0.06] bg-[#08090a] py-8 px-4 sm:px-6 mt-auto">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
