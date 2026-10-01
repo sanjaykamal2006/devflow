@@ -102,6 +102,16 @@ export default function ProjectIssuesPage({
     fetchIssues();
   }, [fetchIssues]);
 
+  // Periodic background revalidation (every 15s when tab is visible and not creating)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible' && !createModalOpen) {
+        fetchIssues();
+      }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [fetchIssues, createModalOpen]);
+
   const handleStatusChange = async (issueId: string, newStatus: IssueStatus) => {
     try {
       const updated = await api.issues.changeStatus(issueId, newStatus);
@@ -182,6 +192,10 @@ export default function ProjectIssuesPage({
             <h1 className="text-2xl font-bold tracking-tight text-white font-mono">{project.key} Issues</h1>
             <span className="text-xs font-mono font-medium px-2 py-0.5 rounded-md bg-zinc-900 border border-white/[0.08] text-zinc-300 tabular-nums">
               {totalElements} total
+            </span>
+            <span className="flex items-center gap-1.5 text-[11px] font-mono text-zinc-500 bg-zinc-900/60 px-2 py-0.5 rounded-md border border-white/[0.06]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live Sync</span>
             </span>
             {project.githubConnected && (
               <Link
@@ -375,7 +389,7 @@ export default function ProjectIssuesPage({
         <KanbanBoard issues={issues} onStatusChange={handleStatusChange} />
       ) : (
         <div className="space-y-4">
-          <IssueTable issues={issues} />
+          <IssueTable issues={issues} members={members} onRefresh={fetchIssues} />
 
           {/* Table Pagination */}
           {totalPages > 1 && (

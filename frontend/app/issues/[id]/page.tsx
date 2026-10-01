@@ -17,6 +17,7 @@ import {
 import { api } from '@/lib/api';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import { TypeBadge } from '@/components/TypeBadge';
+import { MarkdownContent, MarkdownEditor } from '@/components/MarkdownContent';
 import {
   MessageSquare,
   GitCommit,
@@ -32,8 +33,25 @@ import {
   ExternalLink,
   Calendar,
   User as UserIcon,
+  History,
+  CircleDot,
+  CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+interface TimelineEvent {
+  id: string;
+  timestamp: string;
+  type: string;
+  icon: React.ReactNode;
+  badgeClass: string;
+  title: string;
+  actor: string;
+  description: string;
+  isMarkdown?: boolean;
+  url?: string;
+  ref?: string;
+}
 
 export default function IssueDetailPage({
   params,
@@ -64,8 +82,8 @@ export default function IssueDetailPage({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editingCommentText, setEditingCommentText] = useState('');
 
-  // Active tab in main area: comments or github
-  const [mainTab, setMainTab] = useState<'comments' | 'github'>('comments');
+  // Active tab in main area: comments, github, or timeline
+  const [mainTab, setMainTab] = useState<'comments' | 'github' | 'timeline'>('comments');
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
@@ -259,6 +277,67 @@ export default function IssueDetailPage({
     }
   };
 
+  // Generate chronological audit timeline from issue events, comments, and git links
+  const timelineEvents: TimelineEvent[] = issue
+    ? [
+        {
+          id: 'evt-created',
+          timestamp: issue.createdAt,
+          type: 'create',
+          icon: <CircleDot className="w-3 h-3 text-emerald-400" />,
+          badgeClass: 'bg-emerald-950/80 border-emerald-700/60',
+          title: 'Issue opened',
+          actor: issue.reporter.fullName,
+          description: `Created issue ${issue.issueKey} (${issue.issueType}) with priority ${issue.priority}.`,
+        },
+        ...activities.map((act) => ({
+          id: `evt-gh-${act.id}`,
+          timestamp: act.eventTimestamp,
+          type: 'github',
+          icon:
+            act.activityType === 'COMMIT' ? (
+              <GitCommit className="w-3 h-3 text-sky-400" />
+            ) : (
+              <GitPullRequest className="w-3 h-3 text-emerald-400" />
+            ),
+          badgeClass: 'bg-sky-950/80 border-sky-700/60',
+          title: act.activityType === 'COMMIT' ? 'Git commit referenced' : 'Pull request referenced',
+          actor: act.authorName || 'GitHub',
+          description: act.title,
+          url: act.url,
+          ref: act.externalId.substring(0, 7),
+        })),
+        ...comments.map((comm) => ({
+          id: `evt-comment-${comm.id}`,
+          timestamp: comm.createdAt,
+          type: 'comment',
+          icon: <MessageSquare className="w-3 h-3 text-indigo-400" />,
+          badgeClass: 'bg-indigo-950/80 border-indigo-700/60',
+          title: 'Comment added',
+          actor: comm.author.fullName,
+          description: comm.content,
+          isMarkdown: true,
+        })),
+        ...(issue.updatedAt &&
+        new Date(issue.updatedAt).getTime() > new Date(issue.createdAt).getTime() + 1000
+          ? [
+              {
+                id: 'evt-updated',
+                timestamp: issue.updatedAt,
+                type: 'update',
+                icon: <CheckCircle2 className="w-3 h-3 text-purple-400" />,
+                badgeClass: 'bg-purple-950/80 border-purple-700/60',
+                title: `Status at ${issue.status.replace('_', ' ')}`,
+                actor: issue.assignee ? `Assigned: ${issue.assignee.fullName}` : 'Unassigned',
+                description: `Current priority: ${issue.priority} • Type: ${issue.issueType}${
+                  issue.dueDate ? ` • Due: ${new Date(issue.dueDate).toLocaleDateString()}` : ''
+                }`,
+              },
+            ]
+          : []),
+      ].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+    : [];
+
   if (loading && !issue) {
     return (
       <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 py-8 space-y-6 animate-pulse">
@@ -399,13 +478,11 @@ export default function IssueDetailPage({
 
             {editingDesc ? (
               <div className="space-y-3">
-                <textarea
-                  rows={6}
-                  autoFocus
-                  aria-label="Issue description"
+                <MarkdownEditor
                   value={descInput}
-                  onChange={(e) => setDescInput(e.target.value)}
-                  className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-xl p-3 text-xs text-zinc-100 focus:outline-none resize-none font-sans transition-colors"
+                  onChange={setDescInput}
+                  minRows={6}
+                  placeholder="Issue description in Markdown…"
                 />
                 <div className="flex items-center justify-end gap-2">
                   <button
@@ -428,10 +505,8 @@ export default function IssueDetailPage({
                 </div>
               </div>
             ) : (
-              <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed min-h-[48px]">
-                {issue.description || (
-                  <span className="text-zinc-600 italic">No description provided for this issue.</span>
-                )}
+              <div className="min-h-[48px] py-1">
+                <MarkdownContent content={issue.description || ''} />
               </div>
             )}
           </div>
@@ -467,6 +542,21 @@ export default function IssueDetailPage({
               >
                 <GitCommit className="w-3.5 h-3.5 text-sky-400" aria-hidden="true" />
                 <span>GitHub Activity (<span className="tabular-nums">{activities.length}</span>)</span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mainTab === 'timeline'}
+                onClick={() => setMainTab('timeline')}
+                className={`flex items-center gap-2 pb-1 border-b-2 transition-all cursor-pointer ${
+                  mainTab === 'timeline'
+                    ? 'border-white text-white font-semibold'
+                    : 'border-transparent text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <History className="w-3.5 h-3.5 text-purple-400" aria-hidden="true" />
+                <span>Audit Timeline (<span className="tabular-nums">{timelineEvents.length}</span>)</span>
               </button>
             </div>
 
@@ -525,12 +615,10 @@ export default function IssueDetailPage({
 
                         {editingCommentId === comment.id ? (
                           <div className="space-y-2 pt-1">
-                            <textarea
-                              rows={3}
-                              aria-label="Edit comment text"
+                            <MarkdownEditor
                               value={editingCommentText}
-                              onChange={(e) => setEditingCommentText(e.target.value)}
-                              className="w-full bg-zinc-900 border border-white/[0.12] rounded-lg p-2.5 text-xs text-zinc-100 focus:outline-none resize-none font-sans"
+                              onChange={setEditingCommentText}
+                              minRows={3}
                             />
                             <div className="flex items-center justify-end gap-2">
                               <button
@@ -550,8 +638,8 @@ export default function IssueDetailPage({
                             </div>
                           </div>
                         ) : (
-                          <div className="text-xs text-zinc-300 whitespace-pre-wrap leading-relaxed pl-8">
-                            {comment.content}
+                          <div className="text-xs text-zinc-300 pl-8 pt-0.5">
+                            <MarkdownContent content={comment.content} />
                           </div>
                         )}
                       </div>
@@ -561,13 +649,11 @@ export default function IssueDetailPage({
 
                 {/* Add Comment Input */}
                 <form onSubmit={handleAddComment} className="space-y-2.5 pt-2">
-                  <textarea
-                    rows={3}
-                    aria-label="Add a comment"
-                    placeholder="Write a comment or status update…"
+                  <MarkdownEditor
                     value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="w-full bg-zinc-950 border border-white/[0.08] focus:border-white/[0.25] rounded-xl p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none resize-none font-sans transition-colors"
+                    onChange={setNewComment}
+                    placeholder="Write a comment or status update using markdown…"
+                    minRows={3}
                   />
                   <div className="flex justify-end">
                     <button
@@ -633,6 +719,74 @@ export default function IssueDetailPage({
                         <span className="text-[10px] font-mono text-zinc-500 shrink-0 tabular-nums">
                           {new Date(act.eventTimestamp).toLocaleDateString()}
                         </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab: Audit Timeline */}
+            {mainTab === 'timeline' && (
+              <div className="space-y-4 pt-1">
+                {timelineEvents.length === 0 ? (
+                  <div className="py-8 text-center text-xs text-zinc-500 font-mono border border-dashed border-white/[0.06] rounded-xl bg-zinc-950/40">
+                    No timeline events recorded yet.
+                  </div>
+                ) : (
+                  <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/[0.08]">
+                    {timelineEvents.map((evt) => (
+                      <div key={evt.id} className="relative flex items-start gap-3 group">
+                        {/* Node point */}
+                        <div
+                          className={`absolute -left-6 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center border shadow-sm ${evt.badgeClass}`}
+                        >
+                          {evt.icon}
+                        </div>
+
+                        {/* Event content */}
+                        <div className="w-full bg-zinc-950/70 border border-white/[0.06] rounded-xl p-3.5 space-y-1.5 transition-colors hover:border-white/[0.12]">
+                          <div className="flex items-center justify-between gap-2 text-xs">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-white">{evt.title}</span>
+                              <span className="text-zinc-500 font-mono text-[10px]">•</span>
+                              <span className="text-zinc-400 font-mono text-[11px]">{evt.actor}</span>
+                            </div>
+                            <span className="text-[10px] font-mono text-zinc-500 tabular-nums">
+                              {new Date(evt.timestamp).toLocaleString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                          </div>
+
+                          {evt.isMarkdown ? (
+                            <div className="text-xs text-zinc-300 pt-0.5">
+                              <MarkdownContent content={evt.description} />
+                            </div>
+                          ) : evt.url ? (
+                            <div className="text-xs text-zinc-300 flex items-center gap-2">
+                              <a
+                                href={evt.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-sky-400 hover:underline flex items-center gap-1 font-mono text-xs"
+                              >
+                                <span>{evt.description}</span>
+                                <ExternalLink className="w-3 h-3 text-sky-400" />
+                              </a>
+                              {evt.ref && (
+                                <span className="font-mono text-[10px] text-zinc-500 bg-zinc-900 px-1.5 py-0.5 rounded border border-white/[0.06]">
+                                  {evt.ref}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-zinc-400 leading-relaxed">{evt.description}</p>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>

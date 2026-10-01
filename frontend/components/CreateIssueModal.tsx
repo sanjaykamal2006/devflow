@@ -5,6 +5,7 @@ import { Issue, IssuePriority, IssueType, Label, WorkspaceMember } from '@/types
 import { api } from '@/lib/api';
 import { X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { MarkdownEditor } from './MarkdownContent';
 
 interface CreateIssueModalProps {
   projectId: string;
@@ -101,7 +102,7 @@ export function CreateIssueModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-issue-title"
-        className="bg-[#0c0c0e]/95 border border-white/[0.12] rounded-2xl max-w-xl w-full p-6 shadow-2xl backdrop-blur-2xl relative text-zinc-100"
+        className="bg-[#0c0c0e]/95 border border-white/[0.12] rounded-2xl max-w-xl w-full p-6 shadow-2xl backdrop-blur-2xl relative text-zinc-100 max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.06] mb-4">
@@ -235,14 +236,12 @@ export function CreateIssueModal({
           )}
 
           <div>
-            <label htmlFor="issue-description" className="block text-xs font-medium text-zinc-300 mb-1.5">Description</label>
-            <textarea
-              id="issue-description"
-              rows={4}
+            <label className="block text-xs font-medium text-zinc-300 mb-1.5">Description</label>
+            <MarkdownEditor
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Provide technical context, reproduction steps, or requirements…"
-              className="w-full bg-zinc-950 border border-white/[0.08] rounded-lg p-3 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-white/[0.25] resize-none transition-colors"
+              onChange={setDescription}
+              placeholder="Provide technical context, reproduction steps, or requirements in markdown…"
+              minRows={4}
             />
           </div>
 
