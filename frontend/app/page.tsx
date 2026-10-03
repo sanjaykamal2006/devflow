@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { BrandLogo } from '@/components/BrandLogo';
 import { OrbGallery } from '@/components/OrbGallery';
+import { PredictiveArcBackground } from '@/components/PredictiveArcBackground';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
 import {
@@ -279,6 +280,9 @@ export default function LandingPage() {
             <span>Drag to spin &middot; hover a task</span>
           </div>
         </motion.div>
+
+        {/* ThreeUI Signal Particles Ambient Background Effect */}
+        <PredictiveArcBackground opacity={0.7} />
 
         {/* Animated 3D Orb Layer */}
         <motion.div
