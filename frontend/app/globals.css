@@ -188,21 +188,15 @@ body {
   pointer-events: none;
 }
 
-/* ---------- Bottom Copy Band (Pinned to Corners) ---------- */
+/* ---------- Bottom Copy Band (In Hero Viewport) ---------- */
 .orb-band {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
+  position: relative;
+  z-index: 20;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: end;
   gap: clamp(24px, 4vw, 80px);
-  padding: 0 var(--pad) clamp(24px, 4.4vh, 52px);
-  pointer-events: none;
-}
-.orb-band > * {
+  padding: 0 var(--pad) clamp(24px, 4vh, 48px);
   pointer-events: auto;
 }
 

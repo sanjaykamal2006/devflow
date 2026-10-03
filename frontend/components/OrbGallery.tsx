@@ -14,35 +14,36 @@ interface CardData {
 
 const CARDS_DATA: CardData[] = [
   { key: 'QE-104', title: 'Migrate connection pool to HikariCP', status: 'IN_PROGRESS', priority: 'HIGH', tag: 'Backend', assignee: 'SK' },
-  { key: 'QE-105', title: 'Row-level locking on sequence generator', status: 'IN_REVIEW', priority: 'CRITICAL', tag: 'Database', assignee: 'AL' },
-  { key: 'DS-201', title: 'Liquid-glass token system for cmdk palette', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'EM' },
-  { key: 'DS-202', title: 'Vim keymap bindings: j/k navigation & x delete', status: 'DONE', priority: 'HIGH', tag: 'Frontend', assignee: 'SK' },
-  { key: 'HSC-88', title: 'Sub-millisecond query cache for Neon postgres', status: 'IN_PROGRESS', priority: 'CRITICAL', tag: 'Infra', assignee: 'JD' },
-  { key: 'HSC-89', title: 'Stateless JWT refresh rotation & revoked tokens', status: 'DONE', priority: 'HIGH', tag: 'Security', assignee: 'AL' },
+  { key: 'QE-105', title: 'Row-level locking on sequence key', status: 'IN_REVIEW', priority: 'CRITICAL', tag: 'Database', assignee: 'AL' },
+  { key: 'DS-201', title: 'Liquid-glass token system for cmdk', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'EM' },
+  { key: 'DS-202', title: 'Vim keymap bindings: j/k navigation', status: 'DONE', priority: 'HIGH', tag: 'Frontend', assignee: 'SK' },
+  { key: 'HSC-88', title: 'Sub-ms query cache for Neon postgres', status: 'IN_PROGRESS', priority: 'CRITICAL', tag: 'Infra', assignee: 'JD' },
+  { key: 'HSC-89', title: 'Stateless JWT refresh rotation', status: 'DONE', priority: 'HIGH', tag: 'Security', assignee: 'AL' },
   { key: 'MOB-12', title: 'Offline sync queue with optimistic rollback', status: 'TODO', priority: 'HIGH', tag: 'Mobile', assignee: 'JD' },
-  { key: 'QE-106', title: 'WebSocket push notification channel for updates', status: 'IN_PROGRESS', priority: 'MEDIUM', tag: 'Backend', assignee: 'SK' },
-  { key: 'DS-203', title: 'Spring animation curves on drag-and-drop board', status: 'DONE', priority: 'MEDIUM', tag: 'Frontend', assignee: 'SK' },
-  { key: 'HSC-90', title: 'Distributed tracing via OpenTelemetry collector', status: 'TODO', priority: 'LOW', tag: 'Infra', assignee: 'AL' },
-  { key: 'QE-107', title: 'Atomic issue key allocation: HSC-1, HSC-2', status: 'DONE', priority: 'CRITICAL', tag: 'Database', assignee: 'SK' },
-  { key: 'MOB-13', title: 'Haptic feedback on gesture status transitions', status: 'TODO', priority: 'LOW', tag: 'Mobile', assignee: 'JD' },
+  { key: 'QE-106', title: 'WebSocket push notification channel', status: 'IN_PROGRESS', priority: 'MEDIUM', tag: 'Backend', assignee: 'SK' },
+  { key: 'DS-203', title: 'Spring animation curves on Kanban board', status: 'DONE', priority: 'MEDIUM', tag: 'Frontend', assignee: 'SK' },
+  { key: 'HSC-90', title: 'Distributed tracing via OpenTelemetry', status: 'TODO', priority: 'LOW', tag: 'Infra', assignee: 'AL' },
+  { key: 'QE-107', title: 'Atomic issue key allocation: HSC-1', status: 'DONE', priority: 'CRITICAL', tag: 'Database', assignee: 'SK' },
+  { key: 'MOB-13', title: 'Haptic feedback on gesture transitions', status: 'TODO', priority: 'LOW', tag: 'Mobile', assignee: 'JD' },
   { key: 'HSC-91', title: 'Neon database branch instant ephemeral preview', status: 'DONE', priority: 'HIGH', tag: 'DevOps', assignee: 'AL' },
-  { key: 'DS-204', title: 'Linear obsidian theme palette with #1f1f21 tone', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'SK' },
+  { key: 'DS-204', title: 'Linear obsidian theme palette with #1f1f21', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'SK' },
 ];
 
 function drawCardCanvas(data: CardData): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
-  canvas.width = 440;
-  canvas.height = 270;
+  // High-DPI canvas for crisp, sharp rendering
+  canvas.width = 380;
+  canvas.height = 230;
   const ctx = canvas.getContext('2d');
   if (!ctx) return canvas;
 
-  const w = 440;
-  const h = 270;
-  const r = 20;
+  const w = 380;
+  const h = 230;
+  const r = 18;
 
   ctx.clearRect(0, 0, w, h);
 
-  // Card background
+  // Card background with rounded clipping
   ctx.save();
   ctx.beginPath();
   ctx.moveTo(r, 0);
@@ -57,79 +58,79 @@ function drawCardCanvas(data: CardData): HTMLCanvasElement {
   ctx.closePath();
   ctx.clip();
 
-  // Gradient fill (charcoal matte glass)
+  // Dark matte charcoal surface
   const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, '#2a2a2f');
-  grad.addColorStop(1, '#1b1b1e');
+  grad.addColorStop(0, '#2d2d32');
+  grad.addColorStop(1, '#1c1c1f');
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
 
-  // Border highlight
-  ctx.lineWidth = 3.5;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+  // Subtle border outline
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
   ctx.stroke();
   ctx.restore();
 
-  // Key badge
+  // Key badge (top-left)
   ctx.fillStyle = '#f4f3f0';
-  ctx.font = 'bold 24px Inter, system-ui, sans-serif';
-  ctx.fillText(data.key, 28, 48);
+  ctx.font = 'bold 22px Inter, system-ui, sans-serif';
+  ctx.fillText(data.key, 24, 42);
 
-  // Status badge pill
+  // Status badge pill (top-right)
   let statusColor = '#38bdf8';
-  let statusBg = 'rgba(56, 189, 248, 0.15)';
+  let statusBg = 'rgba(56, 189, 248, 0.18)';
   if (data.status === 'DONE') {
     statusColor = '#4ade80';
-    statusBg = 'rgba(74, 222, 128, 0.15)';
+    statusBg = 'rgba(74, 222, 128, 0.18)';
   } else if (data.status === 'IN_REVIEW') {
     statusColor = '#c084fc';
-    statusBg = 'rgba(192, 132, 252, 0.15)';
+    statusBg = 'rgba(192, 132, 252, 0.18)';
   } else if (data.status === 'TODO') {
     statusColor = '#fbbf24';
-    statusBg = 'rgba(251, 191, 36, 0.15)';
+    statusBg = 'rgba(251, 191, 36, 0.18)';
   }
 
   const pillText = data.status.replace('_', ' ');
-  ctx.font = '600 16px Inter, system-ui, sans-serif';
-  const pillWidth = ctx.measureText(pillText).width + 32;
-  const pillX = w - pillWidth - 28;
-  const pillY = 28;
-  const pillHeight = 28;
-  const pillR = 14;
+  ctx.font = '600 14px Inter, system-ui, sans-serif';
+  const pillWidth = ctx.measureText(pillText).width + 28;
+  const pillX = w - pillWidth - 24;
+  const pillY = 24;
+  const pillHeight = 24;
+  const pillR = 12;
 
   ctx.beginPath();
   ctx.fillStyle = statusBg;
   ctx.roundRect(pillX, pillY, pillWidth, pillHeight, pillR);
   ctx.fill();
   ctx.strokeStyle = statusColor;
-  ctx.lineWidth = 1.2;
+  ctx.lineWidth = 1;
   ctx.stroke();
 
   // Status dot
   ctx.beginPath();
-  ctx.arc(pillX + 14, pillY + 14, 3.5, 0, Math.PI * 2);
+  ctx.arc(pillX + 12, pillY + 12, 3, 0, Math.PI * 2);
   ctx.fillStyle = statusColor;
   ctx.fill();
 
   ctx.fillStyle = statusColor;
-  ctx.fillText(pillText, pillX + 24, pillY + 20);
+  ctx.fillText(pillText, pillX + 20, pillY + 17);
 
-  // Title text (wrap)
+  // Title text (clean 2-line wrap)
   ctx.fillStyle = '#f4f3f0';
-  ctx.font = '600 24px Inter, system-ui, sans-serif';
+  ctx.font = '600 20px Inter, system-ui, sans-serif';
   const words = data.title.split(' ');
   let line = '';
-  let lineY = 105;
-  const maxWidth = w - 56;
+  let lineY = 92;
+  const maxWidth = w - 48;
 
   for (let n = 0; n < words.length; n++) {
     const testLine = line + words[n] + ' ';
     const metrics = ctx.measureText(testLine);
     if (metrics.width > maxWidth && n > 0) {
-      ctx.fillText(line, 28, lineY);
+      ctx.fillText(line, 24, lineY);
       line = words[n] + ' ';
-      lineY += 34;
-      if (lineY > 175) {
+      lineY += 28;
+      if (lineY > 150) {
         line = line + '...';
         break;
       }
@@ -137,42 +138,42 @@ function drawCardCanvas(data: CardData): HTMLCanvasElement {
       line = testLine;
     }
   }
-  ctx.fillText(line, 28, lineY);
+  ctx.fillText(line, 24, lineY);
 
   // Bottom row divider
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(28, 205);
-  ctx.lineTo(w - 28, 205);
+  ctx.moveTo(24, 175);
+  ctx.lineTo(w - 24, 175);
   ctx.stroke();
 
   // Bottom tag & priority
-  ctx.font = '500 16px Inter, system-ui, sans-serif';
+  ctx.font = '500 14px Inter, system-ui, sans-serif';
   ctx.fillStyle = 'rgba(244, 243, 240, 0.6)';
-  ctx.fillText('#' + data.tag, 28, 240);
+  ctx.fillText('#' + data.tag, 24, 204);
 
   let prioColor = '#94a3b8';
   if (data.priority === 'CRITICAL') prioColor = '#f43f5e';
   else if (data.priority === 'HIGH') prioColor = '#fb923c';
   ctx.fillStyle = prioColor;
-  ctx.font = '600 15px Inter, system-ui, sans-serif';
-  ctx.fillText(data.priority, 150, 240);
+  ctx.font = '600 13px Inter, system-ui, sans-serif';
+  ctx.fillText(data.priority, 130, 204);
 
   // Assignee badge circle
   ctx.beginPath();
-  ctx.arc(w - 44, 238, 16, 0, Math.PI * 2);
-  ctx.fillStyle = '#3a3a40';
+  ctx.arc(w - 38, 202, 14, 0, Math.PI * 2);
+  ctx.fillStyle = '#3f3f46';
   ctx.fill();
   ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 1;
   ctx.stroke();
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px Inter, system-ui, sans-serif';
+  ctx.font = 'bold 12px Inter, system-ui, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(data.assignee, w - 44, 238);
+  ctx.fillText(data.assignee, w - 38, 202);
 
   return canvas;
 }
@@ -192,13 +193,13 @@ export function OrbGallery() {
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(
-      36,
+      34,
       container.clientWidth / container.clientHeight,
       0.1,
       1000
     );
-    // Camera placed at comfortable distance so the ball is elegantly sized
-    camera.position.z = 8.5;
+    // Camera distance keeps sphere perfectly framed and compact
+    camera.position.z = 7.2;
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -209,37 +210,40 @@ export function OrbGallery() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(container.clientWidth, container.clientHeight);
 
-    // Group for rotating sphere - elevated so it stays clear of bottom text
+    // Group for rotating sphere - centered in upper half of hero
     const sphereGroup = new THREE.Group();
-    // Lift sphere slightly above center (y = +0.55) to give full breathing room to bottom headlines
-    sphereGroup.position.y = 0.55;
+    // Lift sphere comfortably above bottom copy band
+    sphereGroup.position.y = 0.35;
     scene.add(sphereGroup);
 
+    // Compact, refined sphere radius
+    const radius = 1.25;
+
     // Opaque dark core sphere to occlude back-facing cards
-    const radius = 1.85; // Clean, proportional sphere radius (not oversized)
-    const coreGeo = new THREE.SphereGeometry(radius * 0.96, 48, 48);
+    const coreGeo = new THREE.SphereGeometry(radius * 0.98, 48, 48);
     const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x1a1a1d,
+      color: 0x17171a,
       transparent: false,
     });
     const coreSphere = new THREE.Mesh(coreGeo, coreMat);
     sphereGroup.add(coreSphere);
 
     // Delicate wireframe ambient ring
-    const ringGeo = new THREE.SphereGeometry(radius * 0.97, 24, 16);
+    const ringGeo = new THREE.SphereGeometry(radius * 0.99, 24, 16);
     const ringMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       wireframe: true,
       transparent: true,
-      opacity: 0.03,
+      opacity: 0.025,
     });
     const ringSphere = new THREE.Mesh(ringGeo, ringMat);
     sphereGroup.add(ringSphere);
 
-    // Generate Card Meshes
-    const totalCards = 24; // Clean quantity of cards on the sphere
+    // Miniature, crisp card meshes
+    const totalCards = 22;
     const cardMeshes: THREE.Mesh[] = [];
-    const cardGeom = new THREE.PlaneGeometry(0.68, 0.42);
+    // Miniature card size: 0.34 x 0.21 units (delicate, proportional, non-invasive)
+    const cardGeom = new THREE.PlaneGeometry(0.34, 0.21);
 
     for (let i = 0; i < totalCards; i++) {
       const data = CARDS_DATA[i % CARDS_DATA.length];
@@ -248,7 +252,7 @@ export function OrbGallery() {
       texture.minFilter = THREE.LinearFilter;
       texture.magFilter = THREE.LinearFilter;
 
-      // FrontSide ONLY so back of cards is culled and never shows reversed/mirrored text
+      // FrontSide ONLY so back of cards is culled completely
       const cardMat = new THREE.MeshBasicMaterial({
         map: texture,
         transparent: true,
@@ -266,7 +270,6 @@ export function OrbGallery() {
       const z = radius * Math.sin(phi) * Math.sin(theta);
 
       mesh.position.set(x, y, z);
-      // Face outward away from center (0, 0, 0)
       mesh.lookAt(x * 2, y * 2, z * 2);
 
       sphereGroup.add(mesh);
@@ -279,7 +282,7 @@ export function OrbGallery() {
     let prevPointerY = 0;
     let velX = 0;
     let velY = 0;
-    const baseRotationSpeed = 0.001; // Gentle, relaxed rotation
+    const baseRotationSpeed = 0.0008; // Very calm, serene rotation
 
     const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
@@ -298,11 +301,11 @@ export function OrbGallery() {
         prevPointerX = e.clientX;
         prevPointerY = e.clientY;
 
-        sphereGroup.rotation.y += deltaX * 0.004;
-        sphereGroup.rotation.x += deltaY * 0.004;
+        sphereGroup.rotation.y += deltaX * 0.0035;
+        sphereGroup.rotation.x += deltaY * 0.0035;
 
-        velX = deltaX * 0.004;
-        velY = deltaY * 0.004;
+        velX = deltaX * 0.0035;
+        velY = deltaY * 0.0035;
       }
     };
 
@@ -324,14 +327,14 @@ export function OrbGallery() {
 
       camera.aspect = width / height;
       if (width < 768) {
-        camera.position.z = 10.5;
-        sphereGroup.position.y = 0.8;
-      } else if (width < 1100) {
-        camera.position.z = 9.2;
-        sphereGroup.position.y = 0.65;
-      } else {
         camera.position.z = 8.5;
-        sphereGroup.position.y = 0.55;
+        sphereGroup.position.y = 0.5;
+      } else if (width < 1100) {
+        camera.position.z = 7.8;
+        sphereGroup.position.y = 0.4;
+      } else {
+        camera.position.z = 7.2;
+        sphereGroup.position.y = 0.35;
       }
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -346,7 +349,7 @@ export function OrbGallery() {
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
-      time += 0.008;
+      time += 0.006;
 
       if (!isDragging) {
         velX *= 0.95;
@@ -354,8 +357,7 @@ export function OrbGallery() {
         sphereGroup.rotation.y += velX + baseRotationSpeed;
         sphereGroup.rotation.x += velY;
 
-        // Very subtle resting wobble
-        sphereGroup.rotation.z = Math.sin(time * 0.4) * 0.02;
+        sphereGroup.rotation.z = Math.sin(time * 0.4) * 0.015;
       }
 
       renderer.render(scene, camera);
@@ -386,9 +388,9 @@ export function OrbGallery() {
   }, []);
 
   return (
-    <div ref={containerRef} className="stage">
+    <div ref={containerRef} className="absolute inset-0 pointer-events-auto overflow-hidden">
       <canvas id="orb" ref={canvasRef} className="w-full h-full block cursor-grab touch-none" />
-      {/* Interactive hint under nav */}
+      {/* Interactive hint */}
       <div
         className={`hint transition-all duration-700 select-none ${
           hintDismissed ? 'opacity-0 translate-y-2 pointer-events-none' : 'opacity-100'
@@ -408,7 +410,7 @@ export function OrbGallery() {
           <path d="M12 17.3 v2.2" />
           <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
         </svg>
-        <span>Drag to rotate &middot; real-time task globe</span>
+        <span>Drag to rotate 3D issue globe</span>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
@@ -19,7 +19,11 @@ import {
   Keyboard,
   CheckCircle2,
   Sliders,
+  ArrowDown,
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { toast } from 'sonner';
+import { motion, useScroll, useTransform } from 'motion/react';
 
 function GitHubIcon({ className }: { className?: string }) {
   return (
@@ -32,8 +36,6 @@ function GitHubIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-import confetti from 'canvas-confetti';
-import { toast } from 'sonner';
 
 interface DemoCard {
   id: string;
@@ -99,8 +101,16 @@ export default function LandingPage() {
   const [seqCount, setSeqCount] = useState(105);
   const [lastAllocatedKey, setLastAllocatedKey] = useState('HSC-105');
 
-  // Interactive Sandbox Drawer Toggle
-  const [showSandboxDrawer, setShowSandboxDrawer] = useState(false);
+  // Scroll animation hooks
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.75], [1, 0.9]);
+  const heroY = useTransform(scrollYProgress, [0, 0.75], [0, -60]);
 
   const handleLaunchSandbox = () => {
     toast.success('⚡ Launching instant sandbox session...', {
@@ -108,6 +118,10 @@ export default function LandingPage() {
     });
     enterDemoSandbox();
     router.push('/dashboard');
+  };
+
+  const scrollToPlatform = () => {
+    document.getElementById('platform')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const cycleCardStatus = (id: string) => {
@@ -151,90 +165,117 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#1f1f21] text-[#f4f3f0] selection:bg-white/20 selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#1f1f21] text-[#f4f3f0] selection:bg-white/20 selection:text-white overflow-x-hidden">
       {/* ============================================================
-          STAGE 1: 3D Orb Gallery Hero Stage
+          SECTION 1: Dedicated 3D Orb Hero Viewport (100dvh)
           ============================================================ */}
-      <OrbGallery />
-
-      {/* Floating Header */}
-      <header className="orb-nav">
-        <Link href="/" className="orb-logo">
-          <BrandLogo size="sm" showText={false} />
-          <span className="font-semibold tracking-tight text-lg text-[#f4f3f0]">DevFlow</span>
-        </Link>
-
-        <nav className="orb-links">
-          <a href="#sandbox" onClick={(e) => { e.preventDefault(); setShowSandboxDrawer(!showSandboxDrawer); }}>
-            Interactive Demo
-          </a>
-          <a href="#features">Capabilities</a>
-          <a href="#cli">CLI & Terminal</a>
-          <a href="#architecture">Architecture</a>
-          <a href="https://github.com/sanjaykamal2006/devflow" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
-            <GitHubIcon className="w-3.5 h-3.5" />
-            <span>GitHub</span>
-          </a>
-        </nav>
-
-        <div className="orb-navend">
-          <Link href="/auth/login" className="sign">
-            Sign in
+      <section
+        ref={heroRef}
+        className="relative min-h-[100dvh] h-[100dvh] flex flex-col justify-between overflow-hidden"
+      >
+        {/* Floating Top Navigation */}
+        <header className="orb-nav">
+          <Link href="/" className="orb-logo">
+            <BrandLogo size="sm" showText={false} />
+            <span className="font-semibold tracking-tight text-lg text-[#f4f3f0]">DevFlow</span>
           </Link>
-          <button onClick={handleLaunchSandbox} className="btn-orb sm solid flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 fill-current" />
-            <span>Try Live Sandbox</span>
-          </button>
-        </div>
-      </header>
 
-      {/* Bottom Pinned Copy Band */}
-      <section className="orb-band">
-        <h1 className="orb-lead">
-          Every issue<br />
-          worth <em>solving</em>.
-        </h1>
-
-        <div className="orb-side">
-          <span className="orb-badge">
-            <i />
-            Open Source &middot; Linear-grade developer workspace
-          </span>
-
-          <p className="orb-lede">
-            High-velocity issue tracking and project management for engineering teams. Sub-millisecond navigation, Vim keybindings, and real-time Kanban boards.
-          </p>
-
-          <div className="orb-cta">
-            <button onClick={handleLaunchSandbox} className="btn-orb lg solid flex items-center gap-2">
-              <Zap className="w-4 h-4 fill-current text-amber-500" />
-              <span>⚡ Try Live Sandbox</span>
+          <nav className="orb-links">
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+              Interactive Demo
             </button>
-            <button
-              onClick={() => setShowSandboxDrawer(!showSandboxDrawer)}
-              className="btn-orb lg ghost flex items-center gap-2"
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+              Capabilities
+            </button>
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+              CLI & Terminal
+            </button>
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+              Architecture
+            </button>
+            <a
+              href="https://github.com/sanjaykamal2006/devflow"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-[14.5px] text-zinc-400 hover:text-white transition"
             >
-              <span>{showSandboxDrawer ? 'Hide Preview' : 'Explore Platform'}</span>
-              <span className="arrow">&rarr;</span>
+              <GitHubIcon className="w-3.5 h-3.5" />
+              <span>GitHub</span>
+            </a>
+          </nav>
+
+          <div className="orb-navend">
+            <Link href="/auth/login" className="sign">
+              Sign in
+            </Link>
+            <button onClick={handleLaunchSandbox} className="btn-orb sm solid flex items-center gap-1.5">
+              <Zap className="w-3.5 h-3.5 fill-current" />
+              <span>Try Live Sandbox</span>
             </button>
           </div>
+        </header>
 
-          <div className="orb-proof">
-            <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Next.js 15 App Router &middot; Spring Boot 3.3 &middot; Neon Postgres</span>
+        {/* Animated 3D Orb Layer */}
+        <motion.div
+          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          className="absolute inset-0 pointer-events-auto"
+        >
+          <OrbGallery />
+        </motion.div>
+
+        {/* Bottom Hero Copy Band */}
+        <motion.div
+          style={{ opacity: heroOpacity, y: heroY }}
+          className="relative z-20 mt-auto"
+        >
+          <div className="orb-band">
+            <h1 className="orb-lead">
+              Every issue<br />
+              worth <em>solving</em>.
+            </h1>
+
+            <div className="orb-side">
+              <span className="orb-badge">
+                <i />
+                Open Source &middot; Linear-grade developer workspace
+              </span>
+
+              <p className="orb-lede">
+                High-velocity issue tracking and project management for engineering teams. Sub-millisecond navigation, Vim keybindings, and real-time Kanban boards.
+              </p>
+
+              <div className="orb-cta">
+                <button onClick={handleLaunchSandbox} className="btn-orb lg solid flex items-center gap-2">
+                  <Zap className="w-4 h-4 fill-current text-amber-500" />
+                  <span>⚡ Try Live Sandbox</span>
+                </button>
+                <button
+                  onClick={scrollToPlatform}
+                  className="btn-orb lg ghost flex items-center gap-2"
+                >
+                  <span>Explore Platform</span>
+                  <ArrowDown className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="orb-proof">
+                <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>Next.js 15 App Router &middot; Spring Boot 3.3 &middot; Neon Postgres</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ============================================================
-          STAGE 2: Interactive Sandbox & Engineering Capabilities
+          SECTION 2: Dedicated Interactive Platform & Kanban Workspace
           ============================================================ */}
-      <div id="sandbox" className={`relative z-20 pt-28 pb-32 transition-all duration-500 ${showSandboxDrawer ? 'block' : 'mt-[100vh]'}`}>
+      <section id="platform" className="relative z-20 bg-[#17171a] border-t border-white/10 py-28">
         <div className="max-w-6xl mx-auto px-6">
-          {/* Section Anchor Divider */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-6 mb-16">
+          {/* Section Header */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-8 mb-16 gap-6">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-400 mb-3">
                 <Sliders className="w-3.5 h-3.5 text-emerald-400" />
@@ -246,10 +287,10 @@ export default function LandingPage() {
             </div>
             <button
               onClick={handleLaunchSandbox}
-              className="hidden md:inline-flex btn-orb sm solid items-center gap-2"
+              className="btn-orb sm solid self-start md:self-auto flex items-center gap-2"
             >
               <Zap className="w-3.5 h-3.5" />
-              <span>Full Demo App</span>
+              <span>Open Guest Sandbox</span>
             </button>
           </div>
 
@@ -313,7 +354,7 @@ export default function LandingPage() {
           </div>
 
           {/* Capabilities Bento Grid */}
-          <div id="features" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
             {/* Bento 1: Keyboard First Navigation */}
             <div className="orb-card rounded-2xl p-7 flex flex-col justify-between">
               <div>
@@ -366,7 +407,7 @@ export default function LandingPage() {
           </div>
 
           {/* CLI & Terminal Section */}
-          <div id="cli" className="orb-card rounded-2xl p-6 md:p-8 mb-16">
+          <div className="orb-card rounded-2xl p-6 md:p-8 mb-16">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
@@ -405,7 +446,7 @@ export default function LandingPage() {
           </div>
 
           {/* Architecture Dossier Summary */}
-          <div id="architecture" className="border-t border-white/10 pt-12 pb-16">
+          <div className="border-t border-white/10 pt-12 pb-16">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-zinc-400 mb-6">
               Production Architecture Highlights
             </h4>
@@ -434,7 +475,7 @@ export default function LandingPage() {
         <footer className="border-t border-white/10 py-10 text-center text-xs text-zinc-500">
           <p>&copy; {new Date().getFullYear()} DevFlow. Open source developer workspace. Built with craftsmanship.</p>
         </footer>
-      </div>
+      </section>
     </div>
   );
 }
