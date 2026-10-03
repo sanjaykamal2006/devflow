@@ -1,417 +1,670 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { ORB_TILE_URLS } from '@/lib/orb-tiles';
 
-interface CardData {
-  key: string;
-  title: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  tag: string;
-  assignee: string;
+interface OrbGalleryProps {
+  className?: string;
+  style?: React.CSSProperties;
 }
 
-const CARDS_DATA: CardData[] = [
-  { key: 'QE-104', title: 'Migrate connection pool to HikariCP', status: 'IN_PROGRESS', priority: 'HIGH', tag: 'Backend', assignee: 'SK' },
-  { key: 'QE-105', title: 'Row-level locking on sequence key', status: 'IN_REVIEW', priority: 'CRITICAL', tag: 'Database', assignee: 'AL' },
-  { key: 'DS-201', title: 'Liquid-glass token system for cmdk', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'EM' },
-  { key: 'DS-202', title: 'Vim keymap bindings: j/k navigation', status: 'DONE', priority: 'HIGH', tag: 'Frontend', assignee: 'SK' },
-  { key: 'HSC-88', title: 'Sub-ms query cache for Neon postgres', status: 'IN_PROGRESS', priority: 'CRITICAL', tag: 'Infra', assignee: 'JD' },
-  { key: 'HSC-89', title: 'Stateless JWT refresh rotation', status: 'DONE', priority: 'HIGH', tag: 'Security', assignee: 'AL' },
-  { key: 'MOB-12', title: 'Offline sync queue with optimistic rollback', status: 'TODO', priority: 'HIGH', tag: 'Mobile', assignee: 'JD' },
-  { key: 'QE-106', title: 'WebSocket push notification channel', status: 'IN_PROGRESS', priority: 'MEDIUM', tag: 'Backend', assignee: 'SK' },
-  { key: 'DS-203', title: 'Spring animation curves on Kanban board', status: 'DONE', priority: 'MEDIUM', tag: 'Frontend', assignee: 'SK' },
-  { key: 'HSC-90', title: 'Distributed tracing via OpenTelemetry', status: 'TODO', priority: 'LOW', tag: 'Infra', assignee: 'AL' },
-  { key: 'QE-107', title: 'Atomic issue key allocation: HSC-1', status: 'DONE', priority: 'CRITICAL', tag: 'Database', assignee: 'SK' },
-  { key: 'MOB-13', title: 'Haptic feedback on gesture transitions', status: 'TODO', priority: 'LOW', tag: 'Mobile', assignee: 'JD' },
-  { key: 'HSC-91', title: 'Neon database branch instant ephemeral preview', status: 'DONE', priority: 'HIGH', tag: 'DevOps', assignee: 'AL' },
-  { key: 'DS-204', title: 'Linear obsidian theme palette with #1f1f21', status: 'DONE', priority: 'MEDIUM', tag: 'Design', assignee: 'SK' },
-];
+// Deterministic PRNG
+function mulberry32(a: number) {
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
-function drawCardCanvas(data: CardData): HTMLCanvasElement {
-  const canvas = document.createElement('canvas');
-  // High-DPI canvas for crisp, sharp rendering
-  canvas.width = 380;
-  canvas.height = 230;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return canvas;
+const pick = <T,>(r: () => number, a: T[]): T => a[Math.min(a.length - 1, (r() * a.length) | 0)];
+const rr = (r: () => number, a: number, b: number) => a + r() * (b - a);
 
-  const w = 380;
-  const h = 230;
-  const r = 18;
+// Geometry & Atlas Constants
+const SPHERE = {
+  R: 1,
+  nEquator: 20,
+  latLimit: 84,
+  gap: 0.1,
+};
 
-  ctx.clearRect(0, 0, w, h);
+const ASPECTS = [1.62, 1.56, 1.5, 1.5, 1.5, 1.44, 1.38, 1.32];
+const TW = 384;
+const TH = 256;
+const COLS = 12;
+const ROWS = 8;
+const TILES = COLS * ROWS; // 96
+const SEG = 7;
+const PER = 4 * (SEG + 1); // 32
+const HOVER_POP = 1.12;
+const AUTO = (Math.PI * 2) / 22; // 22 seconds per revolution
 
-  // Card background with rounded clipping
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(r, 0);
-  ctx.lineTo(w - r, 0);
-  ctx.quadraticCurveTo(w, 0, w, r);
-  ctx.lineTo(w, h - r);
-  ctx.quadraticCurveTo(w, h, w - r, h);
-  ctx.lineTo(r, h);
-  ctx.quadraticCurveTo(0, h, 0, h - r);
-  ctx.lineTo(0, r);
-  ctx.quadraticCurveTo(0, 0, r, 0);
-  ctx.closePath();
-  ctx.clip();
+interface CardItem {
+  lat: number;
+  lon: number;
+  rad: number;
+  w: number;
+  h: number;
+  roll: number;
+  tile: number;
+  basis: {
+    n: [number, number, number];
+    R: [number, number, number];
+    U: [number, number, number];
+  };
+  outline: [number, number][];
+  vBase: number;
+}
 
-  // Dark matte charcoal surface
-  const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, '#2d2d32');
-  grad.addColorStop(1, '#1c1c1f');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, w, h);
+function cardBasis(lat: number, lon: number, roll: number) {
+  const cl = Math.cos(lat),
+    sl = Math.sin(lat),
+    cs = Math.cos(lon),
+    sn = Math.sin(lon);
+  const n: [number, number, number] = [cl * sn, sl, cl * cs];
+  const u: [number, number, number] = [-sl * sn, cl, -sl * cs];
+  const g: [number, number, number] = [
+    u[1] * n[2] - u[2] * n[1],
+    u[2] * n[0] - u[0] * n[2],
+    u[0] * n[1] - u[1] * n[0],
+  ];
+  const cr = Math.cos(roll),
+    sr = Math.sin(roll);
+  return {
+    n,
+    R: [g[0] * cr + u[0] * sr, g[1] * cr + u[1] * sr, g[2] * cr + u[2] * sr] as [number, number, number],
+    U: [u[0] * cr - g[0] * sr, u[1] * cr - g[1] * sr, u[2] * cr - g[2] * sr] as [number, number, number],
+  };
+}
 
-  // Subtle border outline
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-  ctx.stroke();
-  ctx.restore();
-
-  // Key badge (top-left)
-  ctx.fillStyle = '#f4f3f0';
-  ctx.font = 'bold 22px Inter, system-ui, sans-serif';
-  ctx.fillText(data.key, 24, 42);
-
-  // Status badge pill (top-right)
-  let statusColor = '#38bdf8';
-  let statusBg = 'rgba(56, 189, 248, 0.18)';
-  if (data.status === 'DONE') {
-    statusColor = '#4ade80';
-    statusBg = 'rgba(74, 222, 128, 0.18)';
-  } else if (data.status === 'IN_REVIEW') {
-    statusColor = '#c084fc';
-    statusBg = 'rgba(192, 132, 252, 0.18)';
-  } else if (data.status === 'TODO') {
-    statusColor = '#fbbf24';
-    statusBg = 'rgba(251, 191, 36, 0.18)';
-  }
-
-  const pillText = data.status.replace('_', ' ');
-  ctx.font = '600 14px Inter, system-ui, sans-serif';
-  const pillWidth = ctx.measureText(pillText).width + 28;
-  const pillX = w - pillWidth - 24;
-  const pillY = 24;
-  const pillHeight = 24;
-  const pillR = 12;
-
-  ctx.beginPath();
-  ctx.fillStyle = statusBg;
-  ctx.roundRect(pillX, pillY, pillWidth, pillHeight, pillR);
-  ctx.fill();
-  ctx.strokeStyle = statusColor;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Status dot
-  ctx.beginPath();
-  ctx.arc(pillX + 12, pillY + 12, 3, 0, Math.PI * 2);
-  ctx.fillStyle = statusColor;
-  ctx.fill();
-
-  ctx.fillStyle = statusColor;
-  ctx.fillText(pillText, pillX + 20, pillY + 17);
-
-  // Title text (clean 2-line wrap)
-  ctx.fillStyle = '#f4f3f0';
-  ctx.font = '600 20px Inter, system-ui, sans-serif';
-  const words = data.title.split(' ');
-  let line = '';
-  let lineY = 92;
-  const maxWidth = w - 48;
-
-  for (let n = 0; n < words.length; n++) {
-    const testLine = line + words[n] + ' ';
-    const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && n > 0) {
-      ctx.fillText(line, 24, lineY);
-      line = words[n] + ' ';
-      lineY += 28;
-      if (lineY > 150) {
-        line = line + '...';
-        break;
-      }
-    } else {
-      line = testLine;
+function cardOutline(w: number, h: number, rad: number, seg: number): [number, number][] {
+  const a = w / 2,
+    b = h / 2,
+    q = Math.min(rad, a * 0.9, b * 0.9),
+    pts: [number, number][] = [];
+  const corners: [number, number, number][] = [
+    [a - q, b - q, 0],
+    [-a + q, b - q, Math.PI / 2],
+    [-a + q, -b + q, Math.PI],
+    [a - q, -b + q, -Math.PI / 2],
+  ];
+  for (const [cx, cy, a0] of corners) {
+    for (let s = 0; s <= seg; s++) {
+      const t = a0 + (s / seg) * (Math.PI / 2);
+      pts.push([cx + Math.cos(t) * q, cy + Math.sin(t) * q]);
     }
   }
-  ctx.fillText(line, 24, lineY);
-
-  // Bottom row divider
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(24, 175);
-  ctx.lineTo(w - 24, 175);
-  ctx.stroke();
-
-  // Bottom tag & priority
-  ctx.font = '500 14px Inter, system-ui, sans-serif';
-  ctx.fillStyle = 'rgba(244, 243, 240, 0.6)';
-  ctx.fillText('#' + data.tag, 24, 204);
-
-  let prioColor = '#94a3b8';
-  if (data.priority === 'CRITICAL') prioColor = '#f43f5e';
-  else if (data.priority === 'HIGH') prioColor = '#fb923c';
-  ctx.fillStyle = prioColor;
-  ctx.font = '600 13px Inter, system-ui, sans-serif';
-  ctx.fillText(data.priority, 130, 204);
-
-  // Assignee badge circle
-  ctx.beginPath();
-  ctx.arc(w - 38, 202, 14, 0, Math.PI * 2);
-  ctx.fillStyle = '#3f3f46';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 12px Inter, system-ui, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(data.assignee, w - 38, 202);
-
-  return canvas;
+  return pts;
 }
 
-export function OrbGallery() {
+function writeCard(
+  pos: Float32Array,
+  c: CardItem,
+  scale: number,
+  radMul: number
+) {
+  const b = c.basis;
+  const rad = c.rad * radMul;
+  const ox = b.n[0] * rad;
+  const oy = b.n[1] * rad;
+  const oz = b.n[2] * rad;
+  let p = c.vBase * 3;
+  pos[p++] = ox;
+  pos[p++] = oy;
+  pos[p++] = oz;
+  for (let i = 0; i < c.outline.length; i++) {
+    const x = c.outline[i][0] * scale;
+    const y = c.outline[i][1] * scale;
+    pos[p++] = ox + b.R[0] * x + b.U[0] * y;
+    pos[p++] = oy + b.R[1] * x + b.U[1] * y;
+    pos[p++] = oz + b.R[2] * x + b.U[2] * y;
+  }
+}
+
+function buildCards(): CardItem[] {
+  const r = mulberry32(424242);
+  const out: Partial<CardItem>[] = [];
+  const lim = (SPHERE.latLimit * Math.PI) / 180;
+  const cellEq = (2 * Math.PI) / SPHERE.nEquator;
+  const nRings = Math.max(1, Math.round((lim * 2) / (cellEq / 1.5)));
+  const pitch = (lim * 2) / nRings;
+
+  for (let j = 0; j <= nRings; j++) {
+    const lat = -lim + j * pitch;
+    const cl = Math.max(0.05, Math.cos(lat));
+    const n = Math.max(1, Math.round(SPHERE.nEquator * cl));
+    const cellW = (2 * Math.PI * cl) / n;
+    const cellH = pitch;
+    const maxW = cellW * (1 - SPHERE.gap);
+    const maxH = cellH * (1 - SPHERE.gap);
+    const off = r() * Math.PI * 2;
+
+    for (let i = 0; i < n; i++) {
+      const asp = pick(r, ASPECTS);
+      const roll = rr(r, -0.045, 0.045);
+      const ca = Math.cos(roll);
+      const sa = Math.abs(Math.sin(roll));
+      let w = Math.min(maxW / (ca + sa / asp), maxH / (ca / asp + sa));
+      w *= rr(r, 0.86, 0.96);
+      const h = w / asp;
+      const slackLon = Math.max(0, (cellW - (w * ca + h * sa)) / 2);
+      out.push({
+        lat,
+        lon: off + (i / n) * Math.PI * 2 + (slackLon / cl) * rr(r, -0.85, 0.85),
+        rad: SPHERE.R * (1 + rr(r, 0, 0.02)),
+        w,
+        h,
+        roll,
+        tile: 0,
+      });
+    }
+  }
+
+  // Shuffle & clash avoidance across sphere
+  const idx = out.map((_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const k = (r() * (i + 1)) | 0;
+    [idx[i], idx[k]] = [idx[k], idx[i]];
+  }
+  idx.forEach((o, i) => {
+    out[o].tile = i % TILES;
+  });
+
+  const dir = out.map((c) => {
+    const cl = Math.cos(c.lat!);
+    return [cl * Math.sin(c.lon!), Math.sin(c.lat!), cl * Math.cos(c.lon!)];
+  });
+  const MIND = Math.cos(0.62); // ~35 deg arc
+  const clash = (i: number) => {
+    for (let j = 0; j < out.length; j++) {
+      if (j === i || out[j].tile !== out[i].tile) continue;
+      const d = dir[i][0] * dir[j][0] + dir[i][1] * dir[j][1] + dir[i][2] * dir[j][2];
+      if (d > MIND) return true;
+    }
+    return false;
+  };
+
+  for (let pass = 0; pass < 4; pass++) {
+    for (let i = 0; i < out.length; i++) {
+      if (!clash(i)) continue;
+      for (let t = 0; t < 24; t++) {
+        const k = (r() * out.length) | 0;
+        if (k === i) continue;
+        const aTile = out[i].tile!;
+        const bTile = out[k].tile!;
+        out[i].tile = bTile;
+        out[k].tile = aTile;
+        if (!clash(i) && !clash(k)) break;
+        out[i].tile = aTile;
+        out[k].tile = bTile;
+      }
+    }
+  }
+
+  return out as CardItem[];
+}
+
+function clearTo(cx: number, cy: number, el: Element | null): number {
+  if (!el) return Infinity;
+  const r = el.getBoundingClientRect();
+  const dx = Math.max(r.left - cx, 0, cx - r.right);
+  const dy = Math.max(r.top - cy, 0, cy - r.bottom);
+  return Math.hypot(dx, dy);
+}
+
+// Procedural fallback card painter for instant zero-latency loading
+function drawFallbackCard(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, i: number) {
+  ctx.save();
+  ctx.fillStyle = '#1c1c1f';
+  ctx.fillRect(x, y, w, h);
+
+  // Card header band
+  ctx.fillStyle = '#28282c';
+  ctx.fillRect(x, y, w, 32);
+
+  // Subtle accent dot
+  const colors = ['#38bdf8', '#818cf8', '#34d399', '#f472b6', '#fbbf24'];
+  ctx.fillStyle = colors[i % colors.length];
+  ctx.beginPath();
+  ctx.arc(x + 18, y + 16, 5, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Mock UI lines
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.fillRect(x + 32, y + 12, 60, 8);
+  ctx.fillRect(x + 18, y + 50, w - 36, 10);
+  ctx.fillRect(x + 18, y + 70, w - 80, 8);
+  ctx.fillRect(x + 18, y + 90, w - 120, 8);
+
+  // Mock chart / metrics block
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+  ctx.fillRect(x + 18, y + 120, w - 36, 90);
+
+  // Mock bar lines
+  ctx.fillStyle = colors[(i + 1) % colors.length];
+  for (let b = 0; b < 6; b++) {
+    const bh = 20 + ((b * 13 + i * 7) % 50);
+    ctx.fillRect(x + 32 + b * 20, y + 195 - bh, 12, bh);
+  }
+
+  // Border
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  ctx.restore();
+}
+
+export function OrbGallery({ className = '', style }: OrbGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [hintDismissed, setHintDismissed] = useState(false);
 
   useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
-
     const canvas = canvasRef.current;
     const container = containerRef.current;
+    if (!canvas || !container) return;
 
-    // Three.js Scene Setup
-    const scene = new THREE.Scene();
+    let animId: number;
+    let isDisposed = false;
+    let isVisible = true;
 
-    const camera = new THREE.PerspectiveCamera(
-      34,
-      container.clientWidth / container.clientHeight,
-      0.1,
-      1000
-    );
-    // Camera distance keeps sphere perfectly framed and compact
-    camera.position.z = 7.2;
+    // 1. Build Atlas Canvas
+    const atlasCanvas = document.createElement('canvas');
+    atlasCanvas.width = TW * COLS;
+    atlasCanvas.height = TH * ROWS;
+    const ac = atlasCanvas.getContext('2d');
+    if (ac) {
+      ac.fillStyle = '#18181b';
+      ac.fillRect(0, 0, atlasCanvas.width, atlasCanvas.height);
+      for (let i = 0; i < TILES; i++) {
+        const tx = (i % COLS) * TW;
+        const ty = Math.floor(i / COLS) * TH;
+        drawFallbackCard(ac, tx, ty, TW, TH, i);
+      }
+    }
 
+    // 2. Setup Three.js WebGL Renderer
     const renderer = new THREE.WebGLRenderer({
       canvas,
       antialias: true,
       alpha: true,
       powerPreference: 'high-performance',
     });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setClearColor(0x000000, 0);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    // Group for rotating sphere - centered in upper half of hero
-    const sphereGroup = new THREE.Group();
-    // Lift sphere comfortably above bottom copy band
-    sphereGroup.position.y = 0.35;
-    scene.add(sphereGroup);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(19, 1, 0.1, 60);
 
-    // Compact, refined sphere radius
-    const radius = 1.25;
+    const atlasTex = new THREE.CanvasTexture(atlasCanvas);
+    atlasTex.flipY = false;
+    atlasTex.colorSpace = THREE.SRGBColorSpace;
+    atlasTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    atlasTex.minFilter = THREE.LinearMipmapLinearFilter;
+    atlasTex.magFilter = THREE.LinearFilter;
+    atlasTex.generateMipmaps = true;
+    atlasTex.needsUpdate = true;
 
-    // Opaque dark core sphere to occlude back-facing cards
-    const coreGeo = new THREE.SphereGeometry(radius * 0.98, 48, 48);
-    const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x17171a,
-      transparent: false,
+    // 3. Preload WebP Atlas Images
+    const imageElements: HTMLImageElement[] = [];
+    ORB_TILE_URLS.forEach((url, i) => {
+      if (i >= TILES) return;
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        if (isDisposed || !ac) return;
+        const tx = (i % COLS) * TW;
+        const ty = Math.floor(i / COLS) * TH;
+        ac.drawImage(img, tx, ty, TW, TH);
+        atlasTex.needsUpdate = true;
+      };
+      img.src = url;
+      imageElements.push(img);
     });
-    const coreSphere = new THREE.Mesh(coreGeo, coreMat);
-    sphereGroup.add(coreSphere);
 
-    // Delicate wireframe ambient ring
-    const ringGeo = new THREE.SphereGeometry(radius * 0.99, 24, 16);
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: 0xffffff,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.025,
-    });
-    const ringSphere = new THREE.Mesh(ringGeo, ringMat);
-    sphereGroup.add(ringSphere);
+    // 4. Build Cards & Geometry
+    const cards = buildCards();
+    const vCount = cards.length * (PER + 1);
+    const pos = new Float32Array(vCount * 3);
+    const uv = new Float32Array(vCount * 2);
+    const col = new Float32Array(vCount * 3).fill(1);
+    const idx = new Uint32Array(cards.length * PER * 3);
 
-    // Miniature, crisp card meshes
-    const totalCards = 22;
-    const cardMeshes: THREE.Mesh[] = [];
-    // Miniature card size: 0.34 x 0.21 units (delicate, proportional, non-invasive)
-    const cardGeom = new THREE.PlaneGeometry(0.34, 0.21);
+    const TILEU = 1 / COLS;
+    const TILEV = 1 / ROWS;
+    const INSET = 0.5 / TW;
+    let up = 0;
+    let ip = 0;
+    let vbase = 0;
 
-    for (let i = 0; i < totalCards; i++) {
-      const data = CARDS_DATA[i % CARDS_DATA.length];
-      const cardCanvas = drawCardCanvas(data);
-      const texture = new THREE.CanvasTexture(cardCanvas);
-      texture.minFilter = THREE.LinearFilter;
-      texture.magFilter = THREE.LinearFilter;
+    for (const c of cards) {
+      c.basis = cardBasis(c.lat, c.lon, c.roll);
+      c.outline = cardOutline(c.w, c.h, c.w * 0.065, SEG);
+      c.vBase = vbase;
+      writeCard(pos, c, 1, 1);
 
-      // FrontSide ONLY so back of cards is culled completely
-      const cardMat = new THREE.MeshBasicMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.FrontSide,
-      });
+      const cl = c.tile % COLS;
+      const row = Math.floor(c.tile / COLS);
+      const asp = c.w / c.h;
+      const tileAsp = TW / TH;
+      const us = asp > tileAsp ? 1 : asp / tileAsp;
+      const vs = asp > tileAsp ? tileAsp / asp : 1;
 
-      const mesh = new THREE.Mesh(cardGeom, cardMat);
+      uv[up++] = (cl + 0.5) * TILEU;
+      uv[up++] = (row + 0.5) * TILEV;
 
-      // Fibonacci sphere coordinates
-      const phi = Math.acos(1 - (2 * (i + 0.5)) / totalCards);
-      const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+      for (let i = 0; i < c.outline.length; i++) {
+        const lu = 0.5 + (c.outline[i][0] / c.w) * us;
+        const lv = 0.5 + (c.outline[i][1] / c.h) * vs;
+        uv[up++] = (cl + Math.min(1 - INSET, Math.max(INSET, lu))) * TILEU;
+        uv[up++] = (row + (1 - Math.min(1 - INSET, Math.max(INSET, lv)))) * TILEV;
+      }
 
-      const x = radius * Math.sin(phi) * Math.cos(theta);
-      const y = radius * Math.cos(phi);
-      const z = radius * Math.sin(phi) * Math.sin(theta);
-
-      mesh.position.set(x, y, z);
-      mesh.lookAt(x * 2, y * 2, z * 2);
-
-      sphereGroup.add(mesh);
-      cardMeshes.push(mesh);
+      for (let i = 0; i < PER; i++) {
+        idx[ip++] = vbase;
+        idx[ip++] = vbase + 1 + i;
+        idx[ip++] = vbase + 1 + ((i + 1) % PER);
+      }
+      vbase += PER + 1;
     }
 
-    // Pointer Drag & Velocity Interaction
-    let isDragging = false;
-    let prevPointerX = 0;
-    let prevPointerY = 0;
-    let velX = 0;
-    let velY = 0;
-    const baseRotationSpeed = 0.0008; // Very calm, serene rotation
+    const geo = new THREE.BufferGeometry();
+    const posAttr = new THREE.BufferAttribute(pos, 3);
+    const colAttr = new THREE.BufferAttribute(col, 3);
+    geo.setAttribute('position', posAttr);
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    geo.setAttribute('color', colAttr);
+    geo.setIndex(new THREE.BufferAttribute(idx, 1));
+    geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1.35);
+
+    const mat = new THREE.MeshBasicMaterial({
+      map: atlasTex,
+      side: THREE.FrontSide,
+      vertexColors: true,
+      toneMapped: false,
+    });
+
+    const cardMesh = new THREE.Mesh(geo, mat);
+    const orbGroup = new THREE.Group();
+    orbGroup.add(cardMesh);
+    scene.add(orbGroup);
+
+    // 5. Dynamic Camera Sizing & Auto-Clearing Copy Elements
+    let fitW = 0;
+    let fitH = 0;
+
+    const fitCamera = (force = false) => {
+      const parent = canvas.parentElement;
+      if (!parent) return;
+      const W = parent.clientWidth;
+      const H = parent.clientHeight;
+      if (W < 2 || H < 2) return;
+      if (!force && W === fitW && H === fitH) return;
+      fitW = W;
+      fitH = H;
+
+      const D = 4.0;
+      const alpha = Math.asin(1 / D);
+      let diameter: number;
+
+      const isStacked = window.innerWidth <= 900;
+      if (isStacked) {
+        diameter = Math.min(0.88 * W, 0.92 * H);
+      } else {
+        const cx = W / 2;
+        const cy = H / 2;
+        let R = Math.min(0.32 * W, 0.44 * H);
+        const navEl = document.querySelector('.orb-nav');
+        const hintEl = document.querySelector('.hint');
+        const leadEl = document.querySelector('.orb-lead');
+        const sideEl = document.querySelector('.orb-side');
+        for (const e of [navEl, hintEl, leadEl, sideEl]) {
+          if (e) {
+            R = Math.min(R, clearTo(cx, cy, e) - 20);
+          }
+        }
+        diameter = 2 * Math.max(80, R);
+      }
+
+      const halfFov = Math.atan((Math.tan(alpha) * H) / diameter);
+      camera.fov = Math.max(4, Math.min(100, (halfFov * 2 * 180) / Math.PI));
+      camera.aspect = W / H;
+      camera.position.set(0, 0, D);
+      camera.updateProjectionMatrix();
+      orbGroup.position.y = 0;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(W, H, false);
+    };
+
+    fitCamera(true);
+
+    const resizeObserver = new ResizeObserver(() => fitCamera());
+    if (canvas.parentElement) {
+      resizeObserver.observe(canvas.parentElement);
+    }
+    const handleWindowResize = () => fitCamera(true);
+    window.addEventListener('resize', handleWindowResize);
+
+    // 6. Interaction State
+    let yaw = 0;
+    let pitch = 0;
+    let yawVel = 0;
+    let pitchVel = 0;
+    let dragging = false;
+    let lastPointer: { x: number; y: number } | null = null;
+    let hoverPos: { x: number; y: number } | null = null;
+    let hoverIdx = -1;
+    let dimT = 0;
+    let slowT = 0;
+    const hoverT = new Float32Array(cards.length);
+    const live = new Set<number>();
+
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const hoverBall = new THREE.Sphere(new THREE.Vector3(), 1.06);
+    const hitPt = new THREE.Vector3();
+    const canHover = !window.matchMedia || window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const hintEl = document.getElementById('hint');
+
+    // Pointer events
+    const rad = () => Math.min(canvas.clientWidth, canvas.clientHeight) || 1;
 
     const onPointerDown = (e: PointerEvent) => {
-      isDragging = true;
-      prevPointerX = e.clientX;
-      prevPointerY = e.clientY;
-      velX = 0;
-      velY = 0;
-      canvas.style.cursor = 'grabbing';
-      setHintDismissed(true);
+      dragging = true;
+      if (hintEl) hintEl.classList.add('gone');
+      canvas.classList.add('dragging');
+      try {
+        canvas.setPointerCapture(e.pointerId);
+      } catch {}
+      lastPointer = { x: e.clientX, y: e.clientY };
     };
 
     const onPointerMove = (e: PointerEvent) => {
-      if (isDragging) {
-        const deltaX = e.clientX - prevPointerX;
-        const deltaY = e.clientY - prevPointerY;
-        prevPointerX = e.clientX;
-        prevPointerY = e.clientY;
-
-        sphereGroup.rotation.y += deltaX * 0.0035;
-        sphereGroup.rotation.x += deltaY * 0.0035;
-
-        velX = deltaX * 0.0035;
-        velY = deltaY * 0.0035;
+      if (canHover && e.pointerType !== 'touch') {
+        const b = canvas.getBoundingClientRect();
+        hoverPos = {
+          x: ((e.clientX - b.left) / b.width) * 2 - 1,
+          y: -((e.clientY - b.top) / b.height) * 2 + 1,
+        };
       }
+      if (!dragging || !lastPointer) return;
+      const dx = e.clientX - lastPointer.x;
+      const dy = e.clientY - lastPointer.y;
+      lastPointer = { x: e.clientX, y: e.clientY };
+      const k = 2.6 / rad();
+      yaw += dx * k;
+      yawVel = dx * k * 60 * 0.35;
+      pitch = Math.max(-0.26, Math.min(0.26, pitch + dy * k * 0.55));
+      pitchVel = dy * k * 60 * 0.2;
     };
 
-    const onPointerUp = () => {
-      isDragging = false;
-      canvas.style.cursor = 'grab';
+    const onPointerUp = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      canvas.classList.remove('dragging');
+      lastPointer = null;
+      try {
+        canvas.releasePointerCapture(e.pointerId);
+      } catch {}
+    };
+
+    const onPointerLeave = (e: PointerEvent) => {
+      hoverPos = null;
+      onPointerUp(e);
     };
 
     canvas.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('pointercancel', onPointerUp);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('pointercancel', onPointerUp);
+    canvas.addEventListener('pointerleave', onPointerLeave);
 
-    // Responsive Resize Handler
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
-
-      camera.aspect = width / height;
-      if (width < 768) {
-        camera.position.z = 8.5;
-        sphereGroup.position.y = 0.5;
-      } else if (width < 1100) {
-        camera.position.z = 7.8;
-        sphereGroup.position.y = 0.4;
-      } else {
-        camera.position.z = 7.2;
-        sphereGroup.position.y = 0.35;
+    // Hover logic
+    const updateHover = (dt: number) => {
+      let want = -1;
+      if (hoverPos && !dragging && canHover) {
+        ndc.set(hoverPos.x, hoverPos.y);
+        raycaster.setFromCamera(ndc, camera);
+        hoverBall.center.copy(orbGroup.position);
+        if (raycaster.ray.intersectsSphere(hoverBall)) {
+          const intersects = raycaster.intersectObject(cardMesh, false);
+          const hit = intersects[0];
+          if (hit && hit.faceIndex != null) {
+            want = Math.floor(hit.faceIndex / PER);
+          } else if (hoverIdx >= 0) {
+            want = hoverIdx;
+          } else if (raycaster.ray.intersectSphere(hoverBall, hitPt)) {
+            orbGroup.worldToLocal(hitPt).normalize();
+            let best = -1;
+            let bd = -2;
+            for (let i = 0; i < cards.length; i++) {
+              const n = cards[i].basis.n;
+              const d = n[0] * hitPt.x + n[1] * hitPt.y + n[2] * hitPt.z;
+              if (d > bd) {
+                bd = d;
+                best = i;
+              }
+            }
+            want = best;
+          }
+        }
       }
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
+
+      if (want !== hoverIdx) {
+        if (hoverIdx >= 0) live.add(hoverIdx);
+        if (want >= 0) live.add(want);
+        hoverIdx = want;
+      }
+
+      const ease = 1 - Math.pow(0.0009, dt);
+      dimT += ((hoverIdx >= 0 ? 1 : 0) - dimT) * ease;
+      slowT += ((hoverIdx >= 0 ? 1 : 0) - slowT) * ease;
+      const dimTo = 1 - 0.42 * dimT;
+      mat.color.setScalar(dimTo);
+
+      let movedGeo = false;
+      let movedCol = false;
+      for (const i of Array.from(live)) {
+        const target = i === hoverIdx ? 1 : 0;
+        const t = hoverT[i] + (target - hoverT[i]) * ease;
+        hoverT[i] = Math.abs(t - target) < 0.0015 ? target : t;
+        const c = cards[i];
+        const k = 1 + hoverT[i] * (HOVER_POP - 1);
+        writeCard(pos, c, k, k);
+        movedGeo = true;
+
+        const lift = 1 + hoverT[i] * (1 / dimTo - 1);
+        const colArr = colAttr.array as Float32Array;
+        const v0 = c.vBase * 3;
+        const v1 = v0 + (PER + 1) * 3;
+        for (let v = v0; v < v1; v++) {
+          colArr[v] = lift;
+        }
+        movedCol = true;
+        if (hoverT[i] === 0 && i !== hoverIdx) {
+          live.delete(i);
+        }
+      }
+      if (movedGeo) posAttr.needsUpdate = true;
+      if (movedCol) colAttr.needsUpdate = true;
     };
 
-    window.addEventListener('resize', handleResize);
-    handleResize();
+    // 7. Render Loop
+    let prev = performance.now();
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Animation Loop
-    let animId: number;
-    let time = 0;
+    const tick = (now: number) => {
+      if (isDisposed) return;
+      animId = requestAnimationFrame(tick);
+      if (!isVisible) return;
 
-    const animate = () => {
-      animId = requestAnimationFrame(animate);
-      time += 0.006;
+      let dt = (now - prev) / 1000;
+      prev = now;
+      if (dt > 0.1) dt = 0.1;
 
-      if (!isDragging) {
-        velX *= 0.95;
-        velY *= 0.95;
-        sphereGroup.rotation.y += velX + baseRotationSpeed;
-        sphereGroup.rotation.x += velY;
+      fitCamera();
 
-        sphereGroup.rotation.z = Math.sin(time * 0.4) * 0.015;
+      if (!dragging) {
+        yaw += (AUTO * (reduceMotion ? 0 : 1) * (1 - 0.78 * slowT) + yawVel) * dt;
+        yawVel *= Math.pow(0.0016, dt);
+        pitch += pitchVel * dt;
+        pitchVel *= Math.pow(0.0016, dt);
+        pitch *= Math.pow(0.22, dt);
       }
 
+      orbGroup.rotation.set(pitch, yaw, 0);
+      updateHover(dt);
       renderer.render(scene, camera);
     };
 
-    animate();
+    animId = requestAnimationFrame(tick);
 
+    // 8. Visibility & Intersection Management
+    const io = new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+    }, { threshold: 0.05 });
+    io.observe(container);
+
+    const onVisibilityChange = () => {
+      isVisible = !document.hidden;
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    // 9. Cleanup
     return () => {
+      isDisposed = true;
       cancelAnimationFrame(animId);
-      canvas.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
-      window.removeEventListener('pointercancel', onPointerUp);
-      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('resize', handleWindowResize);
+      resizeObserver.disconnect();
+      io.disconnect();
 
-      coreGeo.dispose();
-      coreMat.dispose();
-      ringGeo.dispose();
-      ringMat.dispose();
-      cardGeom.dispose();
-      cardMeshes.forEach((mesh) => {
-        const mat = mesh.material as THREE.MeshBasicMaterial;
-        mat.map?.dispose();
-        mat.dispose();
-      });
+      canvas.removeEventListener('pointerdown', onPointerDown);
+      canvas.removeEventListener('pointermove', onPointerMove);
+      canvas.removeEventListener('pointerup', onPointerUp);
+      canvas.removeEventListener('pointercancel', onPointerUp);
+      canvas.removeEventListener('pointerleave', onPointerLeave);
+
+      geo.dispose();
+      mat.dispose();
+      atlasTex.dispose();
       renderer.dispose();
     };
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 pointer-events-auto overflow-hidden">
-      <canvas id="orb" ref={canvasRef} className="w-full h-full block cursor-grab touch-none" />
-      {/* Interactive hint */}
-      <div
-        className={`hint transition-all duration-700 select-none ${
-          hintDismissed ? 'opacity-0 translate-y-2 pointer-events-none' : 'opacity-100'
-        }`}
-        aria-hidden="true"
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="w-3.5 h-3.5 text-zinc-400 animate-pulse"
-        >
-          <path d="M7.2 2.9 L16.4 10.6 L11.6 11.2 L13.9 15.5 L11.6 16.7 L9.3 12.4 L6.6 15.3 Z" />
-          <path d="M12 17.3 v2.2" />
-          <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
-        </svg>
-        <span>Drag to rotate 3D issue globe</span>
-      </div>
+    <div
+      ref={containerRef}
+      className={`relative w-full h-full overflow-hidden select-none ${className}`}
+      style={style}
+    >
+      <canvas
+        ref={canvasRef}
+        id="orb"
+        className="w-full h-full block cursor-grab active:cursor-grabbing touch-none"
+      />
     </div>
   );
 }

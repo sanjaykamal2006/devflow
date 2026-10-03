@@ -215,6 +215,24 @@ export default function LandingPage() {
           </div>
         </header>
 
+        {/* Drag / Hover Affordance Hint Pill */}
+        <div className="hint" id="hint" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="w-3.5 h-3.5"
+          >
+            <path d="M7.2 2.9 L16.4 10.6 L11.6 11.2 L13.9 15.5 L11.6 16.7 L9.3 12.4 L6.6 15.3 Z" />
+            <path d="M12 17.3 v2.2" />
+            <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
+          </svg>
+          <span>Drag to spin &middot; hover a task</span>
+        </div>
+
         {/* Animated 3D Orb Layer */}
         <motion.div
           style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
