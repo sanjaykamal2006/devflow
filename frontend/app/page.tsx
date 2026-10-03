@@ -11,22 +11,29 @@ import { PriorityBadge } from '@/components/PriorityBadge';
 import {
   Command as CommandIcon,
   Shield,
-  Loader2,
   Zap,
   Terminal,
   ChevronRight,
-  Sparkles,
-  Bot,
   Copy,
   Check,
   Keyboard,
   CheckCircle2,
   Sliders,
 } from 'lucide-react';
+
+function GitHubIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+      />
+    </svg>
+  );
+}
 import confetti from 'canvas-confetti';
 import { toast } from 'sonner';
-import { generateAiIssueSpec, SpecMode } from '@/lib/ai-issue-doctor';
-import { MarkdownContent } from '@/components/MarkdownContent';
 
 interface DemoCard {
   id: string;
@@ -63,7 +70,7 @@ const INITIAL_DEMO_CARDS: DemoCard[] = [
   {
     id: 'demo-3',
     key: 'DS-201',
-    title: 'Liquid-glass token system & responsive layout for orb.gallery stage',
+    title: 'Linear dark token system & responsive layout for orb stage',
     status: 'TODO',
     priority: 'MEDIUM',
     type: 'TASK',
@@ -88,13 +95,6 @@ export default function LandingPage() {
   const [cards, setCards] = useState<DemoCard[]>(INITIAL_DEMO_CARDS);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  // AI Doctor Playground State
-  const [specTitle, setSpecTitle] = useState('WebSocket connection drops after 60s idle timeout');
-  const [specDesc, setSpecDesc] = useState('Client disconnected randomly without handshake close frame in production load balancer.');
-  const [specMode, setSpecMode] = useState<SpecMode>('BUG_REPORT');
-  const [specResult, setSpecResult] = useState<string | null>(null);
-  const [isSynthesizing, setIsSynthesizing] = useState(false);
-
   // Atomic Sequence State
   const [seqCount, setSeqCount] = useState(105);
   const [lastAllocatedKey, setLastAllocatedKey] = useState('HSC-105');
@@ -104,7 +104,7 @@ export default function LandingPage() {
 
   const handleLaunchSandbox = () => {
     toast.success('⚡ Launching instant sandbox session...', {
-      description: 'Pre-populating HyperScale Core with 15 engineering issues.',
+      description: 'Pre-populating HyperScale Core with engineering issues.',
     });
     enterDemoSandbox();
     router.push('/dashboard');
@@ -143,24 +143,6 @@ export default function LandingPage() {
     });
   };
 
-  const handleSynthesizeSpec = async () => {
-    if (!specTitle.trim()) return;
-    setIsSynthesizing(true);
-    try {
-      const generated = await generateAiIssueSpec({
-        title: specTitle,
-        description: specDesc,
-        mode: specMode,
-      });
-      setSpecResult(generated);
-      toast.success('Spec synthesized successfully!');
-    } catch {
-      toast.error('Synthesis failed. Please try again.');
-    } finally {
-      setIsSynthesizing(false);
-    }
-  };
-
   const handleCopyCli = (text: string, keyName: string) => {
     navigator.clipboard.writeText(text);
     setCopiedKey(keyName);
@@ -187,9 +169,12 @@ export default function LandingPage() {
             Interactive Demo
           </a>
           <a href="#features">Capabilities</a>
-          <a href="#doctor">AI Doctor</a>
           <a href="#cli">CLI & Terminal</a>
           <a href="#architecture">Architecture</a>
+          <a href="https://github.com/sanjaykamal2006/devflow" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
+            <GitHubIcon className="w-3.5 h-3.5" />
+            <span>GitHub</span>
+          </a>
         </nav>
 
         <div className="orb-navend">
@@ -213,11 +198,11 @@ export default function LandingPage() {
         <div className="orb-side">
           <span className="orb-badge">
             <i />
-            1,428 issues shipped this month
+            Open Source &middot; Linear-grade developer workspace
           </span>
 
           <p className="orb-lede">
-            High-velocity issue tracking, linear workflows, and AI-powered specs — built for engineering teams who ship relentlessly.
+            High-velocity issue tracking and project management for engineering teams. Sub-millisecond navigation, Vim keybindings, and real-time Kanban boards.
           </p>
 
           <div className="orb-cta">
@@ -229,21 +214,15 @@ export default function LandingPage() {
               onClick={() => setShowSandboxDrawer(!showSandboxDrawer)}
               className="btn-orb lg ghost flex items-center gap-2"
             >
-              <span>{showSandboxDrawer ? 'Hide Sandbox' : 'Explore Capabilities'}</span>
+              <span>{showSandboxDrawer ? 'Hide Preview' : 'Explore Platform'}</span>
               <span className="arrow">&rarr;</span>
             </button>
           </div>
 
           <div className="orb-proof">
-            <div className="orb-avatars">
-              <span className="avatar-circle">SK</span>
-              <span className="avatar-circle">AL</span>
-              <span className="avatar-circle">JD</span>
-              <span className="avatar-circle">EM</span>
-            </div>
-            <div>
-              <div className="stars" aria-hidden="true">★★★★★</div>
-              <div className="txt">Joined by 12,000+ engineers at Vercel & Stripe</div>
+            <div className="flex items-center gap-2 text-xs text-zinc-400 font-mono">
+              <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+              <span>Next.js 15 App Router &middot; Spring Boot 3.3 &middot; Neon Postgres</span>
             </div>
           </div>
         </div>
@@ -259,7 +238,7 @@ export default function LandingPage() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-zinc-400 mb-3">
                 <Sliders className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Live Interactive Sandbox</span>
+                <span>Interactive Board Playground</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-[#f4f3f0]">
                 Built for engineers who care about <em className="font-serif-instrument italic font-normal text-white">craft</em>.
@@ -386,95 +365,6 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* AI Issue Doctor Live Playground */}
-          <div id="doctor" className="orb-card rounded-2xl p-6 md:p-8 mb-16">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-amber-400">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">AI Issue Doctor Playground</h3>
-                <p className="text-xs text-zinc-400">Synthesize engineering reproduction steps and architecture specs in seconds.</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Input Form */}
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">Issue Title</label>
-                  <input
-                    type="text"
-                    value={specTitle}
-                    onChange={(e) => setSpecTitle(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-black/40 border border-white/10 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/30"
-                    placeholder="Brief description of the bug or feature..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-zinc-300 mb-1.5">Context & Reproduction Clues</label>
-                  <textarea
-                    rows={3}
-                    value={specDesc}
-                    onChange={(e) => setSpecDesc(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-black/40 border border-white/10 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-white/30 resize-none"
-                    placeholder="Add logs, reproduction hints, or stack trace snippets..."
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {(['BUG_REPORT', 'PRD', 'ARCHITECTURE'] as SpecMode[]).map((mode) => (
-                      <button
-                        key={mode}
-                        type="button"
-                        onClick={() => setSpecMode(mode)}
-                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
-                          specMode === mode
-                            ? 'bg-white text-zinc-900 font-semibold'
-                            : 'bg-white/5 text-zinc-400 hover:text-white border border-white/5'
-                        }`}
-                      >
-                        {mode.replace('_', ' ')}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    onClick={handleSynthesizeSpec}
-                    disabled={isSynthesizing}
-                    className="btn-orb sm solid flex items-center gap-1.5"
-                  >
-                    {isSynthesizing ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        <span>Synthesizing...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                        <span>Synthesize Spec</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Output Preview */}
-              <div className="p-4 rounded-xl bg-black/50 border border-white/10 min-h-[220px] max-h-[300px] overflow-y-auto text-xs text-zinc-300 font-mono">
-                {specResult ? (
-                  <MarkdownContent content={specResult} />
-                ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center text-zinc-500 py-10">
-                    <Sparkles className="w-6 h-6 mb-2 opacity-40 text-amber-400" />
-                    <span>Click &ldquo;Synthesize Spec&rdquo; to generate reproduction steps and test verification criteria.</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
           {/* CLI & Terminal Section */}
           <div id="cli" className="orb-card rounded-2xl p-6 md:p-8 mb-16">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
@@ -542,7 +432,7 @@ export default function LandingPage() {
 
         {/* Footer */}
         <footer className="border-t border-white/10 py-10 text-center text-xs text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} DevFlow. Inspired by Linear and Raycast. Built with craftsmanship.</p>
+          <p>&copy; {new Date().getFullYear()} DevFlow. Open source developer workspace. Built with craftsmanship.</p>
         </footer>
       </div>
     </div>
