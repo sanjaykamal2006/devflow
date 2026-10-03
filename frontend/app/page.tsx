@@ -91,26 +91,71 @@ const INITIAL_DEMO_CARDS: DemoCard[] = [
   },
 ];
 
+const CLI_COMMANDS = {
+  list: {
+    command: 'npx devflow list QE',
+    output: `--------------------------------------------------------------------------------
+KEY        PRIORITY     STATUS         TITLE
+--------------------------------------------------------------------------------
+QE-1       CRITICAL     IN_PROGRESS    Optimize raft consensus lock contention
+QE-2       HIGH         TODO           Implement SIMD-accelerated bloom filter
+DS-4       MEDIUM       IN_REVIEW      Add Vim navigation engine (J/K shortcuts)
+MOB-8      LOW          DONE           Fix biometric auth fallback on iOS
+--------------------------------------------------------------------------------`,
+    desc: 'Dense tabular ASCII summary of active issues straight to terminal stdout.',
+  },
+  create: {
+    command: 'npx devflow create "Migrate connection pool to HikariCP"',
+    output: `Creating issue: "Migrate connection pool to HikariCP"...
+
+✔ Created issue QE-108: "Migrate connection pool to HikariCP"
+  Priority: HIGH · Status: TODO · Project: QE · Mode: Cloud Sync`,
+    desc: 'Atomically creates an issue with pessimistic key allocation from your shell.',
+  },
+  start: {
+    command: 'npx devflow start QE-1',
+    output: `Starting work on QE-1...
+
+✔ Status set to IN_PROGRESS.
+✔ Created & switched to git branch: feature/qe-1`,
+    desc: 'Transitions task to IN_PROGRESS and automates git checkout -b feature/<key>.',
+  },
+  done: {
+    command: 'npx devflow done QE-1',
+    output: `Marking QE-1 as completed...
+
+✔ Status set to DONE.
+✔ Generated git commit: "fix(qe-1): complete Optimize raft consensus lock contention"`,
+    desc: 'Marks task DONE and stages atomic git commit with Linear-formatted messages.',
+  },
+};
+
 export default function LandingPage() {
   const router = useRouter();
   const { enterDemoSandbox } = useAuth();
   const [cards, setCards] = useState<DemoCard[]>(INITIAL_DEMO_CARDS);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
+  // CLI Interactive Terminal Simulator State
+  const [activeCliCmd, setActiveCliCmd] = useState<'list' | 'create' | 'start' | 'done'>('list');
+
   // Atomic Sequence State
   const [seqCount, setSeqCount] = useState(105);
   const [lastAllocatedKey, setLastAllocatedKey] = useState('HSC-105');
 
-  // Scroll animation hooks
+  // Smooth Scroll Transitions
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
 
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.75], [1, 0.9]);
-  const heroY = useTransform(scrollYProgress, [0, 0.75], [0, -60]);
+  const heroCopyOpacity = useTransform(scrollYProgress, [0, 0.45], [1, 0]);
+  const heroCopyY = useTransform(scrollYProgress, [0, 0.45], [0, -35]);
+
+  const heroOrbScale = useTransform(scrollYProgress, [0, 0.85], [1, 0.8]);
+  const heroOrbY = useTransform(scrollYProgress, [0, 0.85], [0, 90]);
+  const heroOrbOpacity = useTransform(scrollYProgress, [0.35, 0.9], [1, 0.2]);
 
   const handleLaunchSandbox = () => {
     toast.success('⚡ Launching instant sandbox session...', {
@@ -216,26 +261,28 @@ export default function LandingPage() {
         </header>
 
         {/* Drag / Hover Affordance Hint Pill */}
-        <div className="hint" id="hint" aria-hidden="true">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="w-3.5 h-3.5"
-          >
-            <path d="M7.2 2.9 L16.4 10.6 L11.6 11.2 L13.9 15.5 L11.6 16.7 L9.3 12.4 L6.6 15.3 Z" />
-            <path d="M12 17.3 v2.2" />
-            <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
-          </svg>
-          <span>Drag to spin &middot; hover a task</span>
-        </div>
+        <motion.div style={{ opacity: heroCopyOpacity }} className="relative z-30">
+          <div className="hint" id="hint" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5"
+            >
+              <path d="M7.2 2.9 L16.4 10.6 L11.6 11.2 L13.9 15.5 L11.6 16.7 L9.3 12.4 L6.6 15.3 Z" />
+              <path d="M12 17.3 v2.2" />
+              <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
+            </svg>
+            <span>Drag to spin &middot; hover a task</span>
+          </div>
+        </motion.div>
 
         {/* Animated 3D Orb Layer */}
         <motion.div
-          style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
+          style={{ opacity: heroOrbOpacity, scale: heroOrbScale, y: heroOrbY }}
           className="absolute inset-0 pointer-events-auto"
         >
           <OrbGallery />
@@ -243,7 +290,7 @@ export default function LandingPage() {
 
         {/* Bottom Hero Copy Band */}
         <motion.div
-          style={{ opacity: heroOpacity, y: heroY }}
+          style={{ opacity: heroCopyOpacity, y: heroCopyY }}
           className="relative z-20 mt-auto"
         >
           <div className="orb-band">
@@ -285,13 +332,17 @@ export default function LandingPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Ambient bottom transition mask */}
+        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-[#17171a] via-[#17171a]/60 to-transparent pointer-events-none z-10" />
       </section>
 
       {/* ============================================================
           SECTION 2: Dedicated Interactive Platform & Kanban Workspace
           ============================================================ */}
       <section id="platform" className="relative z-20 bg-[#17171a] border-t border-white/10 py-28">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-[#17171a] to-transparent pointer-events-none" />
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-8 mb-16 gap-6">
             <div>
@@ -428,37 +479,100 @@ export default function LandingPage() {
           <div className="orb-card rounded-2xl p-6 md:p-8 mb-16">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
-                  <Terminal className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-300">
+                  <Terminal className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-white">DevFlow CLI Command Suite</h3>
-                  <p className="text-xs text-zinc-400">Interact with your issues, projects, and cycles straight from your terminal.</p>
+                  <h3 className="text-xl font-semibold text-white flex items-center gap-2">
+                    <span>DevFlow CLI Command Suite</span>
+                    <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      100% Real CLI
+                    </span>
+                  </h3>
+                  <p className="text-xs text-zinc-400">
+                    Interact with your issues, projects, and git branches directly from your shell.
+                  </p>
                 </div>
+              </div>
+
+              {/* Command Tabs */}
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-black/40 border border-white/5 overflow-x-auto max-w-full">
+                {(['list', 'create', 'start', 'done'] as const).map((cmd) => (
+                  <button
+                    key={cmd}
+                    onClick={() => setActiveCliCmd(cmd)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
+                      activeCliCmd === cmd
+                        ? 'bg-white/15 text-white font-semibold shadow-sm border border-white/20'
+                        : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
+                    }`}
+                  >
+                    devflow {cmd}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-black/60 border border-white/10 flex items-center justify-between">
-                <code className="text-xs font-mono text-zinc-200">npx devflow login</code>
-                <button
-                  onClick={() => handleCopyCli('npx devflow login', 'cli-login')}
-                  className="p-1.5 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition"
-                  title="Copy command"
-                >
-                  {copiedKey === 'cli-login' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
+            {/* Interactive Terminal Window */}
+            <div className="rounded-xl overflow-hidden border border-white/10 bg-black/90 shadow-2xl">
+              {/* Terminal Title Bar */}
+              <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/90 border-b border-white/10 text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
+                    <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
+                  </div>
+                  <span className="font-mono text-[11px] text-zinc-400 ml-2">
+                    bash - devflow-cli ~ (80x24)
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] text-zinc-500 hidden sm:inline">
+                    {CLI_COMMANDS[activeCliCmd].desc}
+                  </span>
+                  <button
+                    onClick={() => handleCopyCli(CLI_COMMANDS[activeCliCmd].command, `cli-${activeCliCmd}`)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-zinc-300 hover:text-white transition cursor-pointer"
+                    title="Copy command to clipboard"
+                  >
+                    {copiedKey === `cli-${activeCliCmd}` ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-400" />
+                        <span className="text-emerald-400">Copied</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-black/60 border border-white/10 flex items-center justify-between">
-                <code className="text-xs font-mono text-zinc-200">npx devflow issue create &quot;Add Redis cache&quot;</code>
-                <button
-                  onClick={() => handleCopyCli('npx devflow issue create "Add Redis cache"', 'cli-issue')}
-                  className="p-1.5 rounded hover:bg-white/10 text-zinc-400 hover:text-white transition"
-                  title="Copy command"
-                >
-                  {copiedKey === 'cli-issue' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
+              {/* Terminal Body */}
+              <div className="p-5 font-mono text-xs text-zinc-300 space-y-3 select-text overflow-x-auto">
+                <div className="flex items-center gap-2 text-zinc-400">
+                  <span className="text-emerald-400 font-semibold">devflow@workstation</span>
+                  <span className="text-zinc-600">:</span>
+                  <span className="text-sky-400">~/projects</span>
+                  <span className="text-zinc-500">$</span>
+                  <span className="text-white font-medium">{CLI_COMMANDS[activeCliCmd].command}</span>
+                </div>
+
+                <pre className="text-zinc-300 whitespace-pre leading-relaxed font-mono text-[11.5px] bg-black/40 p-3 rounded-lg border border-white/5">
+                  {CLI_COMMANDS[activeCliCmd].output}
+                </pre>
+
+                <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-zinc-500">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    CLI source is live at <code className="text-zinc-400 bg-white/5 px-1 py-0.5 rounded">./cli/devflow.mjs</code>
+                  </span>
+                  <span>Run <code className="text-zinc-300">node ./cli/devflow.mjs help</code> to test locally</span>
+                </div>
               </div>
             </div>
           </div>

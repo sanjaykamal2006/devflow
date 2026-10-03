@@ -23,7 +23,17 @@ function mulberry32(a: number) {
 const pick = <T,>(r: () => number, a: T[]): T => a[Math.min(a.length - 1, (r() * a.length) | 0)];
 const rr = (r: () => number, a: number, b: number) => a + r() * (b - a);
 
-// Geometry & Atlas Constants
+// High-Definition Atlas Constants (4K/Retina Crispness)
+const TW = 640;
+const TH = 400;
+const COLS = 8;
+const ROWS = 6;
+const TILES = COLS * ROWS; // 48 unique high-definition plates
+const SEG = 7;
+const PER = 4 * (SEG + 1); // 32
+const HOVER_POP = 1.14;
+const AUTO = (Math.PI * 2) / 22; // 22 seconds per full revolution
+
 const SPHERE = {
   R: 1,
   nEquator: 20,
@@ -32,15 +42,6 @@ const SPHERE = {
 };
 
 const ASPECTS = [1.62, 1.56, 1.5, 1.5, 1.5, 1.44, 1.38, 1.32];
-const TW = 384;
-const TH = 256;
-const COLS = 12;
-const ROWS = 8;
-const TILES = COLS * ROWS; // 96
-const SEG = 7;
-const PER = 4 * (SEG + 1); // 32
-const HOVER_POP = 1.12;
-const AUTO = (Math.PI * 2) / 22; // 22 seconds per revolution
 
 interface CardItem {
   lat: number;
@@ -207,53 +208,305 @@ function buildCards(): CardItem[] {
   return out as CardItem[];
 }
 
-function clearTo(cx: number, cy: number, el: Element | null): number {
-  if (!el) return Infinity;
-  const r = el.getBoundingClientRect();
-  const dx = Math.max(r.left - cx, 0, cx - r.right);
-  const dy = Math.max(r.top - cy, 0, cy - r.bottom);
-  return Math.hypot(dx, dy);
+// ----------------------------------------------------------------------
+// 4K / RETINA ULTRA-CRISP PROCEDURAL CARD ARTIST (48 UNIQUE DESIGNS)
+// ----------------------------------------------------------------------
+const CARD_TEMPLATES = [
+  { prefix: 'QE', title: 'HikariCP connection pool auto-acquisition', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'DIFF', tag: 'Backend' },
+  { prefix: 'HSC', title: 'Pessimistic row lock on sequence allocator', status: 'DONE', priority: 'CRITICAL', cat: 'METRICS', tag: 'Database' },
+  { prefix: 'DS', title: 'Linear obsidian theme tokens & cmdk palette', status: 'TODO', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Design' },
+  { prefix: 'MOB', title: 'Optimistic offline mutation queue with rollback', status: 'IN_REVIEW', priority: 'HIGH', cat: 'DIFF', tag: 'Mobile' },
+  { prefix: 'QE', title: 'WebSocket cluster broadcast latency benchmark', status: 'IN_PROGRESS', priority: 'CRITICAL', cat: 'METRICS', tag: 'Infra' },
+  { prefix: 'HSC', title: 'Neon cloud compute scaling to zero on idle', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'DevOps' },
+  { prefix: 'DS', title: 'Vim key navigation engine: j/k instant jump', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Frontend' },
+  { prefix: 'QE', title: 'Stateless JWT refresh token rotation guard', status: 'TODO', priority: 'HIGH', cat: 'DIFF', tag: 'Security' },
+  { prefix: 'MOB', title: 'Haptic feedback on kanban drag threshold', status: 'DONE', priority: 'LOW', cat: 'KANBAN', tag: 'Mobile' },
+  { prefix: 'HSC', title: 'Distributed tracing spans with OpenTelemetry', status: 'IN_REVIEW', priority: 'MEDIUM', cat: 'METRICS', tag: 'Infra' },
+  { prefix: 'QE', title: 'Spring Boot 3.3 virtual thread request handlers', status: 'DONE', priority: 'CRITICAL', cat: 'DIFF', tag: 'Kernel' },
+  { prefix: 'DS', title: 'Spring animation curves on card drag drop', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'KANBAN', tag: 'Design' },
+];
+
+function drawRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  if (typeof ctx.roundRect === 'function') {
+    ctx.roundRect(x, y, w, h, r);
+  } else {
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+  }
 }
 
-// Procedural fallback card painter for instant zero-latency loading
-function drawFallbackCard(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, i: number) {
+function drawHDCard(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  index: number
+) {
   ctx.save();
-  ctx.fillStyle = '#1c1c1f';
-  ctx.fillRect(x, y, w, h);
 
-  // Card header band
-  ctx.fillStyle = '#28282c';
-  ctx.fillRect(x, y, w, 32);
-
-  // Subtle accent dot
-  const colors = ['#38bdf8', '#818cf8', '#34d399', '#f472b6', '#fbbf24'];
-  ctx.fillStyle = colors[i % colors.length];
+  // Use round rect clipping for smooth anti-aliased corners
+  const radius = 24;
   ctx.beginPath();
-  ctx.arc(x + 18, y + 16, 5, 0, Math.PI * 2);
-  ctx.fill();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.clip();
 
-  // Mock UI lines
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
-  ctx.fillRect(x + 32, y + 12, 60, 8);
-  ctx.fillRect(x + 18, y + 50, w - 36, 10);
-  ctx.fillRect(x + 18, y + 70, w - 80, 8);
-  ctx.fillRect(x + 18, y + 90, w - 120, 8);
-
-  // Mock chart / metrics block
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-  ctx.fillRect(x + 18, y + 120, w - 36, 90);
-
-  // Mock bar lines
-  ctx.fillStyle = colors[(i + 1) % colors.length];
-  for (let b = 0; b < 6; b++) {
-    const bh = 20 + ((b * 13 + i * 7) % 50);
-    ctx.fillRect(x + 32 + b * 20, y + 195 - bh, 12, bh);
+  // 1. Sleek luxury dark card background with subtle gradient
+  const isLight = index % 9 === 3; // Occasional light card like original orb.gallery
+  if (isLight) {
+    ctx.fillStyle = '#f4f3f0';
+    ctx.fillRect(x, y, w, h);
+  } else {
+    const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
+    bgGrad.addColorStop(0, '#232328');
+    bgGrad.addColorStop(1, '#141416');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(x, y, w, h);
   }
 
-  // Border
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+  // 2. Subtle top glow
+  if (!isLight) {
+    const glow = ctx.createRadialGradient(x + w / 2, y, 0, x + w / 2, y, w * 0.8);
+    glow.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+    glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(x, y, w, h);
+  }
+
+  const tmpl = CARD_TEMPLATES[index % CARD_TEMPLATES.length];
+  const itemNum = 100 + (index * 7 + 13) % 250;
+  const issueKey = `${tmpl.prefix}-${itemNum}`;
+
+  // 3. Top Header Bar
+  const headH = 56;
+  ctx.fillStyle = isLight ? '#e7e6e2' : '#1c1c1f';
+  ctx.fillRect(x, y, w, headH);
+
+  // Window dots / Key badge
+  ctx.fillStyle = '#ef4444';
+  ctx.beginPath();
+  ctx.arc(x + 28, y + 28, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#f59e0b';
+  ctx.beginPath();
+  ctx.arc(x + 48, y + 28, 6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#10b981';
+  ctx.beginPath();
+  ctx.arc(x + 68, y + 28, 6, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Issue key
+  ctx.fillStyle = isLight ? '#111827' : '#f4f3f0';
+  ctx.font = '700 20px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(issueKey, x + 96, y + 35);
+
+  // Priority Badge
+  const prioColors: Record<string, string> = {
+    CRITICAL: '#f87171',
+    HIGH: '#fb923c',
+    MEDIUM: '#38bdf8',
+    LOW: '#94a3b8',
+  };
+  const pCol = prioColors[tmpl.priority] || '#38bdf8';
+  ctx.fillStyle = pCol;
+  ctx.font = '600 13px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(tmpl.priority, x + w - 160, y + 35);
+
+  // Status Badge Pill
+  const statusColors: Record<string, { bg: string; text: string }> = {
+    DONE: { bg: 'rgba(74, 222, 128, 0.18)', text: '#4ade80' },
+    IN_PROGRESS: { bg: 'rgba(56, 189, 248, 0.18)', text: '#38bdf8' },
+    IN_REVIEW: { bg: 'rgba(192, 132, 252, 0.18)', text: '#c084fc' },
+    TODO: { bg: 'rgba(251, 191, 36, 0.18)', text: '#fbbf24' },
+  };
+  const sConf = statusColors[tmpl.status] || statusColors.TODO;
+  ctx.fillStyle = sConf.bg;
+  ctx.beginPath();
+  drawRoundedRect(ctx, x + w - 85, y + 16, 65, 24, 12);
+  ctx.fill();
+  ctx.fillStyle = sConf.text;
+  ctx.font = '600 11px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(tmpl.status.replace('_', ' '), x + w - 77, y + 32);
+
+  // 4. Card Content: Dynamic Category
+  const textColor = isLight ? '#18181b' : '#f4f3f0';
+  const dimColor = isLight ? '#71717a' : '#a1a1aa';
+
+  // Title
+  ctx.fillStyle = textColor;
+  ctx.font = '600 20px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(tmpl.title, x + 28, y + 95);
+
+  if (tmpl.cat === 'DIFF') {
+    // Code Diff Preview
+    ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    ctx.fill();
+
+    ctx.font = '400 14px "JetBrains Mono", monospace';
+    // Line 1
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('104  @@ -42,7 +42,9 @@ async function acquire() {', x + 44, y + 150);
+    // Line 2 (Deletion)
+    ctx.fillStyle = '#f87171';
+    ctx.fillText('- 105      const conn = await rawPool.get();', x + 44, y + 180);
+    // Line 3 (Addition)
+    ctx.fillStyle = '#4ade80';
+    ctx.fillText('+ 105      const conn = await hikariPool.acquireLease();', x + 44, y + 210);
+    // Line 4 (Addition)
+    ctx.fillStyle = '#4ade80';
+    ctx.fillText('+ 106      metrics.recordLatency("sub_ms", conn.time);', x + 44, y + 240);
+    // Line 5
+    ctx.fillStyle = '#64748b';
+    ctx.fillText('  107      return new ManagedSession(conn);', x + 44, y + 270);
+  } else if (tmpl.cat === 'METRICS') {
+    // Performance Latency Graph & Sparkline
+    ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    ctx.fill();
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.font = '700 32px Inter, ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('0.82 ms', x + 48, y + 170);
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '500 13px Inter, ui-sans-serif, system-ui, sans-serif';
+    ctx.fillText('p99 Query Acquisition (HikariCP / Neon DB)', x + 48, y + 195);
+
+    // Smooth glowing area curve
+    ctx.beginPath();
+    ctx.moveTo(x + 48, y + 280);
+    const pts = [30, 45, 25, 60, 40, 80, 50, 95, 30, 20];
+    const step = (w - 150) / (pts.length - 1);
+    for (let p = 0; p < pts.length; p++) {
+      ctx.lineTo(x + 48 + p * step, y + 280 - pts[p]);
+    }
+    ctx.lineTo(x + 48 + (pts.length - 1) * step, y + 280);
+    ctx.closePath();
+    const areaGrad = ctx.createLinearGradient(x, y + 180, x, y + 280);
+    areaGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+    areaGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
+    ctx.fillStyle = areaGrad;
+    ctx.fill();
+
+    // Line stroke
+    ctx.beginPath();
+    for (let p = 0; p < pts.length; p++) {
+      if (p === 0) ctx.moveTo(x + 48, y + 280 - pts[p]);
+      else ctx.lineTo(x + 48 + p * step, y + 280 - pts[p]);
+    }
+    ctx.strokeStyle = '#38bdf8';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  } else if (tmpl.cat === 'CLI') {
+    // Real Terminal Screen
+    ctx.fillStyle = '#0a0a0c';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    ctx.fill();
+
+    ctx.font = '500 14px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('devflow@local:~$ devflow start QE-1', x + 44, y + 155);
+    ctx.fillStyle = '#4ade80';
+    ctx.fillText('✔ Switched to branch "feature/qe-1"', x + 44, y + 185);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('✔ Remote sync: Synced with HyperScale Core', x + 44, y + 215);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('⚡ Vim keybindings enabled (j/k to cycle)', x + 44, y + 245);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('devflow@local:~$ _', x + 44, y + 275);
+  } else {
+    // Live Kanban Card Progress & Checklist
+    ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    ctx.fill();
+
+    // Checkbox items
+    const tasks = [
+      { text: 'Atomic pessimistic row-level lock', done: true },
+      { text: 'Verify sub-millisecond query cache', done: true },
+      { text: 'Linear obsidian theme tokens test', done: index % 2 === 0 },
+    ];
+    tasks.forEach((t, ti) => {
+      const ty = y + 160 + ti * 38;
+      ctx.fillStyle = t.done ? '#10b981' : '#64748b';
+      ctx.beginPath();
+      ctx.arc(x + 52, ty - 5, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = t.done ? textColor : dimColor;
+      ctx.font = '500 15px Inter, ui-sans-serif, system-ui, sans-serif';
+      ctx.fillText(t.text, x + 72, ty);
+    });
+
+    // Progress bar
+    const progressW = (w - 110) * 0.78;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 48, y + 270, w - 96, 8, 4);
+    ctx.fill();
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 48, y + 270, progressW, 8, 4);
+    ctx.fill();
+  }
+
+  // 5. Card Footer: Assignee & Tag
+  const footY = y + h - 42;
+  // Avatar Circle
+  ctx.fillStyle = '#3b82f6';
+  ctx.beginPath();
+  ctx.arc(x + 44, footY + 12, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '700 12px Inter, sans-serif';
+  ctx.fillText('SK', x + 35, footY + 16);
+
+  ctx.fillStyle = dimColor;
+  ctx.font = '500 14px Inter, sans-serif';
+  ctx.fillText('Sanjay K. · Engineering', x + 68, footY + 17);
+
+  // Tag Pill
+  ctx.fillStyle = isLight ? '#d4d4d8' : '#27272a';
+  ctx.beginPath();
+  drawRoundedRect(ctx, x + w - 120, footY, 92, 24, 6);
+  ctx.fill();
+  ctx.fillStyle = isLight ? '#18181b' : '#e4e4e7';
+  ctx.font = '600 12px Inter, sans-serif';
+  ctx.fillText(`#${tmpl.tag}`, x + w - 105, footY + 16);
+
+  // Subtle border outline
+  ctx.strokeStyle = isLight ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
+
   ctx.restore();
 }
 
@@ -270,18 +523,18 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     let isDisposed = false;
     let isVisible = true;
 
-    // 1. Build Atlas Canvas
+    // 1. Build High-Definition 4K Canvas Texture Atlas
     const atlasCanvas = document.createElement('canvas');
     atlasCanvas.width = TW * COLS;
     atlasCanvas.height = TH * ROWS;
     const ac = atlasCanvas.getContext('2d');
     if (ac) {
-      ac.fillStyle = '#18181b';
+      ac.fillStyle = '#141416';
       ac.fillRect(0, 0, atlasCanvas.width, atlasCanvas.height);
       for (let i = 0; i < TILES; i++) {
         const tx = (i % COLS) * TW;
         const ty = Math.floor(i / COLS) * TH;
-        drawFallbackCard(ac, tx, ty, TW, TH, i);
+        drawHDCard(ac, tx, ty, TW, TH, i);
       }
     }
 
@@ -307,7 +560,7 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     atlasTex.generateMipmaps = true;
     atlasTex.needsUpdate = true;
 
-    // 3. Preload WebP Atlas Images
+    // 3. Preload WebP Atlas Images (Layer on top if network responds)
     const imageElements: HTMLImageElement[] = [];
     ORB_TILE_URLS.forEach((url, i) => {
       if (i >= TILES) return;
@@ -391,7 +644,7 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     orbGroup.add(cardMesh);
     scene.add(orbGroup);
 
-    // 5. Dynamic Camera Sizing & Auto-Clearing Copy Elements
+    // 5. Predictable, Proportional Camera Sizing
     let fitW = 0;
     let fitH = 0;
 
@@ -407,29 +660,16 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
 
       const D = 4.0;
       const alpha = Math.asin(1 / D);
-      let diameter: number;
 
+      // Sphere diameter is comfortably sized between nav and bottom text
+      const minDim = Math.min(W, H);
       const isStacked = window.innerWidth <= 900;
-      if (isStacked) {
-        diameter = Math.min(0.88 * W, 0.92 * H);
-      } else {
-        const cx = W / 2;
-        const cy = H / 2;
-        let R = Math.min(0.32 * W, 0.44 * H);
-        const navEl = document.querySelector('.orb-nav');
-        const hintEl = document.querySelector('.hint');
-        const leadEl = document.querySelector('.orb-lead');
-        const sideEl = document.querySelector('.orb-side');
-        for (const e of [navEl, hintEl, leadEl, sideEl]) {
-          if (e) {
-            R = Math.min(R, clearTo(cx, cy, e) - 20);
-          }
-        }
-        diameter = 2 * Math.max(80, R);
-      }
+      const diameter = isStacked
+        ? Math.min(0.85 * W, 0.9 * H)
+        : Math.min(minDim * 0.72, 620);
 
       const halfFov = Math.atan((Math.tan(alpha) * H) / diameter);
-      camera.fov = Math.max(4, Math.min(100, (halfFov * 2 * 180) / Math.PI));
+      camera.fov = Math.max(12, Math.min(42, (halfFov * 2 * 180) / Math.PI));
       camera.aspect = W / H;
       camera.position.set(0, 0, D);
       camera.updateProjectionMatrix();
@@ -447,7 +687,7 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     const handleWindowResize = () => fitCamera(true);
     window.addEventListener('resize', handleWindowResize);
 
-    // 6. Interaction State
+    // 6. Interaction State & Physics
     let yaw = 0;
     let pitch = 0;
     let yawVel = 0;
@@ -591,9 +831,8 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
       if (movedCol) colAttr.needsUpdate = true;
     };
 
-    // 7. Render Loop
+    // 7. Render Loop (Guaranteed continuous rotation)
     let prev = performance.now();
-    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const tick = (now: number) => {
       if (isDisposed) return;
@@ -604,10 +843,9 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
       prev = now;
       if (dt > 0.1) dt = 0.1;
 
-      fitCamera();
-
       if (!dragging) {
-        yaw += (AUTO * (reduceMotion ? 0 : 1) * (1 - 0.78 * slowT) + yawVel) * dt;
+        // Continuous, smooth rotation (slows down when hovering a card)
+        yaw += (AUTO * (1 - 0.78 * slowT) + yawVel) * dt;
         yawVel *= Math.pow(0.0016, dt);
         pitch += pitchVel * dt;
         pitchVel *= Math.pow(0.0016, dt);
@@ -622,9 +860,12 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     animId = requestAnimationFrame(tick);
 
     // 8. Visibility & Intersection Management
-    const io = new IntersectionObserver(([entry]) => {
-      isVisible = entry.isIntersecting;
-    }, { threshold: 0.05 });
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
     io.observe(container);
 
     const onVisibilityChange = () => {
