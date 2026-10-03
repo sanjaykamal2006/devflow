@@ -142,3 +142,66 @@ body {
   user-select: none;
   transition: background-color 0.1s ease;
 }
+
+/* CryptiX Electric Mint & Dark Glass System */
+:root {
+  --cryptix-mint: #00ffb2;
+  --cryptix-black: #08070e;
+  --cryptix-surface: #121118;
+  --cryptix-border: rgba(255, 255, 255, 0.08);
+  --cryptix-mint-glow: rgba(0, 255, 178, 0.22);
+}
+
+.cryptix-card {
+  background: linear-gradient(180deg, rgba(20, 20, 27, 0.85) 0%, rgba(10, 9, 14, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cryptix-card:hover {
+  border-color: rgba(0, 255, 178, 0.35);
+  box-shadow: 0 1px 0 0 rgba(0, 255, 178, 0.2) inset, 0 20px 48px -8px rgba(0, 0, 0, 0.8), 0 0 24px rgba(0, 255, 178, 0.09);
+  transform: translateY(-2px);
+}
+
+.cryptix-btn-mint {
+  background: #00ffb2;
+  color: #08070e;
+  font-weight: 700;
+  box-shadow: 0 0 24px rgba(0, 255, 178, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cryptix-btn-mint:hover {
+  background: #33ffc2;
+  box-shadow: 0 0 36px rgba(0, 255, 178, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.cryptix-glow-mint {
+  box-shadow: 0 0 32px rgba(0, 255, 178, 0.25);
+}
+
+.bg-cryptix-glow {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% -10%, rgba(0, 255, 178, 0.16), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 20% 20%, rgba(99, 102, 241, 0.12), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 80% 20%, rgba(255, 0, 102, 0.08), transparent 60%);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
