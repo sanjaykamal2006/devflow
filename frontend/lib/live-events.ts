@@ -1,5 +1,7 @@
 'use client';
 
+import { Issue } from '@/types';
+
 // Real-time Event Bus & Cross-Tab Synchronizer
 export interface LiveEvent {
   id: string;
@@ -12,6 +14,7 @@ export interface LiveEvent {
   projectId?: string;
   author?: string;
   url?: string;
+  issue?: Issue;
 }
 
 const STORAGE_KEY = 'devflow_notifications';
@@ -128,3 +131,11 @@ class LiveEventManager {
 }
 
 export const liveEvents = new LiveEventManager();
+
+export function subscribeToLiveEvents(callback: (event: LiveEvent) => void) {
+  return liveEvents.subscribe(callback);
+}
+
+export function dispatchLiveEvent(eventData: Omit<LiveEvent, 'id' | 'timestamp'>) {
+  liveEvents.dispatch(eventData);
+}

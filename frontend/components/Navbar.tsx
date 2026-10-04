@@ -55,8 +55,8 @@ export function Navbar() {
     return () => window.removeEventListener('devflow:open-shortcuts', handleOpenShortcuts);
   }, []);
 
-  // Hide global app navbar on public landing, login, and register pages
-  if (pathname === '/' || pathname === '/login' || pathname === '/register') {
+  // Hide global app navbar on public landing, login, register, and dedicated dashboard pages
+  if (pathname === '/' || pathname === '/login' || pathname === '/register' || pathname === '/dashboard') {
     return null;
   }
 
