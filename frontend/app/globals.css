@@ -1,28 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #1f1f21;
-  --ink: #f4f3f0;
-  --dim: rgba(244, 243, 240, 0.60);
-  --faint: rgba(244, 243, 240, 0.40);
-  --line: rgba(255, 255, 255, 0.12);
-  --line-2: rgba(255, 255, 255, 0.20);
-  --pad: clamp(20px, 3.4vw, 52px);
+  --bg: #000000;
+  --ink: #ffffff;
+  --dim: rgba(255, 255, 255, 0.70);
+  --faint: rgba(255, 255, 255, 0.45);
+  --line: rgba(255, 255, 255, 0.10);
+  --line-2: rgba(255, 255, 255, 0.18);
+  --pad: clamp(20px, 3.4vw, 56px);
 
-  --background: #1f1f21;
-  --foreground: #f4f3f0;
+  --background: #000000;
+  --foreground: #ffffff;
 }
 
 body {
   color: var(--ink);
-  background: var(--bg);
-  font-family: var(--font-sans), Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: #000000;
+  font-family: 'Plus Jakarta Sans', var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.font-heading {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
 }
 
 /* Subtle, clean scrollbars */
@@ -34,7 +42,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2e2e33;
+  background: #27272a;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -42,12 +50,8 @@ body {
 }
 
 /* ============================================================
-   orb.gallery Core Design System Tokens & Classes
+   DevFlow AMOLED Design System Tokens & Classes
    ============================================================ */
-
-.font-serif-instrument {
-  font-family: 'Instrument Serif', Georgia, serif;
-}
 
 /* The gallery stage */
 .stage {
@@ -73,51 +77,57 @@ body {
 /* ---------- Navigation ---------- */
 .orb-nav {
   position: relative;
-  z-index: 30;
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: clamp(20px, 3vw, 44px);
-  padding: clamp(18px, 2.3vw, 28px) var(--pad);
+  padding: clamp(16px, 2vw, 24px) var(--pad);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+  backdrop-filter: blur(12px);
 }
 
 .orb-logo {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 500;
-  letter-spacing: -0.022em;
-  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-size: 19px;
   flex: 0 0 auto;
-  color: var(--ink);
+  color: #ffffff;
 }
 
 .orb-links {
   display: flex;
   gap: clamp(16px, 2vw, 30px);
-  margin-left: 6px;
+  margin-left: 12px;
 }
+.orb-links button,
 .orb-links a {
-  font-size: 14.5px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--dim);
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
+.orb-links button:hover,
 .orb-links a:hover {
-  color: var(--ink);
+  color: #ffffff;
 }
 
 .orb-navend {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.6vw, 22px);
+  gap: clamp(12px, 1.6vw, 20px);
 }
 .orb-navend .sign {
-  font-size: 14.5px;
+  font-size: 14px;
+  font-weight: 500;
   color: var(--dim);
   transition: color 0.2s ease;
 }
 .orb-navend .sign:hover {
-  color: var(--ink);
+  color: #ffffff;
 }
 
 /* ---------- Button Capsule System ---------- */
@@ -127,46 +137,41 @@ body {
   justify-content: center;
   gap: 8px;
   border-radius: 999px;
-  font-weight: 500;
-  letter-spacing: -0.012em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   white-space: nowrap;
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1), background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1), background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 .btn-orb:active {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(0.99);
 }
 .btn-orb.sm {
-  font-size: 14px;
-  padding: 9px 18px;
+  font-size: 13.5px;
+  padding: 8px 16px;
 }
 .btn-orb.lg {
-  font-size: 15.5px;
+  font-size: 15px;
   padding: 13px 26px;
 }
 .btn-orb.solid {
-  background: var(--ink);
-  color: #17171a;
-  font-weight: 600;
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.18);
 }
 .btn-orb.solid:hover {
-  background: #ffffff;
-  box-shadow: 0 0 24px rgba(255, 255, 255, 0.2);
+  background: #f4f4f5;
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.32);
 }
 .btn-orb.ghost {
-  border: 1px solid var(--line-2);
-  color: var(--ink);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
 }
 .btn-orb.ghost:hover {
-  border-color: rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.07);
-}
-.btn-orb .arrow {
-  transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.btn-orb:hover .arrow {
-  transform: translateX(3px);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* ---------- Drag / Hover Affordance ---------- */
@@ -174,172 +179,27 @@ body {
   position: relative;
   z-index: 30;
   width: fit-content;
-  margin: 2px auto 0;
   display: flex;
   align-items: center;
   gap: 9px;
-  padding: 8px 16px 8px 12px;
+  padding: 7px 15px 7px 11px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.055);
-  border: 1px solid var(--line);
-  font-size: 12.5px;
-  color: var(--faint);
-  letter-spacing: -0.004em;
+  background: rgba(18, 18, 22, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dim);
+  letter-spacing: -0.01em;
   pointer-events: none;
-}
-
-/* ---------- Bottom Copy Band (In Hero Viewport) ---------- */
-.orb-band {
-  position: relative;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: end;
-  gap: clamp(24px, 4vw, 80px);
-  padding: 0 var(--pad) clamp(24px, 4vh, 48px);
-  pointer-events: auto;
-}
-
-.orb-lead {
-  grid-column: 1;
-  justify-self: start;
-  margin: 0;
-  font-weight: 600;
-  font-size: clamp(38px, 5.2vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.042em;
-  color: var(--ink);
-}
-.orb-lead em {
-  font-family: 'Instrument Serif', Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.008em;
-  margin-right: -0.05em;
-  color: #ffffff;
-}
-
-.orb-side {
-  grid-column: 2;
-  justify-self: end;
-  max-width: min(100%, 420px);
-}
-
-.orb-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 5px 14px 5px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.045);
-  font-size: 12.5px;
-  color: var(--dim);
-  letter-spacing: -0.006em;
-}
-.orb-badge i {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #4ade80;
-  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
-  display: inline-block;
-}
-
-.orb-lede {
-  margin: 13px 0 0;
-  font-size: clamp(14.5px, 1.05vw, 15.5px);
-  line-height: 1.48;
-  color: var(--dim);
-  letter-spacing: -0.006em;
-}
-
-.orb-cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 17px;
-}
-
-.orb-proof {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 17px;
-}
-.orb-avatars {
-  display: flex;
-}
-.orb-avatars .avatar-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  margin-left: -9px;
-  border: 2px solid var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  background: #2a2a2e;
-  color: #f4f3f0;
-}
-.orb-avatars .avatar-circle:first-child {
-  margin-left: 0;
-}
-.orb-proof .stars {
-  display: flex;
-  gap: 2px;
-  color: #f5b301;
-  font-size: 12.5px;
-  line-height: 1;
-}
-.orb-proof .txt {
-  font-size: 13px;
-  color: var(--faint);
-  letter-spacing: -0.004em;
-  margin-top: 5px;
 }
 
 /* Secondary Panels & Modal Cards */
 .orb-card {
-  background: linear-gradient(180deg, rgba(34, 34, 38, 0.85) 0%, rgba(22, 22, 25, 0.95) 100%);
-  border: 1px solid var(--line);
-  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 16px 40px -8px rgba(0, 0, 0, 0.7);
+  background: linear-gradient(180deg, rgba(20, 20, 24, 0.9) 0%, rgba(10, 10, 12, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08) inset, 0 20px 48px -12px rgba(0, 0, 0, 0.9);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.orb-card:hover {
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.14) inset, 0 20px 48px -8px rgba(0, 0, 0, 0.8);
-}
-
-@media (max-width: 980px) {
-  .orb-links {
-    display: none;
-  }
-}
-
-@media (max-width: 900px) {
-  .stage {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    min-height: 48dvh;
-    height: 48dvh;
-  }
-  .orb-band {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 16px var(--pad) 48px;
-  }
-  .orb-lead {
-    font-size: clamp(36px, 9.2vw, 54px);
-  }
-  .orb-side {
-    max-width: none;
-  }
 }
 
 /* ---------- Predictive Arc / ThreeUI Shader Frame ---------- */
@@ -351,10 +211,8 @@ body {
   overflow: hidden;
   pointer-events: none;
 }
-.shader-frame iframe,
 .shader-frame canvas {
   width: 100%;
   height: 100%;
   display: block;
 }
-
