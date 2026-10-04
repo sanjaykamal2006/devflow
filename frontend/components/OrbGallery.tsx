@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { ORB_TILE_URLS } from '@/lib/orb-tiles';
 
 interface OrbGalleryProps {
   className?: string;
@@ -687,6 +688,24 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     atlasTex.magFilter = THREE.LinearFilter;
     atlasTex.generateMipmaps = true;
     atlasTex.needsUpdate = true;
+
+    // Asynchronously load the 48 custom generated HD card textures
+    if (ac && ORB_TILE_URLS && ORB_TILE_URLS.length > 0) {
+      ORB_TILE_URLS.forEach((url, i) => {
+        if (i >= TILES) return;
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          if (isDisposed || !ac) return;
+          const tx = (i % COLS) * TW;
+          const ty = Math.floor(i / COLS) * TH;
+          ac.clearRect(tx, ty, TW, TH);
+          ac.drawImage(img, tx, ty, TW, TH);
+          atlasTex.needsUpdate = true;
+        };
+        img.src = url;
+      });
+    }
 
     // 3. Build Cards & Geometry
     const cards = buildCards();
