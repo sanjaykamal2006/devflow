@@ -29,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${jetbrains.variable} font-sans bg-[#09090b] text-zinc-100 antialiased min-h-screen flex flex-col selection:bg-zinc-800 selection:text-white`}>
+      <body className={`${inter.variable} ${jetbrains.variable} font-sans bg-[#000000] text-zinc-100 antialiased min-h-screen flex flex-col selection:bg-white/20 selection:text-white`}>
         <AuthProvider>
           <Navbar />
           <CommandPalette />

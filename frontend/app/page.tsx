@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth-context';
 import { BrandLogo } from '@/components/BrandLogo';
 import { OrbGallery } from '@/components/OrbGallery';
 import { PredictiveArcBackground } from '@/components/PredictiveArcBackground';
+import { DocsModal } from '@/components/DocsModal';
 import {
   Zap,
   Keyboard,
@@ -33,6 +34,7 @@ export default function LandingPage() {
   const router = useRouter();
   const { enterDemoSandbox } = useAuth();
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showDocsModal, setShowDocsModal] = useState(false);
 
   const handleLaunchSandbox = () => {
     toast.success('⚡ Launching instant sandbox session...', {
@@ -63,15 +65,13 @@ export default function LandingPage() {
           >
             Workspace
           </Link>
-          <a
-            href="https://github.com/sanjaykamal2006/devflow#readme"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition"
+          <button
+            onClick={() => setShowDocsModal(true)}
+            className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-zinc-500" />
             <span>Docs</span>
-          </a>
+          </button>
           <button
             onClick={() => setShowShortcutsModal(true)}
             className="flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition cursor-pointer"
@@ -243,6 +243,13 @@ export default function LandingPage() {
           </div>
         </div>
       )}
+
+      {/* Interactive In-App Documentation Modal */}
+      <DocsModal
+        isOpen={showDocsModal}
+        onClose={() => setShowDocsModal(false)}
+        onLaunchDemo={handleLaunchSandbox}
+      />
     </main>
   );
 }
