@@ -6,7 +6,7 @@ import {
   BookOpen,
   Keyboard,
   Terminal,
-  Sparkles,
+  Cpu,
   Webhook,
   Layers,
   Copy,
@@ -21,7 +21,7 @@ interface DocsModalProps {
   onLaunchDemo?: () => void;
 }
 
-type TabType = 'quickstart' | 'vim' | 'cli' | 'ai-doctor' | 'webhooks' | 'api';
+type TabType = 'quickstart' | 'vim' | 'cli' | 'architecture' | 'webhooks' | 'api';
 
 export function DocsModal({ isOpen, onClose, onLaunchDemo }: DocsModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>('quickstart');
@@ -96,15 +96,15 @@ export function DocsModal({ isOpen, onClose, onLaunchDemo }: DocsModalProps) {
               <span>CLI Companion</span>
             </button>
             <button
-              onClick={() => setActiveTab('ai-doctor')}
+              onClick={() => setActiveTab('architecture')}
               className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition cursor-pointer text-left whitespace-nowrap ${
-                activeTab === 'ai-doctor'
+                activeTab === 'architecture'
                   ? 'bg-white/10 text-white font-semibold border border-white/10'
                   : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              <span>AI Spec Doctor</span>
+              <Cpu className="w-3.5 h-3.5 text-amber-400" />
+              <span>Architecture & Perf</span>
             </button>
             <button
               onClick={() => setActiveTab('webhooks')}
@@ -241,22 +241,30 @@ export function DocsModal({ isOpen, onClose, onLaunchDemo }: DocsModalProps) {
               </div>
             )}
 
-            {activeTab === 'ai-doctor' && (
+            {activeTab === 'architecture' && (
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white font-heading">AI Spec Doctor & Multi-Modal Studio</h3>
+                  <h3 className="text-lg font-bold text-white font-heading">High-Velocity Architecture &amp; Caching</h3>
                   <p className="text-xs text-zinc-400 mt-1">
-                    Intent distillation engine that cleanses informal shorthand into structured PRDs, Bug RCAs, and checklists.
+                    Multi-tier performance stack engineered for sub-millisecond response and zero-cost cloud topology.
                   </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1">
-                    <span className="font-bold text-amber-400">1. PRD Specification Mode</span>
-                    <p className="text-zinc-400">Synthesizes user stories, acceptance criteria, and edge cases.</p>
+                    <span className="font-bold text-amber-400 font-mono">1. SWR In-Memory Cache</span>
+                    <p className="text-zinc-400">Sub-millisecond GET caching with 60s TTL and atomic prefix invalidation on mutations.</p>
                   </div>
                   <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1">
-                    <span className="font-bold text-rose-400">2. Bug RCA Mode</span>
-                    <p className="text-zinc-400">Generates root-cause hypothesis, regression steps, and telemetry fixes.</p>
+                    <span className="font-bold text-emerald-400 font-mono">2. Cold-Start Failover</span>
+                    <p className="text-zinc-400">4.5s fast-failover timeout with automatic mock-store fallback to eliminate UI freezes.</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1">
+                    <span className="font-bold text-sky-400 font-mono">3. Stateless RBAC Security</span>
+                    <p className="text-zinc-400">Spring Security 6 filter chain with 256-bit HMAC secret tokens and multi-tenant isolation.</p>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.08] space-y-1">
+                    <span className="font-bold text-indigo-400 font-mono">4. Neon Serverless Postgres</span>
+                    <p className="text-zinc-400">Auto-scale to zero compute with HikariCP connection pool and 11 normalized relational tables.</p>
                   </div>
                 </div>
               </div>

@@ -24,7 +24,7 @@ interface PredictiveArcBackgroundProps {
 export function PredictiveArcBackground({
   className = '',
   style,
-  opacity = 0.6,
+  opacity = 0.65,
 }: PredictiveArcBackgroundProps) {
   return (
     <div
@@ -45,7 +45,7 @@ export function PredictiveArcBackground({
       <PredictiveArcCanvas
         variant="signal-particles"
         mode="dark"
-        speed={1.0}
+        speed={2.6}
         hue={0}
         saturation={1.0}
         brightness={1.0}

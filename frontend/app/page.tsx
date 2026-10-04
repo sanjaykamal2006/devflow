@@ -48,7 +48,7 @@ export default function LandingPage() {
     <main className="fixed inset-0 w-screen h-[100dvh] bg-[#000000] text-white selection:bg-white/20 selection:text-white overflow-hidden flex flex-col justify-between select-none">
       {/* ThreeUI Signal Particles Ambient Background (Layer 0) */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <PredictiveArcBackground opacity={0.45} />
+        <PredictiveArcBackground opacity={0.65} />
       </div>
 
       {/* Floating Top Navigation (Clean, High-Utility & AMOLED Sharp) */}
