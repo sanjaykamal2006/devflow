@@ -154,7 +154,7 @@ export default function LandingPage() {
 
         {/* Right Column: Dedicated 3D Globe Container with Perfectly Centered Drag Hint */}
         <div className="md:col-span-6 lg:col-span-7 relative h-full min-h-[380px] md:min-h-full flex items-center justify-center pointer-events-auto">
-          {/* Centered Drag & Hover Hint Pill */}
+          {/* Centered Drag Hint Pill */}
           <div className="absolute top-2 inset-x-0 mx-auto w-fit z-30 pointer-events-none">
             <div className="hint" id="hint" aria-hidden="true">
               <svg
@@ -170,7 +170,7 @@ export default function LandingPage() {
                 <path d="M12 17.3 v2.2" />
                 <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
               </svg>
-              <span className="text-zinc-400">Drag to spin 3D globe &middot; hover cards</span>
+              <span className="text-zinc-400">Drag to spin 3D globe</span>
             </div>
           </div>
 
