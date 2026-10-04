@@ -19,6 +19,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { ShortcutsModal } from './ShortcutsModal';
+import { NotificationCenter } from './NotificationCenter';
 
 export function Navbar() {
   const { user, logout, isDemo, exitDemoSandbox } = useAuth();
@@ -226,6 +227,9 @@ export function Navbar() {
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] animate-pulse" />
               <span>Live</span>
             </div>
+
+            {/* Notification Center */}
+            <NotificationCenter />
 
             {/* Keyboard Shortcuts Trigger Button */}
             <button

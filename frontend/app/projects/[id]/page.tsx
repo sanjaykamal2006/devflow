@@ -7,6 +7,7 @@ import { Project, GitHubRepository, Workspace } from '@/types';
 import { api } from '@/lib/api';
 import { GitHubPanel } from '@/components/GitHubPanel';
 import { WebhookSettingsCard } from '@/components/WebhookSettingsCard';
+import { GitHubWebhookModal } from '@/components/GitHubWebhookModal';
 import {
   Kanban,
   CheckCircle2,
@@ -16,6 +17,7 @@ import {
   GitBranch,
   Trash2,
   FolderGit2,
+  Webhook,
 } from 'lucide-react';
 
 export default function ProjectOverviewPage({
@@ -30,6 +32,7 @@ export default function ProjectOverviewPage({
   const [project, setProject] = useState<Project | null>(null);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [gitHubRepo, setGitHubRepo] = useState<GitHubRepository | null>(null);
+  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -144,6 +147,16 @@ export default function ProjectOverviewPage({
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setWebhookModalOpen(true)}
+              className="h-9 px-3.5 bg-zinc-900/80 hover:bg-purple-950/40 text-purple-300 border border-white/[0.08] hover:border-purple-500/50 rounded-lg text-xs font-mono font-medium transition-all duration-150 flex items-center gap-2 cursor-pointer"
+              title="View Inbound GitHub Webhook Setup"
+            >
+              <Webhook className="w-3.5 h-3.5 text-purple-400" aria-hidden="true" />
+              <span>Inbound Webhooks</span>
+            </button>
+
             <Link
               href={`/projects/${project.id}/issues`}
               className="h-9 px-4 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-semibold transition-all duration-150 flex items-center gap-2 shadow-[0_0_16px_rgba(255,255,255,0.12)] cursor-pointer"
@@ -240,6 +253,16 @@ export default function ProjectOverviewPage({
           canManage={canManage}
         />
       </div>
+
+      {/* Inbound GitHub Webhook Setup Modal */}
+      {project && (
+        <GitHubWebhookModal
+          isOpen={webhookModalOpen}
+          onClose={() => setWebhookModalOpen(false)}
+          projectName={project.name}
+          projectKey={project.key}
+        />
+      )}
     </div>
   );
 }

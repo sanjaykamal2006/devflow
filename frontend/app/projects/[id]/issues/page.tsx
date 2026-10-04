@@ -4,9 +4,13 @@ import React, { useEffect, useState, use, useCallback } from 'react';
 import Link from 'next/link';
 import { Issue, IssuePriority, IssueStatus, IssueType, Label, Project, Workspace, WorkspaceMember } from '@/types';
 import { api } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
+import { liveEvents } from '@/lib/live-events';
 import { KanbanBoard } from '@/components/KanbanBoard';
 import { IssueTable } from '@/components/IssueTable';
 import { CreateIssueModal } from '@/components/CreateIssueModal';
+import { CustomViewsBar, ViewPreset } from '@/components/CustomViewsBar';
+import { GitHubWebhookModal } from '@/components/GitHubWebhookModal';
 import {
   Kanban,
   Table as TableIcon,
@@ -16,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   GitBranch,
+  Webhook,
 } from 'lucide-react';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { ShortcutsModal } from '@/components/ShortcutsModal';
@@ -28,6 +33,7 @@ export default function ProjectIssuesPage({
   const resolvedParams = use(params);
   const projectId = resolvedParams.id;
 
+  const { user } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -37,6 +43,9 @@ export default function ProjectIssuesPage({
 
   // View mode
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
+
+  // View Presets
+  const [activePresetId, setActivePresetId] = useState('all');
 
   // Filters
   const [search, setSearch] = useState('');
@@ -54,6 +63,7 @@ export default function ProjectIssuesPage({
   // Modals
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [shortcutsModalOpen, setShortcutsModalOpen] = useState(false);
+  const [webhookModalOpen, setWebhookModalOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Power-user global shortcuts on issues board
@@ -122,20 +132,49 @@ export default function ProjectIssuesPage({
     return () => clearInterval(interval);
   }, [fetchIssues, createModalOpen]);
 
+  // Cross-tab & Real-time Live Event Sync
+  useEffect(() => {
+    const unsubscribe = liveEvents.subscribe((event) => {
+      if (!event.projectId || event.projectId === projectId) {
+        fetchIssues();
+      }
+    });
+    return () => unsubscribe();
+  }, [fetchIssues, projectId]);
+
+  const handleSelectPreset = (preset: ViewPreset) => {
+    setActivePresetId(preset.id);
+    setStatusFilter(preset.statusFilter || '');
+    setPriorityFilter(preset.priorityFilter || '');
+    setAssigneeFilter(preset.assigneeFilter || '');
+    setPage(0);
+  };
+
   const handleStatusChange = async (issueId: string, newStatus: IssueStatus) => {
     try {
       const updated = await api.issues.changeStatus(issueId, newStatus);
       setIssues((prev) => prev.map((i) => (i.id === issueId ? updated : i)));
+
+      // Dispatch real-time synchronization event
+      liveEvents.dispatch({
+        type: 'issue_updated',
+        title: `${updated.issueKey} Status Changed`,
+        description: `Moved to ${newStatus.replace('_', ' ')}`,
+        issueKey: updated.issueKey,
+        issueId: updated.id,
+        projectId,
+      });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to update issue status');
     }
   };
 
   const hasActiveFilters = Boolean(
-    search || statusFilter || priorityFilter || typeFilter || assigneeFilter || labelFilter
+    search || statusFilter || priorityFilter || typeFilter || assigneeFilter || labelFilter || activePresetId !== 'all'
   );
 
   const clearFilters = () => {
+    setActivePresetId('all');
     setSearch('');
     setStatusFilter('');
     setPriorityFilter('');
@@ -207,6 +246,15 @@ export default function ProjectIssuesPage({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.9)] animate-pulse" />
               <span>Live Sync</span>
             </span>
+            <button
+              type="button"
+              onClick={() => setWebhookModalOpen(true)}
+              className="flex items-center gap-1.5 text-xs font-mono text-purple-300 bg-purple-950/40 hover:bg-purple-900/50 px-2.5 py-0.5 rounded-full border border-purple-800/60 hover:border-purple-500/60 transition-colors cursor-pointer"
+              title="GitHub Inbound Webhook Settings"
+            >
+              <Webhook className="w-3 h-3 text-purple-400" aria-hidden="true" />
+              <span>Webhooks</span>
+            </button>
             {project.githubConnected && (
               <Link
                 href={`/projects/${project.id}`}
@@ -274,7 +322,19 @@ export default function ProjectIssuesPage({
 
       {/* Filter Toolbar */}
       <div className="bg-[#0c0c0e]/90 border border-white/[0.08] rounded-xl p-3 space-y-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5">
+        {/* Custom Views & Smart Filter Presets */}
+        <CustomViewsBar
+          currentUserId={user?.id}
+          activePresetId={activePresetId}
+          onSelectPreset={handleSelectPreset}
+          currentFilters={{
+            status: statusFilter,
+            priority: priorityFilter,
+            assignee: assigneeFilter,
+          }}
+        />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pt-2 border-t border-white/[0.04]">
           {/* Search Input */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true" />
@@ -446,7 +506,25 @@ export default function ProjectIssuesPage({
         onCreated={(newIssue) => {
           setIssues((prev) => [newIssue, ...prev]);
           setTotalElements((cnt) => cnt + 1);
+
+          // Dispatch real-time synchronizer notification
+          liveEvents.dispatch({
+            type: 'issue_created',
+            title: `Created ${newIssue.issueKey}`,
+            description: newIssue.title,
+            issueKey: newIssue.issueKey,
+            issueId: newIssue.id,
+            projectId,
+          });
         }}
+      />
+
+      {/* GitHub Inbound Webhook Setup Modal */}
+      <GitHubWebhookModal
+        isOpen={webhookModalOpen}
+        onClose={() => setWebhookModalOpen(false)}
+        projectName={project.name}
+        projectKey={project.key}
       />
 
       {/* Keyboard Shortcuts Cheatsheet Modal */}
