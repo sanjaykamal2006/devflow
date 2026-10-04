@@ -55,22 +55,26 @@ const FALLBACK = <div className="threeui-background predictive-arc" />;
 
 export function PredictiveArcCanvas(props: PredictiveArcCanvasProps) {
   if (props.variant === "ribbon-field") {
-    const { variant: _variant, ...ribbonProps } = props;
+    const { variant: _, ...ribbonProps } = props;
+    void _;
     return <Suspense fallback={FALLBACK}><RibbonFieldVariant {...ribbonProps} /></Suspense>;
   }
 
   if (props.variant === "void-field") {
-    const { variant: _variant, ...voidProps } = props;
+    const { variant: _, ...voidProps } = props;
+    void _;
     return <Suspense fallback={FALLBACK}><VoidFieldVariant {...voidProps} /></Suspense>;
   }
 
   if (props.variant === "halftone-flow") {
-    const { variant: _variant, ...halftoneProps } = props;
+    const { variant: _, ...halftoneProps } = props;
+    void _;
     return <Suspense fallback={FALLBACK}><HalftoneFlowVariant {...halftoneProps} /></Suspense>;
   }
 
   if (props.variant === "amber-halftone") {
-    const { variant: _variant, ...amberProps } = props;
+    const { variant: _, ...amberProps } = props;
+    void _;
     return <Suspense fallback={FALLBACK}><AmberHalftoneVariant {...amberProps} /></Suspense>;
   }
 

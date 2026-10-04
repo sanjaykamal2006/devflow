@@ -1,26 +1,40 @@
 import { useEffect, useRef } from "react";
-import { createDataPixelArcRenderer, DATA_PIXEL_ARC_DEFAULTS, type DataPixelArcOptions } from "./dataPixelArcRenderer";
+import {
+  createSignalParticlesRenderer,
+  SIGNAL_PARTICLES_DEFAULTS,
+  type SignalParticlesOptions,
+} from "./signalParticlesRenderer";
 
-export type DataPixelArcCanvasProps = Partial<DataPixelArcOptions> & { className?: string };
+export type SignalParticlesCanvasProps = Partial<SignalParticlesOptions> & {
+  className?: string;
+};
 
-export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCanvasProps) {
+export function SignalParticlesCanvas({
+  className = "",
+  ...props
+}: SignalParticlesCanvasProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const optionsRef = useRef({ ...DATA_PIXEL_ARC_DEFAULTS, ...props });
-  optionsRef.current = { ...DATA_PIXEL_ARC_DEFAULTS, ...props };
+  const optionsRef = useRef({ ...SIGNAL_PARTICLES_DEFAULTS, ...props });
+  optionsRef.current = { ...SIGNAL_PARTICLES_DEFAULTS, ...props };
+
   useEffect(() => {
     const host = hostRef.current;
     const canvas = canvasRef.current;
     if (!host || !canvas) return undefined;
-    const renderer = createDataPixelArcRenderer(canvas, () => optionsRef.current);
+
+    const renderer = createSignalParticlesRenderer(canvas, () => optionsRef.current);
     if (!renderer) return undefined;
+
     let frame = 0;
     let visible = true;
+
     const resize = () => {
       const bounds = host.getBoundingClientRect();
       renderer.resize(bounds.width, bounds.height);
       renderer.render();
     };
+
     const tick = () => {
       renderer.render();
       if (visible && !document.hidden) {
@@ -29,6 +43,7 @@ export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCan
         frame = 0;
       }
     };
+
     const observer = new ResizeObserver(resize);
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
@@ -40,6 +55,7 @@ export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCan
         frame = 0;
       }
     });
+
     const visibility = () => {
       if (document.hidden && frame) {
         cancelAnimationFrame(frame);
@@ -48,11 +64,13 @@ export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCan
         frame = requestAnimationFrame(tick);
       }
     };
+
     observer.observe(host);
     intersection.observe(host);
     document.addEventListener("visibilitychange", visibility);
     resize();
     frame = requestAnimationFrame(tick);
+
     return () => {
       if (frame) cancelAnimationFrame(frame);
       observer.disconnect();
@@ -60,11 +78,15 @@ export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCan
       document.removeEventListener("visibilitychange", visibility);
     };
   }, []);
+
+  const hue = optionsRef.current.hue ?? 0;
+  const saturation = optionsRef.current.saturation ?? 1;
+
   return (
     <div
       ref={hostRef}
-      className={`threeui-background data-pixel-arc data-pixel-arc--${optionsRef.current.mode}${className ? ` ${className}` : ""}`}
-      data-mode={optionsRef.current.mode}
+      className={`threeui-background signal-particles signal-particles--${optionsRef.current.mode ?? "dark"}${className ? ` ${className}` : ""}`}
+      data-mode={optionsRef.current.mode ?? "dark"}
       style={{
         position: "absolute",
         inset: 0,
@@ -73,7 +95,18 @@ export function DataPixelArcCanvas({ className = "", ...props }: DataPixelArcCan
         pointerEvents: "none",
       }}
     >
-      <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", filter: `hue-rotate(${optionsRef.current.hue}deg) saturate(${optionsRef.current.saturation})` }} />
+      <canvas
+        ref={canvasRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          filter:
+            hue === 0 && saturation === 1
+              ? undefined
+              : `hue-rotate(${hue}deg) saturate(${saturation})`,
+        }}
+      />
     </div>
   );
 }

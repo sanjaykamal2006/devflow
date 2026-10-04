@@ -5,27 +5,15 @@ import dynamic from 'next/dynamic';
 
 // Dynamic import with ssr: false for Next.js App Router client rendering
 const PredictiveArcCanvas = dynamic(
-  () => import('@/src/shaders/predictive-arc/PredictiveArcCanvas').then((mod) => mod.PredictiveArcCanvas),
+  () =>
+    import('@/src/shaders/predictive-arc/PredictiveArcCanvas').then(
+      (mod) => mod.PredictiveArcCanvas
+    ),
   {
     ssr: false,
     loading: () => <div className="threeui-background predictive-arc" />,
   }
 );
-
-export function Scene() {
-  return (
-    <div className="shader-frame">
-      <PredictiveArcCanvas
-        variant="signal-particles"
-        mode="dark"
-        speed={1.00}
-        hue={0}
-        saturation={1.00}
-        brightness={1.00}
-      />
-    </div>
-  );
-}
 
 interface PredictiveArcBackgroundProps {
   className?: string;
@@ -36,11 +24,11 @@ interface PredictiveArcBackgroundProps {
 export function PredictiveArcBackground({
   className = '',
   style,
-  opacity = 0.65,
+  opacity = 0.6,
 }: PredictiveArcBackgroundProps) {
   return (
     <div
-      className={`shader-frame ${className}`}
+      className={`shader-frame pointer-events-none select-none ${className}`}
       style={{
         position: 'absolute',
         inset: 0,
@@ -49,17 +37,18 @@ export function PredictiveArcBackground({
         overflow: 'hidden',
         pointerEvents: 'none',
         opacity,
-        zIndex: 1,
+        zIndex: 0,
         ...style,
       }}
+      aria-hidden="true"
     >
       <PredictiveArcCanvas
         variant="signal-particles"
         mode="dark"
-        speed={1.00}
+        speed={1.0}
         hue={0}
-        saturation={1.00}
-        brightness={1.00}
+        saturation={1.0}
+        brightness={1.0}
       />
     </div>
   );

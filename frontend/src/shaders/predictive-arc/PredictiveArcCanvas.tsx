@@ -3,6 +3,10 @@ import {
   DataPixelArcCanvas,
   type DataPixelArcCanvasProps,
 } from "../data-pixel-arc/DataPixelArcCanvas";
+import {
+  SignalParticlesCanvas,
+  type SignalParticlesCanvasProps,
+} from "../signal-particles/SignalParticlesCanvas";
 import type { NeuformBatchEffectProps } from "../neuform-isolated/NeuformBatchEffects";
 import {
   createPredictiveArcRenderer,
@@ -21,18 +25,19 @@ type DataPixelVariantProps = DataPixelArcCanvasProps & {
   variant: "data-pixel";
 };
 
+type SignalParticlesVariantProps = SignalParticlesCanvasProps & {
+  variant: "signal-particles";
+};
+
 type BatchVariantProps = Partial<NeuformBatchEffectProps> & {
-  variant: "signal-particles" | "override-grid";
+  variant: "override-grid";
 };
 
 export type PredictiveArcCanvasProps =
   | PredictiveVariantProps
   | DataPixelVariantProps
+  | SignalParticlesVariantProps
   | BatchVariantProps;
-
-const SignalParticlesVariant = lazy(() =>
-  import("../neuform-isolated/NeuformBatchEffects").then((module) => ({ default: module.SignalParticles })),
-);
 
 const OverrideGridVariant = lazy(() =>
   import("../neuform-isolated/NeuformBatchEffects").then((module) => ({ default: module.OverrideGrid })),
@@ -59,17 +64,30 @@ function PredictiveArcRenderer({ className = "", ...props }: PredictiveVariantPr
     };
     const tick = () => {
       renderer.render();
-      frame = visible && !document.hidden ? requestAnimationFrame(tick) : 0;
+      if (visible && !document.hidden) {
+        frame = requestAnimationFrame(tick);
+      } else {
+        frame = 0;
+      }
     };
     const observer = new ResizeObserver(resize);
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
-      if (visible && !frame) frame = requestAnimationFrame(tick);
-      if (!visible && frame) cancelAnimationFrame(frame), frame = 0;
+      if (visible && !frame) {
+        frame = requestAnimationFrame(tick);
+      }
+      if (!visible && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
     });
     const visibility = () => {
-      if (document.hidden && frame) cancelAnimationFrame(frame), frame = 0;
-      else if (!document.hidden && visible && !frame) frame = requestAnimationFrame(tick);
+      if (document.hidden && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      } else if (!document.hidden && visible && !frame) {
+        frame = requestAnimationFrame(tick);
+      }
     };
     observer.observe(host);
     intersection.observe(host);
@@ -89,10 +107,22 @@ function PredictiveArcRenderer({ className = "", ...props }: PredictiveVariantPr
       ref={hostRef}
       className={`threeui-background predictive-arc predictive-arc--${optionsRef.current.mode}${className ? ` ${className}` : ""}`}
       data-mode={optionsRef.current.mode}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+      }}
     >
       <canvas
         ref={canvasRef}
-        style={{ filter: `hue-rotate(${optionsRef.current.hue}deg) saturate(${optionsRef.current.saturation})` }}
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          filter: `hue-rotate(${optionsRef.current.hue}deg) saturate(${optionsRef.current.saturation})`,
+        }}
       />
     </div>
   );
@@ -100,21 +130,20 @@ function PredictiveArcRenderer({ className = "", ...props }: PredictiveVariantPr
 
 export function PredictiveArcCanvas(props: PredictiveArcCanvasProps) {
   if (props.variant === "data-pixel") {
-    const { variant: _variant, ...canvasProps } = props;
+    const { variant: _, ...canvasProps } = props;
+    void _;
     return <DataPixelArcCanvas {...canvasProps} />;
   }
 
   if (props.variant === "signal-particles") {
-    const { variant: _variant, ...effectProps } = props;
-    return (
-      <Suspense fallback={<div className="threeui-background predictive-arc" />}>
-        <SignalParticlesVariant {...effectProps} />
-      </Suspense>
-    );
+    const { variant: _, ...particleProps } = props;
+    void _;
+    return <SignalParticlesCanvas {...particleProps} />;
   }
 
   if (props.variant === "override-grid") {
-    const { variant: _variant, ...effectProps } = props;
+    const { variant: _, ...effectProps } = props;
+    void _;
     return (
       <Suspense fallback={<div className="threeui-background predictive-arc" />}>
         <OverrideGridVariant {...effectProps} />
@@ -122,6 +151,7 @@ export function PredictiveArcCanvas(props: PredictiveArcCanvasProps) {
     );
   }
 
-  const { variant: _variant, ...canvasProps } = props as PredictiveVariantProps;
+  const { variant: _, ...canvasProps } = props as PredictiveVariantProps;
+  void _;
   return <PredictiveArcRenderer {...canvasProps} />;
 }

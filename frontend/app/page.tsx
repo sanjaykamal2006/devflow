@@ -219,24 +219,29 @@ export default function LandingPage() {
         ref={heroRef}
         className="relative min-h-[100dvh] h-[100dvh] flex flex-col justify-between overflow-hidden"
       >
-        {/* Floating Top Navigation */}
-        <header className="orb-nav">
+        {/* ThreeUI Signal Particles Ambient Background Effect (Layer 0 - Ambient Canvas) */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <PredictiveArcBackground opacity={0.65} />
+        </div>
+
+        {/* Floating Top Navigation (Layer 4 - Fixed / Top Nav) */}
+        <header className="orb-nav relative z-30">
           <Link href="/" className="orb-logo">
             <BrandLogo size="sm" showText={false} />
             <span className="font-semibold tracking-tight text-lg text-[#f4f3f0]">DevFlow</span>
           </Link>
 
           <nav className="orb-links">
-            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition cursor-pointer">
               Interactive Demo
             </button>
-            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition cursor-pointer">
               Capabilities
             </button>
-            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition cursor-pointer">
               CLI & Terminal
             </button>
-            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition">
+            <button onClick={scrollToPlatform} className="text-[14.5px] text-zinc-400 hover:text-white transition cursor-pointer">
               Architecture
             </button>
             <a
@@ -251,7 +256,7 @@ export default function LandingPage() {
           </nav>
 
           <div className="orb-navend">
-            <Link href="/auth/login" className="sign">
+            <Link href="/login" className="sign">
               Sign in
             </Link>
             <button onClick={handleLaunchSandbox} className="btn-orb sm solid flex items-center gap-1.5">
@@ -262,7 +267,7 @@ export default function LandingPage() {
         </header>
 
         {/* Drag / Hover Affordance Hint Pill */}
-        <motion.div style={{ opacity: heroCopyOpacity }} className="relative z-30">
+        <motion.div style={{ opacity: heroCopyOpacity }} className="relative z-30 pointer-events-none">
           <div className="hint" id="hint" aria-hidden="true">
             <svg
               viewBox="0 0 24 24"
@@ -281,18 +286,15 @@ export default function LandingPage() {
           </div>
         </motion.div>
 
-        {/* ThreeUI Signal Particles Ambient Background Effect */}
-        <PredictiveArcBackground opacity={0.7} />
-
-        {/* Animated 3D Orb Layer */}
+        {/* Animated 3D Orb Layer (Layer 1 - Interactive 3D Sphere) */}
         <motion.div
           style={{ opacity: heroOrbOpacity, scale: heroOrbScale, y: heroOrbY }}
-          className="absolute inset-0 pointer-events-auto"
+          className="absolute inset-0 pointer-events-auto z-10"
         >
           <OrbGallery />
         </motion.div>
 
-        {/* Bottom Hero Copy Band */}
+        {/* Bottom Hero Copy Band (Layer 3 - Floating Hero Action Bar) */}
         <motion.div
           style={{ opacity: heroCopyOpacity, y: heroCopyY }}
           className="relative z-20 mt-auto"
@@ -338,7 +340,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* Ambient bottom transition mask */}
-        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-[#17171a] via-[#17171a]/60 to-transparent pointer-events-none z-10" />
+        <div className="absolute bottom-0 inset-x-0 h-36 bg-gradient-to-t from-[#17171a] via-[#17171a]/60 to-transparent pointer-events-none z-15" />
       </section>
 
       {/* ============================================================

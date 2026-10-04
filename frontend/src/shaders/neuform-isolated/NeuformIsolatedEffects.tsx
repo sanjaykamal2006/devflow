@@ -9,6 +9,6 @@ export type NeuformIsolatedEffectProps = {
   style?: React.CSSProperties;
 };
 
-export function VoidField(props: NeuformIsolatedEffectProps) {
-  return <div className="threeui-background void-field" />;
+export function VoidField({ className = "", style }: NeuformIsolatedEffectProps) {
+  return <div className={`threeui-background void-field ${className}`} style={style} />;
 }

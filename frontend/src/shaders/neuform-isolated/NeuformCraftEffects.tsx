@@ -9,6 +9,6 @@ export type NeuformCraftEffectProps = {
   style?: React.CSSProperties;
 };
 
-export function HalftoneFlow(props: NeuformCraftEffectProps) {
-  return <div className="threeui-background halftone-flow" />;
+export function HalftoneFlow({ className = "", style }: NeuformCraftEffectProps) {
+  return <div className={`threeui-background halftone-flow ${className}`} style={style} />;
 }
