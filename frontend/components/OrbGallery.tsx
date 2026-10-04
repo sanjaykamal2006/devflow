@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { ORB_TILE_URLS } from '@/lib/orb-tiles';
 
 interface OrbGalleryProps {
   className?: string;
@@ -209,21 +208,57 @@ function buildCards(): CardItem[] {
 }
 
 // ----------------------------------------------------------------------
-// 4K / RETINA ULTRA-CRISP PROCEDURAL CARD ARTIST (48 UNIQUE DESIGNS)
+// 48 EXHAUSTIVE UNIQUE DEVFLOW CARDS
 // ----------------------------------------------------------------------
-const CARD_TEMPLATES = [
-  { prefix: 'QE', title: 'HikariCP connection pool auto-acquisition', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'DIFF', tag: 'Backend' },
-  { prefix: 'HSC', title: 'Pessimistic row lock on sequence allocator', status: 'DONE', priority: 'CRITICAL', cat: 'METRICS', tag: 'Database' },
-  { prefix: 'DS', title: 'Linear obsidian theme tokens & cmdk palette', status: 'TODO', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Design' },
-  { prefix: 'MOB', title: 'Optimistic offline mutation queue with rollback', status: 'IN_REVIEW', priority: 'HIGH', cat: 'DIFF', tag: 'Mobile' },
-  { prefix: 'QE', title: 'WebSocket cluster broadcast latency benchmark', status: 'IN_PROGRESS', priority: 'CRITICAL', cat: 'METRICS', tag: 'Infra' },
-  { prefix: 'HSC', title: 'Neon cloud compute scaling to zero on idle', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'DevOps' },
-  { prefix: 'DS', title: 'Vim key navigation engine: j/k instant jump', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Frontend' },
-  { prefix: 'QE', title: 'Stateless JWT refresh token rotation guard', status: 'TODO', priority: 'HIGH', cat: 'DIFF', tag: 'Security' },
-  { prefix: 'MOB', title: 'Haptic feedback on kanban drag threshold', status: 'DONE', priority: 'LOW', cat: 'KANBAN', tag: 'Mobile' },
-  { prefix: 'HSC', title: 'Distributed tracing spans with OpenTelemetry', status: 'IN_REVIEW', priority: 'MEDIUM', cat: 'METRICS', tag: 'Infra' },
-  { prefix: 'QE', title: 'Spring Boot 3.3 virtual thread request handlers', status: 'DONE', priority: 'CRITICAL', cat: 'DIFF', tag: 'Kernel' },
-  { prefix: 'DS', title: 'Spring animation curves on card drag drop', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'KANBAN', tag: 'Design' },
+const DEVFLOW_CARDS = [
+  { key: 'QE-101', title: 'HikariCP connection pool auto-acquisition', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'DIFF', tag: 'Backend', author: 'Sanjay K.' },
+  { key: 'HSC-102', title: 'Pessimistic row-level lock on key allocator', status: 'DONE', priority: 'CRITICAL', cat: 'METRICS', tag: 'Database', author: 'Alex M.' },
+  { key: 'DS-103', title: 'Linear obsidian theme tokens & cmdk palette', status: 'TODO', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Design', author: 'Elena R.' },
+  { key: 'MOB-104', title: 'Optimistic offline mutation queue & rollback', status: 'IN_REVIEW', priority: 'HIGH', cat: 'DIFF', tag: 'Mobile', author: 'David L.' },
+  { key: 'QE-105', title: 'WebSocket cluster broadcast P99 latency test', status: 'IN_PROGRESS', priority: 'CRITICAL', cat: 'METRICS', tag: 'Infra', author: 'Sanjay K.' },
+  { key: 'HSC-106', title: 'Neon cloud serverless PostgreSQL compute', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'DevOps', author: 'Guest' },
+  { key: 'DS-107', title: 'Vim navigation engine: J/K row selection', status: 'DONE', priority: 'MEDIUM', cat: 'VIM', tag: 'Frontend', author: 'Elena R.' },
+  { key: 'SEC-108', title: 'Stateless JWT refresh token rotation guard', status: 'TODO', priority: 'HIGH', cat: 'SECURITY', tag: 'Security', author: 'Alex M.' },
+  { key: 'MOB-109', title: 'Haptic feedback on kanban drag threshold', status: 'DONE', priority: 'LOW', cat: 'KANBAN', tag: 'Mobile', author: 'David L.' },
+  { key: 'HSC-110', title: 'Distributed OpenTelemetry request spans', status: 'IN_REVIEW', priority: 'MEDIUM', cat: 'METRICS', tag: 'Infra', author: 'Sanjay K.' },
+  { key: 'QE-111', title: 'Spring Boot 3.3 virtual thread dispatcher', status: 'DONE', priority: 'CRITICAL', cat: 'DIFF', tag: 'Kernel', author: 'Alex M.' },
+  { key: 'DS-112', title: 'Spring animation curves for modal transitions', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'KANBAN', tag: 'Design', author: 'Elena R.' },
+  { key: 'CLI-113', title: 'npx devflow start QE-1 branch automation', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'Terminal', author: 'Sanjay K.' },
+  { key: 'HOOK-114', title: 'Discord outgoing webhook HMAC verification', status: 'DONE', priority: 'MEDIUM', cat: 'WEBHOOK', tag: 'Webhooks', author: 'Alex M.' },
+  { key: 'ENG-115', title: 'Sub-millisecond SWR client query cache', status: 'DONE', priority: 'CRITICAL', cat: 'METRICS', tag: 'Core', author: 'Sanjay K.' },
+  { key: 'GIT-116', title: 'Auto-generate conventional Linear commits', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'ACTIVITY', tag: 'VCS', author: 'Elena R.' },
+  { key: 'SEC-117', title: 'Multi-tenant workspace schema isolation', status: 'DONE', priority: 'CRITICAL', cat: 'SECURITY', tag: 'Security', author: 'Alex M.' },
+  { key: 'VIM-118', title: 'Global shortcut: C create, X select, ? help', status: 'DONE', priority: 'MEDIUM', cat: 'VIM', tag: 'Shortcuts', author: 'David L.' },
+  { key: 'API-119', title: 'Spring Security 6 stateless filter chain', status: 'DONE', priority: 'HIGH', cat: 'DIFF', tag: 'Backend', author: 'Sanjay K.' },
+  { key: 'DS-120', title: 'Frosted glass capsule navigation docks', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Design', author: 'Elena R.' },
+  { key: 'DB-121', title: 'Serverless PostgreSQL connection autoscale', status: 'IN_PROGRESS', priority: 'HIGH', cat: 'METRICS', tag: 'Database', author: 'Alex M.' },
+  { key: 'CLI-122', title: 'npx devflow list QE formatted ASCII table', status: 'DONE', priority: 'MEDIUM', cat: 'CLI', tag: 'Terminal', author: 'Sanjay K.' },
+  { key: 'HOOK-123', title: 'Slack Block Kit rich embed dispatch engine', status: 'IN_REVIEW', priority: 'HIGH', cat: 'WEBHOOK', tag: 'Webhooks', author: 'David L.' },
+  { key: 'MOB-124', title: 'Touch drag-and-drop gesture acceleration', status: 'DONE', priority: 'LOW', cat: 'KANBAN', tag: 'Mobile', author: 'Elena R.' },
+  { key: 'QE-125', title: 'SIMD-accelerated bloom filter membership', status: 'DONE', priority: 'CRITICAL', cat: 'DIFF', tag: 'Kernel', author: 'Sanjay K.' },
+  { key: 'HSC-126', title: 'Zero-cost Neon serverless database topology', status: 'DONE', priority: 'HIGH', cat: 'METRICS', tag: 'Infra', author: 'Alex M.' },
+  { key: 'GIT-127', title: 'Auto-link pull requests & commit activity', status: 'IN_PROGRESS', priority: 'MEDIUM', cat: 'ACTIVITY', tag: 'VCS', author: 'David L.' },
+  { key: 'VIM-128', title: 'J/K navigation across 10,000 issue rows', status: 'DONE', priority: 'MEDIUM', cat: 'VIM', tag: 'Shortcuts', author: 'Elena R.' },
+  { key: 'ENG-129', title: 'Fast-failover 4.5s cold start resilience', status: 'DONE', priority: 'CRITICAL', cat: 'METRICS', tag: 'Core', author: 'Sanjay K.' },
+  { key: 'DS-130', title: 'High-contrast numeral rhythm and keys', status: 'DONE', priority: 'LOW', cat: 'KANBAN', tag: 'Design', author: 'Elena R.' },
+  { key: 'CLI-131', title: 'npx devflow create with atomic sequence', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'Terminal', author: 'Sanjay K.' },
+  { key: 'SEC-132', title: 'RBAC role gating: OWNER, ADMIN, MEMBER', status: 'DONE', priority: 'CRITICAL', cat: 'SECURITY', tag: 'Security', author: 'Alex M.' },
+  { key: 'HOOK-133', title: 'Webhook retry backoff with jitter circuit', status: 'IN_PROGRESS', priority: 'MEDIUM', cat: 'WEBHOOK', tag: 'Webhooks', author: 'David L.' },
+  { key: 'QE-134', title: 'Concurrent atomic counter lock-free loop', status: 'DONE', priority: 'HIGH', cat: 'DIFF', tag: 'Kernel', author: 'Sanjay K.' },
+  { key: 'MOB-135', title: 'Native biometrics authentication fallback', status: 'DONE', priority: 'MEDIUM', cat: 'SECURITY', tag: 'Mobile', author: 'David L.' },
+  { key: 'GIT-136', title: 'Branch naming convention feature/<KEY>', status: 'DONE', priority: 'LOW', cat: 'ACTIVITY', tag: 'VCS', author: 'Elena R.' },
+  { key: 'DS-137', title: 'Markdown editor with syntax highlight copy', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Editor', author: 'Elena R.' },
+  { key: 'HSC-138', title: 'Neon cold boot auto-resume in 1.4s', status: 'DONE', priority: 'HIGH', cat: 'METRICS', tag: 'Database', author: 'Alex M.' },
+  { key: 'CLI-139', title: 'npx devflow done QE-1 auto-stage commit', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'Terminal', author: 'Sanjay K.' },
+  { key: 'VIM-140', title: 'Global fuzzy search cmdk palette jump', status: 'DONE', priority: 'MEDIUM', cat: 'VIM', tag: 'Shortcuts', author: 'Elena R.' },
+  { key: 'QE-141', title: 'Jackson JSON streaming serializer tuning', status: 'IN_REVIEW', priority: 'HIGH', cat: 'DIFF', tag: 'Backend', author: 'Sanjay K.' },
+  { key: 'SEC-142', title: 'CORS origin allowlist & secure headers', status: 'DONE', priority: 'CRITICAL', cat: 'SECURITY', tag: 'Security', author: 'Alex M.' },
+  { key: 'HOOK-143', title: 'Real-time issue event dispatch pipeline', status: 'DONE', priority: 'HIGH', cat: 'WEBHOOK', tag: 'Webhooks', author: 'David L.' },
+  { key: 'ENG-144', title: 'Instant skeleton loaders with 0 shift', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Frontend', author: 'Elena R.' },
+  { key: 'GIT-145', title: 'GitHub audit timeline chronological stream', status: 'DONE', priority: 'MEDIUM', cat: 'ACTIVITY', tag: 'VCS', author: 'Sanjay K.' },
+  { key: 'DB-146', title: 'Hibernate 6 2nd-level cache validation', status: 'DONE', priority: 'HIGH', cat: 'METRICS', tag: 'Database', author: 'Alex M.' },
+  { key: 'DS-147', title: 'Pinterest floating dock blur & borders', status: 'DONE', priority: 'MEDIUM', cat: 'KANBAN', tag: 'Design', author: 'Elena R.' },
+  { key: 'CLI-148', title: 'Zero-dependency portable CLI runtime', status: 'DONE', priority: 'HIGH', cat: 'CLI', tag: 'Terminal', author: 'Sanjay K.' },
 ];
 
 function drawRoundedRect(
@@ -259,7 +294,7 @@ function drawHDCard(
 ) {
   ctx.save();
 
-  // Use round rect clipping for smooth anti-aliased corners
+  // Anti-aliased rounded clip
   const radius = 24;
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
@@ -274,55 +309,55 @@ function drawHDCard(
   ctx.closePath();
   ctx.clip();
 
-  // 1. Sleek luxury dark card background with subtle gradient
-  const isLight = index % 9 === 3; // Occasional light card like original orb.gallery
+  // 1. Luxury dark slate gradient
+  const isLight = index % 8 === 3;
   if (isLight) {
     ctx.fillStyle = '#f4f3f0';
     ctx.fillRect(x, y, w, h);
   } else {
     const bgGrad = ctx.createLinearGradient(x, y, x, y + h);
-    bgGrad.addColorStop(0, '#232328');
-    bgGrad.addColorStop(1, '#141416');
+    bgGrad.addColorStop(0, '#212126');
+    bgGrad.addColorStop(1, '#121215');
     ctx.fillStyle = bgGrad;
     ctx.fillRect(x, y, w, h);
   }
 
   // 2. Subtle top glow
   if (!isLight) {
-    const glow = ctx.createRadialGradient(x + w / 2, y, 0, x + w / 2, y, w * 0.8);
+    const glow = ctx.createRadialGradient(x + w / 2, y, 0, x + w / 2, y, w * 0.85);
     glow.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
     glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
     ctx.fillStyle = glow;
     ctx.fillRect(x, y, w, h);
   }
 
-  const tmpl = CARD_TEMPLATES[index % CARD_TEMPLATES.length];
-  const itemNum = 100 + (index * 7 + 13) % 250;
-  const issueKey = `${tmpl.prefix}-${itemNum}`;
+  const tmpl = DEVFLOW_CARDS[index % DEVFLOW_CARDS.length];
+  const textColor = isLight ? '#111827' : '#f4f3f0';
+  const dimColor = isLight ? '#4b5563' : '#9ca3af';
 
-  // 3. Top Header Bar
-  const headH = 56;
-  ctx.fillStyle = isLight ? '#e7e6e2' : '#1c1c1f';
+  // 3. Header Bar
+  const headH = 54;
+  ctx.fillStyle = isLight ? '#e7e6e2' : '#1b1b1e';
   ctx.fillRect(x, y, w, headH);
 
-  // Window dots / Key badge
+  // Window dots
   ctx.fillStyle = '#ef4444';
   ctx.beginPath();
-  ctx.arc(x + 28, y + 28, 6, 0, Math.PI * 2);
+  ctx.arc(x + 28, y + 27, 5.5, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = '#f59e0b';
   ctx.beginPath();
-  ctx.arc(x + 48, y + 28, 6, 0, Math.PI * 2);
+  ctx.arc(x + 46, y + 27, 5.5, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = '#10b981';
   ctx.beginPath();
-  ctx.arc(x + 68, y + 28, 6, 0, Math.PI * 2);
+  ctx.arc(x + 64, y + 27, 5.5, 0, Math.PI * 2);
   ctx.fill();
 
   // Issue key
-  ctx.fillStyle = isLight ? '#111827' : '#f4f3f0';
-  ctx.font = '700 20px Inter, ui-sans-serif, system-ui, sans-serif';
-  ctx.fillText(issueKey, x + 96, y + 35);
+  ctx.fillStyle = textColor;
+  ctx.font = '700 19px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(tmpl.key, x + 88, y + 34);
 
   // Priority Badge
   const prioColors: Record<string, string> = {
@@ -333,8 +368,8 @@ function drawHDCard(
   };
   const pCol = prioColors[tmpl.priority] || '#38bdf8';
   ctx.fillStyle = pCol;
-  ctx.font = '600 13px Inter, ui-sans-serif, system-ui, sans-serif';
-  ctx.fillText(tmpl.priority, x + w - 160, y + 35);
+  ctx.font = '600 12.5px Inter, ui-sans-serif, system-ui, sans-serif';
+  ctx.fillText(tmpl.priority, x + w - 165, y + 34);
 
   // Status Badge Pill
   const statusColors: Record<string, { bg: string; text: string }> = {
@@ -346,152 +381,245 @@ function drawHDCard(
   const sConf = statusColors[tmpl.status] || statusColors.TODO;
   ctx.fillStyle = sConf.bg;
   ctx.beginPath();
-  drawRoundedRect(ctx, x + w - 85, y + 16, 65, 24, 12);
+  drawRoundedRect(ctx, x + w - 88, y + 15, 68, 24, 12);
   ctx.fill();
   ctx.fillStyle = sConf.text;
-  ctx.font = '600 11px Inter, ui-sans-serif, system-ui, sans-serif';
-  ctx.fillText(tmpl.status.replace('_', ' '), x + w - 77, y + 32);
-
-  // 4. Card Content: Dynamic Category
-  const textColor = isLight ? '#18181b' : '#f4f3f0';
-  const dimColor = isLight ? '#71717a' : '#a1a1aa';
+  ctx.font = '700 11.5px Inter, sans-serif';
+  ctx.fillText(tmpl.status, x + w - 80, y + 31);
 
   // Title
   ctx.fillStyle = textColor;
-  ctx.font = '600 20px Inter, ui-sans-serif, system-ui, sans-serif';
-  ctx.fillText(tmpl.title, x + 28, y + 95);
+  ctx.font = '600 18px Inter, ui-sans-serif, system-ui, sans-serif';
+  const displayTitle = tmpl.title.length > 36 ? tmpl.title.substring(0, 34) + '...' : tmpl.title;
+  ctx.fillText(displayTitle, x + 28, y + 94);
 
+  // 4. Specific Category Body Visualization
   if (tmpl.cat === 'DIFF') {
-    // Code Diff Preview
-    ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
+    // Code Diff Visualizer
+    ctx.fillStyle = '#090a0d';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
     ctx.fill();
 
-    ctx.font = '400 14px "JetBrains Mono", monospace';
-    // Line 1
+    ctx.font = '500 13px "JetBrains Mono", monospace';
+    // File header
     ctx.fillStyle = '#64748b';
-    ctx.fillText('104  @@ -42,7 +42,9 @@ async function acquire() {', x + 44, y + 150);
-    // Line 2 (Deletion)
-    ctx.fillStyle = '#f87171';
-    ctx.fillText('- 105      const conn = await rawPool.get();', x + 44, y + 180);
-    // Line 3 (Addition)
-    ctx.fillStyle = '#4ade80';
-    ctx.fillText('+ 105      const conn = await hikariPool.acquireLease();', x + 44, y + 210);
-    // Line 4 (Addition)
-    ctx.fillStyle = '#4ade80';
-    ctx.fillText('+ 106      metrics.recordLatency("sub_ms", conn.time);', x + 44, y + 240);
-    // Line 5
+    ctx.fillText(`@@ -48,6 +48,8 @@ void acquireConnection() {`, x + 44, y + 145);
+    // Deleted line
+    ctx.fillStyle = 'rgba(244, 63, 94, 0.18)';
+    ctx.fillRect(x + 36, y + 160, w - 72, 26);
+    ctx.fillStyle = '#f43f5e';
+    ctx.fillText(`-   Connection c = pool.poll(5000, TimeUnit.MS);`, x + 44, y + 178);
+    // Added lines
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.18)';
+    ctx.fillRect(x + 36, y + 192, w - 72, 26);
+    ctx.fillStyle = '#34d399';
+    ctx.fillText(`+   HikariDataSource ds = FastPool.acquire();`, x + 44, y + 210);
+
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.18)';
+    ctx.fillRect(x + 36, y + 224, w - 72, 26);
+    ctx.fillStyle = '#34d399';
+    ctx.fillText(`+   return ds.getConnectionWithPessimisticLock();`, x + 44, y + 242);
+
     ctx.fillStyle = '#64748b';
-    ctx.fillText('  107      return new ManagedSession(conn);', x + 44, y + 270);
+    ctx.fillText(`} // commit: 24aa34b · sub-millisecond p99`, x + 44, y + 280);
   } else if (tmpl.cat === 'METRICS') {
-    // Performance Latency Graph & Sparkline
-    ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
+    // Area Line Graph & Stat Cards
+    ctx.fillStyle = '#0d0e12';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
     ctx.fill();
 
+    // Metric Header
+    ctx.font = '700 24px Inter, sans-serif';
     ctx.fillStyle = '#38bdf8';
-    ctx.font = '700 32px Inter, ui-sans-serif, system-ui, sans-serif';
-    ctx.fillText('0.82 ms', x + 48, y + 170);
+    ctx.fillText('1.2ms', x + 46, y + 158);
+    ctx.font = '500 13px Inter, sans-serif';
     ctx.fillStyle = '#94a3b8';
-    ctx.font = '500 13px Inter, ui-sans-serif, system-ui, sans-serif';
-    ctx.fillText('p99 Query Acquisition (HikariCP / Neon DB)', x + 48, y + 195);
+    ctx.fillText('P99 Acquisition Latency · 14.8k req/s', x + 128, y + 158);
 
-    // Smooth glowing area curve
+    // Area Curve
     ctx.beginPath();
-    ctx.moveTo(x + 48, y + 280);
-    const pts = [30, 45, 25, 60, 40, 80, 50, 95, 30, 20];
+    ctx.moveTo(x + 46, y + 285);
+    const pts = [35, 48, 25, 68, 42, 85, 52, 105, 40, 25];
     const step = (w - 150) / (pts.length - 1);
     for (let p = 0; p < pts.length; p++) {
-      ctx.lineTo(x + 48 + p * step, y + 280 - pts[p]);
+      ctx.lineTo(x + 46 + p * step, y + 285 - pts[p]);
     }
-    ctx.lineTo(x + 48 + (pts.length - 1) * step, y + 280);
+    ctx.lineTo(x + 46 + (pts.length - 1) * step, y + 285);
     ctx.closePath();
-    const areaGrad = ctx.createLinearGradient(x, y + 180, x, y + 280);
-    areaGrad.addColorStop(0, 'rgba(56, 189, 248, 0.35)');
+    const areaGrad = ctx.createLinearGradient(x, y + 170, x, y + 285);
+    areaGrad.addColorStop(0, 'rgba(56, 189, 248, 0.38)');
     areaGrad.addColorStop(1, 'rgba(56, 189, 248, 0.0)');
     ctx.fillStyle = areaGrad;
     ctx.fill();
 
-    // Line stroke
+    // Stroke
     ctx.beginPath();
     for (let p = 0; p < pts.length; p++) {
-      if (p === 0) ctx.moveTo(x + 48, y + 280 - pts[p]);
-      else ctx.lineTo(x + 48 + p * step, y + 280 - pts[p]);
+      if (p === 0) ctx.moveTo(x + 46, y + 285 - pts[p]);
+      else ctx.lineTo(x + 46 + p * step, y + 285 - pts[p]);
     }
     ctx.strokeStyle = '#38bdf8';
     ctx.lineWidth = 3;
     ctx.stroke();
   } else if (tmpl.cat === 'CLI') {
-    // Real Terminal Screen
-    ctx.fillStyle = '#0a0a0c';
+    // Real Terminal Execution
+    ctx.fillStyle = '#08080a';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
     ctx.fill();
 
-    ctx.font = '500 14px "JetBrains Mono", monospace';
+    ctx.font = '500 13px "JetBrains Mono", monospace';
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText('devflow@local:~$ devflow start QE-1', x + 44, y + 155);
+    ctx.fillText('devflow@workstation:~$ npx devflow start ' + tmpl.key, x + 44, y + 150);
     ctx.fillStyle = '#4ade80';
-    ctx.fillText('✔ Switched to branch "feature/qe-1"', x + 44, y + 185);
+    ctx.fillText('✔ Switched to branch "feature/' + tmpl.key.toLowerCase() + '"', x + 44, y + 180);
     ctx.fillStyle = '#94a3b8';
-    ctx.fillText('✔ Remote sync: Synced with HyperScale Core', x + 44, y + 215);
-    ctx.fillStyle = '#f59e0b';
-    ctx.fillText('⚡ Vim keybindings enabled (j/k to cycle)', x + 44, y + 245);
+    ctx.fillText('✔ Remote sync: Synced with Neon PostgreSQL', x + 44, y + 210);
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText('⚡ Vim keybindings enabled (j/k to cycle)', x + 44, y + 240);
     ctx.fillStyle = '#38bdf8';
-    ctx.fillText('devflow@local:~$ _', x + 44, y + 275);
+    ctx.fillText('devflow@workstation:~$ _', x + 44, y + 270);
+  } else if (tmpl.cat === 'VIM') {
+    // Vim Keybindings Cheatsheet Card
+    ctx.fillStyle = '#0e0f13';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
+    ctx.fill();
+
+    const shortcuts = [
+      { key: 'J / K', desc: 'Select issue row down / up' },
+      { key: 'C', desc: 'Open instant Create Issue modal' },
+      { key: '⌘K', desc: 'Universal fuzzy command palette' },
+      { key: 'X', desc: 'Archive or mark issue as done' },
+    ];
+    shortcuts.forEach((sc, sci) => {
+      const sy = y + 150 + sci * 35;
+      // Keycap
+      ctx.fillStyle = '#22232a';
+      ctx.beginPath();
+      drawRoundedRect(ctx, x + 44, sy - 16, 58, 24, 6);
+      ctx.fill();
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = '700 12px "JetBrains Mono", monospace';
+      ctx.fillText(sc.key, x + 52, sy);
+
+      ctx.fillStyle = textColor;
+      ctx.font = '500 13.5px Inter, sans-serif';
+      ctx.fillText(sc.desc, x + 116, sy);
+    });
+  } else if (tmpl.cat === 'WEBHOOK') {
+    // Webhook JSON & Delivery Card
+    ctx.fillStyle = '#090a0d';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
+    ctx.fill();
+
+    ctx.font = '500 13px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#c084fc';
+    ctx.fillText('POST https://discord.com/api/webhooks/...', x + 44, y + 148);
+    ctx.fillStyle = '#34d399';
+    ctx.fillText('Status: 200 OK · HMAC-SHA256 Signed', x + 44, y + 176);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('{ "event": "issue.transitioned",', x + 44, y + 210);
+    ctx.fillText('  "key": "' + tmpl.key + '", "status": "' + tmpl.status + '",', x + 44, y + 234);
+    ctx.fillText('  "author": "' + tmpl.author + '" }', x + 44, y + 258);
+  } else if (tmpl.cat === 'SECURITY') {
+    // Security & RBAC Isolation
+    ctx.fillStyle = '#0e0f13';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
+    ctx.fill();
+
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(x + 56, y + 155, 12, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = '700 16px Inter, sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.fillText('Stateless RBAC Security Active', x + 80, y + 160);
+
+    ctx.font = '500 13px Inter, sans-serif';
+    ctx.fillStyle = dimColor;
+    ctx.fillText('• Multi-tenant UUID workspace isolation', x + 48, y + 198);
+    ctx.fillText('• 256-bit HMAC secret token rotation', x + 48, y + 226);
+    ctx.fillText('• Zero-trust Spring Security 6 filter chain', x + 48, y + 254);
+  } else if (tmpl.cat === 'ACTIVITY') {
+    // Git & VCS Activity
+    ctx.fillStyle = '#0e0f13';
+    ctx.beginPath();
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
+    ctx.fill();
+
+    ctx.font = '600 14px Inter, sans-serif';
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('git checkout -b feature/' + tmpl.key.toLowerCase(), x + 48, y + 155);
+
+    ctx.font = '500 13px Inter, sans-serif';
+    ctx.fillStyle = textColor;
+    ctx.fillText('PR #42: Ready to merge into origin/main', x + 48, y + 192);
+
+    ctx.fillStyle = '#4ade80';
+    ctx.fillText('✔ CI Build Passed (11/11 tests green in 2.9s)', x + 48, y + 226);
+
+    ctx.fillStyle = dimColor;
+    ctx.fillText('Committed by ' + tmpl.author + ' · 2 mins ago', x + 48, y + 258);
   } else {
-    // Live Kanban Card Progress & Checklist
+    // Kanban Checklist & Progress
     ctx.fillStyle = isLight ? '#ebeae6' : '#0d0e11';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 28, y + 120, w - 56, 190, 12);
+    drawRoundedRect(ctx, x + 28, y + 116, w - 56, 194, 12);
     ctx.fill();
 
-    // Checkbox items
     const tasks = [
       { text: 'Atomic pessimistic row-level lock', done: true },
       { text: 'Verify sub-millisecond query cache', done: true },
       { text: 'Linear obsidian theme tokens test', done: index % 2 === 0 },
     ];
     tasks.forEach((t, ti) => {
-      const ty = y + 160 + ti * 38;
+      const ty = y + 155 + ti * 38;
       ctx.fillStyle = t.done ? '#10b981' : '#64748b';
       ctx.beginPath();
-      ctx.arc(x + 52, ty - 5, 7, 0, Math.PI * 2);
+      ctx.arc(x + 52, ty - 5, 6.5, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = t.done ? textColor : dimColor;
-      ctx.font = '500 15px Inter, ui-sans-serif, system-ui, sans-serif';
-      ctx.fillText(t.text, x + 72, ty);
+      ctx.font = '500 14.5px Inter, ui-sans-serif, system-ui, sans-serif';
+      ctx.fillText(t.text, x + 70, ty);
     });
 
     // Progress bar
-    const progressW = (w - 110) * 0.78;
+    const progressW = (w - 112) * 0.82;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 48, y + 270, w - 96, 8, 4);
+    drawRoundedRect(ctx, x + 48, y + 270, w - 96, 7, 3.5);
     ctx.fill();
     ctx.fillStyle = '#10b981';
     ctx.beginPath();
-    drawRoundedRect(ctx, x + 48, y + 270, progressW, 8, 4);
+    drawRoundedRect(ctx, x + 48, y + 270, progressW, 7, 3.5);
     ctx.fill();
   }
 
   // 5. Card Footer: Assignee & Tag
   const footY = y + h - 42;
-  // Avatar Circle
   ctx.fillStyle = '#3b82f6';
   ctx.beginPath();
-  ctx.arc(x + 44, footY + 12, 14, 0, Math.PI * 2);
+  ctx.arc(x + 44, footY + 12, 13, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = '#ffffff';
-  ctx.font = '700 12px Inter, sans-serif';
-  ctx.fillText('SK', x + 35, footY + 16);
+  ctx.font = '700 11.5px Inter, sans-serif';
+  const initials = tmpl.author
+    .split(' ')
+    .map((n) => n[0])
+    .join('');
+  ctx.fillText(initials, x + 36, footY + 16);
 
   ctx.fillStyle = dimColor;
-  ctx.font = '500 14px Inter, sans-serif';
-  ctx.fillText('Sanjay K. · Engineering', x + 68, footY + 17);
+  ctx.font = '500 13.5px Inter, sans-serif';
+  ctx.fillText(`${tmpl.author} · Engineering`, x + 66, footY + 17);
 
   // Tag Pill
   ctx.fillStyle = isLight ? '#d4d4d8' : '#27272a';
@@ -499,7 +627,7 @@ function drawHDCard(
   drawRoundedRect(ctx, x + w - 120, footY, 92, 24, 6);
   ctx.fill();
   ctx.fillStyle = isLight ? '#18181b' : '#e4e4e7';
-  ctx.font = '600 12px Inter, sans-serif';
+  ctx.font = '600 11.5px Inter, sans-serif';
   ctx.fillText(`#${tmpl.tag}`, x + w - 105, footY + 16);
 
   // Subtle border outline
@@ -523,7 +651,7 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     let isDisposed = false;
     let isVisible = true;
 
-    // 1. Build High-Definition 4K Canvas Texture Atlas
+    // 1. Build High-Definition 4K Canvas Texture Atlas (48 unique DevFlow cards)
     const atlasCanvas = document.createElement('canvas');
     atlasCanvas.width = TW * COLS;
     atlasCanvas.height = TH * ROWS;
@@ -560,24 +688,7 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     atlasTex.generateMipmaps = true;
     atlasTex.needsUpdate = true;
 
-    // 3. Preload WebP Atlas Images (Layer on top if network responds)
-    const imageElements: HTMLImageElement[] = [];
-    ORB_TILE_URLS.forEach((url, i) => {
-      if (i >= TILES) return;
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        if (isDisposed || !ac) return;
-        const tx = (i % COLS) * TW;
-        const ty = Math.floor(i / COLS) * TH;
-        ac.drawImage(img, tx, ty, TW, TH);
-        atlasTex.needsUpdate = true;
-      };
-      img.src = url;
-      imageElements.push(img);
-    });
-
-    // 4. Build Cards & Geometry
+    // 3. Build Cards & Geometry
     const cards = buildCards();
     const vCount = cards.length * (PER + 1);
     const pos = new Float32Array(vCount * 3);
@@ -598,45 +709,42 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
       c.vBase = vbase;
       writeCard(pos, c, 1, 1);
 
-      const cl = c.tile % COLS;
-      const row = Math.floor(c.tile / COLS);
-      const asp = c.w / c.h;
-      const tileAsp = TW / TH;
-      const us = asp > tileAsp ? 1 : asp / tileAsp;
-      const vs = asp > tileAsp ? tileAsp / asp : 1;
+      const colIdx = c.tile % COLS;
+      const rowIdx = Math.floor(c.tile / COLS);
+      const u0 = colIdx * TILEU + INSET;
+      const u1 = (colIdx + 1) * TILEU - INSET;
+      const v0 = rowIdx * TILEV + INSET;
+      const v1 = (rowIdx + 1) * TILEV - INSET;
 
-      uv[up++] = (cl + 0.5) * TILEU;
-      uv[up++] = (row + 0.5) * TILEV;
+      uv[up++] = (u0 + u1) / 2;
+      uv[up++] = (v0 + v1) / 2;
 
-      for (let i = 0; i < c.outline.length; i++) {
-        const lu = 0.5 + (c.outline[i][0] / c.w) * us;
-        const lv = 0.5 + (c.outline[i][1] / c.h) * vs;
-        uv[up++] = (cl + Math.min(1 - INSET, Math.max(INSET, lu))) * TILEU;
-        uv[up++] = (row + (1 - Math.min(1 - INSET, Math.max(INSET, lv)))) * TILEV;
+      for (let s = 0; s < c.outline.length; s++) {
+        const nx = c.outline[s][0] / c.w + 0.5;
+        const ny = 0.5 - c.outline[s][1] / c.h;
+        uv[up++] = u0 + nx * (u1 - u0);
+        uv[up++] = v0 + ny * (v1 - v0);
       }
 
-      for (let i = 0; i < PER; i++) {
+      for (let s = 0; s < PER; s++) {
+        const nxt = (s + 1) % PER;
         idx[ip++] = vbase;
-        idx[ip++] = vbase + 1 + i;
-        idx[ip++] = vbase + 1 + ((i + 1) % PER);
+        idx[ip++] = vbase + 1 + s;
+        idx[ip++] = vbase + 1 + nxt;
       }
       vbase += PER + 1;
     }
 
     const geo = new THREE.BufferGeometry();
-    const posAttr = new THREE.BufferAttribute(pos, 3);
-    const colAttr = new THREE.BufferAttribute(col, 3);
-    geo.setAttribute('position', posAttr);
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
     geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-    geo.setAttribute('color', colAttr);
+    geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
     geo.setIndex(new THREE.BufferAttribute(idx, 1));
-    geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 1.35);
 
     const mat = new THREE.MeshBasicMaterial({
       map: atlasTex,
-      side: THREE.FrontSide,
       vertexColors: true,
-      toneMapped: false,
+      side: THREE.FrontSide,
     });
 
     const cardMesh = new THREE.Mesh(geo, mat);
@@ -644,59 +752,15 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     orbGroup.add(cardMesh);
     scene.add(orbGroup);
 
-    // 5. Predictable, Proportional Camera Sizing
-    let fitW = 0;
-    let fitH = 0;
-
-    const fitCamera = (force = false) => {
-      const parent = canvas.parentElement;
-      if (!parent) return;
-      const W = parent.clientWidth;
-      const H = parent.clientHeight;
-      if (W < 2 || H < 2) return;
-      if (!force && W === fitW && H === fitH) return;
-      fitW = W;
-      fitH = H;
-
-      const D = 4.0;
-      const alpha = Math.asin(1 / D);
-
-      // Sphere diameter is comfortably sized between nav and bottom text
-      const minDim = Math.min(W, H);
-      const isStacked = window.innerWidth <= 900;
-      const diameter = isStacked
-        ? Math.min(0.85 * W, 0.9 * H)
-        : Math.min(minDim * 0.72, 620);
-
-      const halfFov = Math.atan((Math.tan(alpha) * H) / diameter);
-      camera.fov = Math.max(12, Math.min(42, (halfFov * 2 * 180) / Math.PI));
-      camera.aspect = W / H;
-      camera.position.set(0, 0, D);
-      camera.updateProjectionMatrix();
-      orbGroup.position.y = 0;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      renderer.setSize(W, H, false);
-    };
-
-    fitCamera(true);
-
-    const resizeObserver = new ResizeObserver(() => fitCamera());
-    if (canvas.parentElement) {
-      resizeObserver.observe(canvas.parentElement);
-    }
-    const handleWindowResize = () => fitCamera(true);
-    window.addEventListener('resize', handleWindowResize);
-
-    // 6. Interaction State & Physics
-    let yaw = 0;
-    let pitch = 0;
+    // Initial orientation
+    let yaw = -0.35;
+    let pitch = 0.08;
     let yawVel = 0;
     let pitchVel = 0;
     let dragging = false;
     let lastPointer: { x: number; y: number } | null = null;
     let hoverPos: { x: number; y: number } | null = null;
     let hoverIdx = -1;
-    let dimT = 0;
     let slowT = 0;
     const hoverT = new Float32Array(cards.length);
     const live = new Set<number>();
@@ -708,7 +772,6 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     const canHover = !window.matchMedia || window.matchMedia('(hover:hover) and (pointer:fine)').matches;
     const hintEl = document.getElementById('hint');
 
-    // Pointer events
     const rad = () => Math.min(canvas.clientWidth, canvas.clientHeight) || 1;
 
     const onPointerDown = (e: PointerEvent) => {
@@ -761,7 +824,6 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
     canvas.addEventListener('pointercancel', onPointerUp);
     canvas.addEventListener('pointerleave', onPointerLeave);
 
-    // Hover logic
     const updateHover = (dt: number) => {
       let want = -1;
       if (hoverPos && !dragging && canHover) {
@@ -798,87 +860,113 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
         hoverIdx = want;
       }
 
-      const ease = 1 - Math.pow(0.0009, dt);
-      dimT += ((hoverIdx >= 0 ? 1 : 0) - dimT) * ease;
-      slowT += ((hoverIdx >= 0 ? 1 : 0) - slowT) * ease;
-      const dimTo = 1 - 0.42 * dimT;
-      mat.color.setScalar(dimTo);
+      let dirtyPos = false;
+      let dirtyCol = false;
+      const dead: number[] = [];
 
-      let movedGeo = false;
-      let movedCol = false;
-      for (const i of Array.from(live)) {
+      for (const i of live) {
         const target = i === hoverIdx ? 1 : 0;
-        const t = hoverT[i] + (target - hoverT[i]) * ease;
-        hoverT[i] = Math.abs(t - target) < 0.0015 ? target : t;
-        const c = cards[i];
-        const k = 1 + hoverT[i] * (HOVER_POP - 1);
-        writeCard(pos, c, k, k);
-        movedGeo = true;
+        const cur = hoverT[i];
+        const rate = target > cur ? 18 : 8;
+        const next = THREE.MathUtils.damp(cur, target, rate, dt);
+        hoverT[i] = Math.abs(next - target) < 0.001 ? target : next;
+        if (hoverT[i] === target && target === 0) dead.push(i);
 
-        const lift = 1 + hoverT[i] * (1 / dimTo - 1);
-        const colArr = colAttr.array as Float32Array;
-        const v0 = c.vBase * 3;
-        const v1 = v0 + (PER + 1) * 3;
-        for (let v = v0; v < v1; v++) {
-          colArr[v] = lift;
+        const s = THREE.MathUtils.lerp(1, HOVER_POP, hoverT[i]);
+        const rMul = THREE.MathUtils.lerp(1, 1.05, hoverT[i]);
+        writeCard(pos, cards[i], s, rMul);
+        dirtyPos = true;
+
+        const b = THREE.MathUtils.lerp(1, 1.25, hoverT[i]);
+        const vb = cards[i].vBase;
+        for (let v = 0; v <= PER; v++) {
+          const p = (vb + v) * 3;
+          col[p] = b;
+          col[p + 1] = b;
+          col[p + 2] = b;
         }
-        movedCol = true;
-        if (hoverT[i] === 0 && i !== hoverIdx) {
-          live.delete(i);
-        }
+        dirtyCol = true;
       }
-      if (movedGeo) posAttr.needsUpdate = true;
-      if (movedCol) colAttr.needsUpdate = true;
+
+      for (const d of dead) live.delete(d);
+      if (dirtyPos) geo.attributes.position.needsUpdate = true;
+      if (dirtyCol) geo.attributes.color.needsUpdate = true;
     };
 
-    // 7. Render Loop (Guaranteed continuous rotation)
-    let prev = performance.now();
+    const updateCameraLayout = () => {
+      const w = canvas.clientWidth || 1;
+      const h = canvas.clientHeight || 1;
+      camera.aspect = w / h;
 
-    const tick = (now: number) => {
+      const isMobile = w < 768;
+      const baseDist = isMobile ? 8.2 : 6.0;
+      camera.position.set(0, 0, baseDist);
+
+      const targetX = isMobile ? 0 : 0.45;
+      const targetY = isMobile ? 0.3 : 0.05;
+      orbGroup.position.set(targetX, targetY, 0);
+
+      camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+    };
+
+    const handleResize = () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
+      renderer.setSize(w, h, false);
+      updateCameraLayout();
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
+    handleResize();
+
+    let lastT = performance.now();
+    const animate = (now: number) => {
       if (isDisposed) return;
-      animId = requestAnimationFrame(tick);
-      if (!isVisible) return;
-
-      let dt = (now - prev) / 1000;
-      prev = now;
-      if (dt > 0.1) dt = 0.1;
+      const dt = Math.min(0.1, (now - lastT) * 0.001);
+      lastT = now;
 
       if (!dragging) {
-        // Continuous, smooth rotation (slows down when hovering a card)
-        yaw += (AUTO * (1 - 0.78 * slowT) + yawVel) * dt;
-        yawVel *= Math.pow(0.0016, dt);
+        const targetSlow = hoverIdx >= 0 ? 0.2 : 0;
+        slowT = THREE.MathUtils.damp(slowT, targetSlow, 4, dt);
+        const curAuto = AUTO * (1 - slowT * 0.82);
+        yaw += curAuto * dt;
+
+        yaw += yawVel * dt;
         pitch += pitchVel * dt;
-        pitchVel *= Math.pow(0.0016, dt);
-        pitch *= Math.pow(0.22, dt);
+        yawVel = THREE.MathUtils.damp(yawVel, 0, 4, dt);
+        pitchVel = THREE.MathUtils.damp(pitchVel, 0, 5, dt);
+        pitch = THREE.MathUtils.damp(pitch, 0.08, 1.6, dt);
       }
 
-      orbGroup.rotation.set(pitch, yaw, 0);
+      orbGroup.rotation.set(pitch, yaw, 0, 'YXZ');
       updateHover(dt);
-      renderer.render(scene, camera);
+
+      if (isVisible) {
+        renderer.render(scene, camera);
+      }
+      animId = requestAnimationFrame(animate);
     };
-
-    animId = requestAnimationFrame(tick);
-
-    // 8. Visibility & Intersection Management
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    io.observe(container);
+    animId = requestAnimationFrame(animate);
 
     const onVisibilityChange = () => {
       isVisible = !document.hidden;
+      if (isVisible) lastT = performance.now();
     };
     document.addEventListener('visibilitychange', onVisibilityChange);
 
-    // 9. Cleanup
+    const io = new IntersectionObserver(([entry]) => {
+      isVisible = entry?.isIntersecting ?? true;
+      if (isVisible) lastT = performance.now();
+    });
+    io.observe(canvas);
+
     return () => {
       isDisposed = true;
       cancelAnimationFrame(animId);
       document.removeEventListener('visibilitychange', onVisibilityChange);
-      window.removeEventListener('resize', handleWindowResize);
       resizeObserver.disconnect();
       io.disconnect();
 
