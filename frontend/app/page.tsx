@@ -156,8 +156,8 @@ export default function LandingPage() {
         <OrbGallery />
       </div>
 
-      {/* Floating Drag Hint Pill (Positioned neatly aligned with 3D Globe) */}
-      <div className="absolute top-20 right-6 md:right-16 lg:right-28 z-30 pointer-events-none">
+      {/* Floating Drag Hint Pill (Centered right above the 3D globe) */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 md:left-auto md:right-[26%] md:translate-x-1/2 z-30 pointer-events-none">
         <div className="hint" id="hint" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"
