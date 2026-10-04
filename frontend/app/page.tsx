@@ -156,8 +156,8 @@ export default function LandingPage() {
         <OrbGallery />
       </div>
 
-      {/* Floating Drag Hint Pill */}
-      <div className="absolute top-20 right-6 md:right-12 z-30 pointer-events-none">
+      {/* Floating Drag Hint Pill (Positioned neatly aligned with 3D Globe) */}
+      <div className="absolute top-20 right-6 md:right-16 lg:right-28 z-30 pointer-events-none">
         <div className="hint" id="hint" aria-hidden="true">
           <svg
             viewBox="0 0 24 24"
@@ -172,7 +172,7 @@ export default function LandingPage() {
             <path d="M12 17.3 v2.2" />
             <ellipse cx="12" cy="20.5" rx="5.4" ry="1.7" />
           </svg>
-          <span className="text-zinc-400">Drag to spin 3D sphere &middot; hover cards</span>
+          <span className="text-zinc-400">Drag to spin 3D globe &middot; hover cards</span>
         </div>
       </div>
 

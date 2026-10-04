@@ -898,13 +898,15 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
       const h = canvas.clientHeight || 1;
       camera.aspect = w / h;
 
-      const isMobile = w < 768;
-      const baseDist = isMobile ? 8.2 : 6.0;
+      const isMobile = w < 1024;
+      // Controlled, compact globe size that doesn't overwhelm viewport
+      const baseDist = isMobile ? 11.5 : 9.6;
       camera.position.set(0, 0, baseDist);
 
-      const targetX = isMobile ? 0 : 0.45;
-      const targetY = isMobile ? 0.3 : 0.05;
+      const targetX = isMobile ? 0 : 1.15;
+      const targetY = isMobile ? 0.7 : 0.02;
       orbGroup.position.set(targetX, targetY, 0);
+      orbGroup.scale.set(0.82, 0.82, 0.82);
 
       camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();

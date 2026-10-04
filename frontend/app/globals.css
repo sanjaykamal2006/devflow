@@ -82,8 +82,7 @@ body {
   align-items: center;
   gap: clamp(20px, 3vw, 44px);
   padding: clamp(16px, 2vw, 24px) var(--pad);
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
-  backdrop-filter: blur(12px);
+  background: transparent;
 }
 
 .orb-logo {
