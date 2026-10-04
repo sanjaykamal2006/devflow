@@ -898,14 +898,12 @@ export function OrbGallery({ className = '', style }: OrbGalleryProps) {
       const h = canvas.clientHeight || 1;
       camera.aspect = w / h;
 
-      const isMobile = w < 1024;
-      // Rich, prominent globe size with clear visibility
-      const baseDist = isMobile ? 8.2 : 6.8;
+      const isMobile = w < 768;
+      // Controlled, proportional standoff distance inside its dedicated container
+      const baseDist = isMobile ? 8.2 : 7.6;
       camera.position.set(0, 0, baseDist);
 
-      const targetX = isMobile ? 0 : 0.65;
-      const targetY = isMobile ? 0.35 : 0.04;
-      orbGroup.position.set(targetX, targetY, 0);
+      orbGroup.position.set(0, 0, 0);
       orbGroup.scale.set(1.0, 1.0, 1.0);
 
       camera.lookAt(0, 0, 0);
