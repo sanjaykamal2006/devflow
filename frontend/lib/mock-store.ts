@@ -33,23 +33,23 @@ interface MockDatabase {
 function getInitialDatabase(): MockDatabase {
   const defaultUser: User = {
     id: 'usr-1',
-    email: 'sanjaykamal2006@gmail.com',
-    fullName: 'Sanjay Kamal',
+    email: 'alex.morgan@example.com',
+    fullName: 'Alex Morgan',
     avatarUrl: null,
     createdAt: new Date().toISOString(),
   };
 
   const user2: User = {
     id: 'usr-2',
-    email: 'alex.chen@company.com',
-    fullName: 'Alex Chen',
+    email: 'jordan.lee@example.com',
+    fullName: 'Jordan Lee',
     createdAt: new Date().toISOString(),
   };
 
   const user3: User = {
     id: 'usr-3',
-    email: 'sarah.connor@company.com',
-    fullName: 'Sarah Connor',
+    email: 'taylor.chen@example.com',
+    fullName: 'Taylor Chen',
     createdAt: new Date().toISOString(),
   };
 

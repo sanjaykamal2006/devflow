@@ -33,7 +33,14 @@ export default function RootLayout({
         <AuthProvider>
           <Navbar />
           <CommandPalette />
-          <Toaster theme="dark" position="bottom-right" richColors closeButton />
+          <Toaster
+            theme="dark"
+            position="top-right"
+            toastOptions={{
+              className: 'bg-[#121318] border border-white/[0.08] text-zinc-100 shadow-xl rounded-xl text-xs',
+            }}
+            closeButton
+          />
           <main className="flex-1">{children}</main>
         </AuthProvider>
       </body>

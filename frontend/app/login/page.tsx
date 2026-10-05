@@ -21,25 +21,25 @@ export default function LoginPage() {
   const { login, enterDemoSandbox } = useAuth();
   const router = useRouter();
 
-  const [email, setEmail] = useState('sanjaykamal2006@gmail.com');
-  const [password, setPassword] = useState('password123');
-  const [activePersona, setActivePersona] = useState<'admin' | 'guest'>('admin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [activePersona, setActivePersona] = useState<'demo' | 'custom'>('custom');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const selectAdmin = () => {
-    setActivePersona('admin');
-    setEmail('sanjaykamal2006@gmail.com');
-    setPassword('password123');
+  const selectDemo = () => {
+    setActivePersona('demo');
+    setEmail('demo@devflow.io');
+    setPassword('demo123');
     setError(null);
   };
 
-  const selectGuest = () => {
-    setActivePersona('guest');
-    setEmail('demo@devflow.io');
-    setPassword('demo123');
+  const selectCustom = () => {
+    setActivePersona('custom');
+    setEmail('');
+    setPassword('');
     setError(null);
   };
 
@@ -64,7 +64,7 @@ export default function LoginPage() {
   const handleForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
     toast.info('Demo Credentials Available', {
-      description: 'Use the Admin (Sanjay) or Demo Guest persona pills above for instant access.',
+      description: 'Use the Demo Account option or instant sandbox for quick access.',
     });
   };
 
@@ -179,32 +179,32 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Segmented Persona Switcher: Admin (Sanjay) vs Demo Guest */}
+            {/* Demo Account Quick Access */}
             <div className="grid grid-cols-2 gap-2.5 p-1 rounded-2xl bg-black/40 border border-white/[0.06]">
               <button
                 type="button"
-                onClick={selectAdmin}
+                onClick={selectDemo}
                 className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer ${
-                  activePersona === 'admin'
+                  activePersona === 'demo'
                     ? 'bg-sky-500/15 border border-sky-500/80 text-sky-300 shadow-[0_0_14px_rgba(56,189,248,0.25),inset_0_1px_0_rgba(56,189,248,0.3)] font-semibold'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent'
                 }`}
               >
-                <User className={`w-3.5 h-3.5 ${activePersona === 'admin' ? 'text-sky-400' : 'text-zinc-500'}`} />
-                <span className="truncate">Admin (Sanjay)</span>
+                <User className={`w-3.5 h-3.5 ${activePersona === 'demo' ? 'text-sky-400' : 'text-zinc-500'}`} />
+                <span className="truncate">Demo Account</span>
               </button>
 
               <button
                 type="button"
-                onClick={selectGuest}
+                onClick={selectCustom}
                 className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer ${
-                  activePersona === 'guest'
+                  activePersona === 'custom'
                     ? 'bg-purple-500/15 border border-purple-500/80 text-purple-300 shadow-[0_0_14px_rgba(168,85,247,0.25),inset_0_1px_0_rgba(168,85,247,0.3)] font-semibold'
                     : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] border border-transparent'
                 }`}
               >
-                <User className={`w-3.5 h-3.5 ${activePersona === 'guest' ? 'text-purple-400' : 'text-zinc-500'}`} />
-                <span className="truncate">Demo Guest</span>
+                <User className={`w-3.5 h-3.5 ${activePersona === 'custom' ? 'text-purple-400' : 'text-zinc-500'}`} />
+                <span className="truncate">Your Account</span>
               </button>
             </div>
 
@@ -241,7 +241,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => {
                       setEmail(e.target.value);
-                      setActivePersona('admin');
+                      setActivePersona('custom');
                     }}
                     placeholder="name@company.com"
                     className="w-full h-11 bg-black/60 border border-white/[0.1] rounded-xl pl-10 pr-3.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition-all font-sans"
@@ -270,7 +270,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
-                      setActivePersona('admin');
+                      setActivePersona('custom');
                     }}
                     placeholder="••••••••"
                     className="w-full h-11 bg-black/60 border border-white/[0.1] rounded-xl pl-10 pr-10 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition-all font-sans"

@@ -85,32 +85,8 @@ class LiveEventManager {
       }
     } catch {}
 
-    // Default seeded initial notifications for rich developer experience
-    return [
-      {
-        id: 'seed-1',
-        type: 'github_activity',
-        title: 'Pull Request Merged',
-        description: 'PR #42 (API-101) merged into origin/main by Sanjay K.',
-        timestamp: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-        issueKey: 'API-101',
-      },
-      {
-        id: 'seed-2',
-        type: 'issue_updated',
-        title: 'Status Transitioned',
-        description: 'DB-104 changed from IN_PROGRESS to DONE',
-        timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-        issueKey: 'DB-104',
-      },
-      {
-        id: 'seed-3',
-        type: 'webhook_dispatched',
-        title: 'Discord Webhook Delivered',
-        description: 'Event issue.created delivered with HMAC-SHA256 signature (200 OK)',
-        timestamp: new Date(Date.now() - 1000 * 60 * 90).toISOString(),
-      },
-    ];
+    // In a real application without stored events, default to empty list
+    return [];
   }
 
   public saveNotification(event: LiveEvent) {

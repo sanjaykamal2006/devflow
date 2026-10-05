@@ -186,7 +186,7 @@ export default function RegisterPage() {
                     autoFocus
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Sanjay Kamal"
+                    placeholder="Alex Morgan"
                     className="w-full h-11 bg-black/60 border border-white/[0.1] rounded-xl pl-10 pr-3.5 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition-all font-sans"
                   />
                 </div>
